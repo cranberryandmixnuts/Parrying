@@ -1,18 +1,16 @@
-﻿// Author: Daniele Giardini - http://www.demigiant.com
+// Author: Daniele Giardini - http://www.demigiant.com
 // Created: 2018/07/13
 
 #if true // MODULE_MARKER
-using System;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins;
 using DG.Tweening.Plugins.Core.PathCore;
 using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
-#pragma warning disable 1591
 namespace DG.Tweening
 {
-	public static class DOTweenModulePhysics2D
+    public static class DOTweenModulePhysics2D
     {
         #region Shortcuts
 
@@ -87,8 +85,10 @@ namespace DG.Tweening
                     .SetOptions(AxisConstraint.X, snapping).SetEase(Ease.Linear)
                 ).Join(yTween)
                 .SetTarget(target).SetEase(DOTween.defaultEaseType);
-            yTween.OnUpdate(() => {
-                if (!offsetYSet) {
+            yTween.OnUpdate(() =>
+            {
+                if (!offsetYSet)
+                {
                     offsetYSet = true;
                     offsetY = s.isRelative ? endValue.y : endValue.y - startPosY;
                 }
@@ -188,6 +188,6 @@ namespace DG.Tweening
         #endregion
 
         #endregion
-	}
+    }
 }
 #endif

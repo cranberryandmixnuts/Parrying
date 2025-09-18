@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+using UnityEngine;
 
 
 namespace TMPro.Examples
@@ -7,7 +6,7 @@ namespace TMPro.Examples
 
     public class ObjectSpin : MonoBehaviour
     {
-        #pragma warning disable 0414
+#pragma warning disable 0414
         public enum MotionType { Rotation, SearchLight, Translation };
         public MotionType Motion;
 
@@ -23,7 +22,7 @@ namespace TMPro.Examples
         private Vector3 m_initial_Position;
         private Color32 m_lightColor;
 
-        void Awake()
+        private void Awake()
         {
             m_transform = transform;
             m_initial_Rotation = m_transform.rotation.eulerAngles;
@@ -35,7 +34,7 @@ namespace TMPro.Examples
 
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             switch (Motion)
             {
