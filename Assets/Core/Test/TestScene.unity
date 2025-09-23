@@ -155,9 +155,9 @@ MonoBehaviour:
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: 0}
+  m_SubmitAction: {fileID: 0}
+  m_CancelAction: {fileID: 0}
   m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
@@ -843,7 +843,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3351578637523860164}
   - component: {fileID: 3351578637523860165}
-  - component: {fileID: 3351578637523860166}
   m_Layer: 3
   m_Name: GroundCheck
   m_TagString: Untagged
@@ -955,21 +954,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &3351578637523860166
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 548850230567831035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05a1a930b5e74df4ba46f24b49a56854, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GroundMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!1 &5246335069868684135
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,8 +966,8 @@ GameObject:
   - component: {fileID: 6806864931138348590}
   - component: {fileID: 2057162027275007409}
   - component: {fileID: 1378351098}
-  - component: {fileID: 6806864931138348593}
   - component: {fileID: 6806864931138348594}
+  - component: {fileID: 6806864931138348595}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1046,23 +1030,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6806864931138348593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5246335069868684135}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1f3012ff21346b46ade75202a84921a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MoveSpeed: 8
-  JumpForce: 14
-  CoyoteTime: 0.1
-  JumpBuffer: 0.1
-  GroundCheck: {fileID: 3351578637523860166}
 --- !u!61 &6806864931138348594
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1109,6 +1076,28 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!95 &6806864931138348595
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5246335069868684135}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

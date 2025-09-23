@@ -1,6 +1,6 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
 public sealed class MeleeSweepEmitter : MonoBehaviour
@@ -20,7 +20,7 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
 
     private LineRenderer lr;
     private float lastFire;
-    private HashSet<Collider2D> hitSet = new HashSet<Collider2D>();
+    private readonly HashSet<Collider2D> hitSet = new HashSet<Collider2D>();
     private Vector2 prevTip;
     private Vector2 prevMid;
 
