@@ -9,7 +9,7 @@ public sealed class DieState : PlayerState
     public override void Enter()
     {
         player.SetEffectState(PlayerController.PlayerEffectState.Dying);
-        player.Animator.Play("Die");
+        player.Animator.Play("Death");
         player.Rigidbody.linearVelocity = Vector2.zero;
         Collider2D col = player.BoxCollider;
         if (col != null) col.enabled = false;

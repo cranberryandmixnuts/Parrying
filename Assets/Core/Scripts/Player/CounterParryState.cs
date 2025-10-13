@@ -15,7 +15,8 @@ public sealed class CounterParryState : PlayerState
         else
         {
             player.EnterCounterParry();
-            player.Animator.Play("CounterParry");
+            if (player.isGround) player.Animator.Play("Ground Enhanced Parry");
+            else player.Animator.Play("Air Enhanced Parry");
             drainTimer = 0f;
         }
     }

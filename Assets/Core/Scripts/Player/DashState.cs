@@ -15,7 +15,8 @@ public sealed class DashState : PlayerState
         cachedGravity = player.Rigidbody.gravityScale;
         player.Rigidbody.gravityScale = 0f;
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
-        player.Animator.Play("Dash");
+        if(player.isGround) player.Animator.Play("Ground Dash");
+        else player.Animator.Play("Air Dash");
         if (!player.isGround) player.canAirDash = false;
     }
 
