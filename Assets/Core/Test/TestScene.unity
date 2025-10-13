@@ -382,7 +382,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1070786891
 Transform:
   m_ObjectHideFlags: 0
@@ -571,7 +571,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1231797101
 Transform:
   m_ObjectHideFlags: 0
@@ -879,7 +879,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.6, y: 1.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3351578637523860164}
@@ -894,7 +894,7 @@ Transform:
   m_GameObject: {fileID: 548850230567831035}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -1.33, z: 0}
   m_LocalScale: {x: 0.9, y: 0.05, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -956,6 +956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2838046105132486482}
   - component: {fileID: 6806864931138348590}
+  - component: {fileID: 6806864931138348596}
   - component: {fileID: 2057162027275007409}
   - component: {fileID: 6806864931138348594}
   - component: {fileID: 6806864931138348595}
@@ -1013,7 +1014,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2179413582dfa7d4ca86e87858cb791c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1058,17 +1059,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.14050859}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.82, y: 3.72}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 2.8921814}
   m_EdgeRadius: 0
 --- !u!95 &6806864931138348595
 Animator:
@@ -1092,6 +1093,81 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6806864931138348596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5246335069868684135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652146b8e97ca7a41b6b726b12e9f625, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  keyData: {fileID: 11400000, guid: c821d049d65037d4d90d3be257eea45b, type: 2}
+  maxHealth: 5
+  maxEnergy: 3
+  startHealth: 5
+  startEnergy: 1.5
+  moveSpeed: 10
+  jumpForceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  maxJumpTime: 0.4
+  maxJumpForce: 20
+  jumpHeightMultiplier: 1
+  jumpBufferTime: 0.1
+  coyoteTime: 0.1
+  dashSpeed: 50
+  dashDuration: 0.1
+  dashCooldown: 0.8
+  parryWindow: 0.07
+  parryEnergyGain: 1
+  parryHitstop: 0.15
+  counterEnterCost: 0.5
+  counterDrainPerSecond: 0.4
+  healEnergyPerSecond: 1.2
+  healHealthPerSecond: 1
+  healEndLag: 0.3
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckBox: {fileID: 3351578637523860165}
+  hitStunDuration: 0.25
+  knockbackDuration: 0.1
+  knockbackForce: 10
+  isGround: 0
+  facingDirection: 1
+  isJumping: 0
+  JumpHeld: 0
+  jumpTimeCounter: 0
+  jumpBufferTimer: 0
+  coyoteTimer: 0
+  canAirDash: 1
+  lastDashTime: -999
+  dashTimer: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
