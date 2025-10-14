@@ -16,6 +16,8 @@ public sealed class LocomotionState : PlayerState
     {
         if (TryHandleDash()) return;
 
+        bool startedJump = false;
+
         if (player.ParryPressed)
         {
             player.ConsumeParryPressed();
@@ -41,22 +43,28 @@ public sealed class LocomotionState : PlayerState
             player.isJumping = true;
             player.jumpTimeCounter = 0f;
             player.Animator.Play("Jump");
+            startedJump = true;
         }
 
         if (!player.JumpHeld && player.isJumping)
             player.StopRising();
 
-        if (player.isGround)
+        if (startedJump) return;
+
+        if (!player.isJumping)
         {
-            if (Mathf.Abs(player.CurrentVelocity.x) > 0.01f || Mathf.Abs(player.MoveInput) > 0.01f)
-                player.Animator.Play("Run");
+            if (player.isGround)
+            {
+                if (Mathf.Abs(player.CurrentVelocity.x) > 0.01f || Mathf.Abs(player.MoveInput) > 0.01f)
+                    player.Animator.Play("Run");
+                else
+                    player.Animator.Play("Idle");
+            }
             else
-                player.Animator.Play("Idle");
-        }
-        else
-        {
-            if (player.Rigidbody.linearVelocity.y < 0f)
-                player.Animator.Play("Fall");
+            {
+                if (player.Rigidbody.linearVelocity.y < 0f)
+                    player.Animator.Play("Fall");
+            }
         }
     }
 

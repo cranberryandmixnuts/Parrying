@@ -202,7 +202,8 @@ public class PlayerController : MonoBehaviour
     {
         DashPressed = false;
     }
-public void SetEffectState(PlayerEffectState newState)
+
+    public void SetEffectState(PlayerEffectState newState)
     {
         if (CurrentEffectState == newState) return;
         CurrentEffectState = newState;
@@ -229,7 +230,7 @@ public void SetEffectState(PlayerEffectState newState)
         if (MoveInput != 0)
         {
             facingDirection = MoveInput > 0 ? 1 : -1;
-            transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
+            //transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f); 반전코드
         }
     }
 
