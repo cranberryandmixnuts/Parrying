@@ -1,35 +1,39 @@
-public class PlayerStateMachine
+using UnityEngine;
+
+public sealed class PlayerStateMachine
 {
     private PlayerState currentState;
-    private PlayerState previousState;
+    public PlayerStateType CurrentStateType { get; private set; } = PlayerStateType.Missing;
 
-    public PlayerStateType CurrentStateType => currentState?.StateType ?? PlayerStateType.Missing;
-
-    public void Initialize(PlayerState startingState)
+    public void Initialize(PlayerState startState)
     {
-        currentState = startingState;
+        currentState = startState;
+        CurrentStateType = startState.StateType;
         currentState.Enter();
     }
 
     public void ChangeState(PlayerState newState)
     {
-        if (currentState != null && !currentState.CanTransitionTo(newState))
-            return;
+        if (newState == null)
+            throw new System.ArgumentNullException(nameof(newState));
 
-        currentState?.Exit();
-        previousState = currentState;
+        if (currentState != null)
+            currentState.Exit();
+
         currentState = newState;
-        //UnityEngine.Debug.Log($"Changing state from {previousState?.StateType} to {currentState.StateType}");
+        CurrentStateType = newState.StateType;
         currentState.Enter();
     }
 
     public void Update()
     {
-        currentState?.Update();
+        if (currentState != null)
+            currentState.Update();
     }
 
     public void FixedUpdate()
     {
-        currentState?.FixedUpdate();
+        if (currentState != null)
+            currentState.FixedUpdate();
     }
 }

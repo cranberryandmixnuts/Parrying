@@ -2,7 +2,8 @@ using UnityEngine;
 
 public sealed class CounterParryState : PlayerState
 {
-    private float drainTimer;
+    private float timer;
+    private float cachedGravity;
 
     public override PlayerStateType StateType => PlayerStateType.CounterParry;
 
@@ -10,38 +11,32 @@ public sealed class CounterParryState : PlayerState
 
     public override void Enter()
     {
-        if (!player.TryConsumeEnergy(player.CounterEnterCost))
-            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-        else
-        {
-            player.EnterCounterParry();
-            if (player.isGround) player.Animator.Play("Ground Enhanced Parry");
-            else player.Animator.Play("Air Enhanced Parry");
-            drainTimer = 0f;
-        }
+        player.CancelJump(true);
+        cachedGravity = player.Rigidbody.gravityScale;
+        player.Rigidbody.gravityScale = 0f;
+        player.Rigidbody.linearVelocity = Vector2.zero;
+        player.currentSpeedAbs = 0f;
+        player.SetInvincible(true);
+        player.EnterCounterParry();
+        if (player.isGround) player.Animator.Play("Ground Counter Parry"); else player.Animator.Play("Air Counter Parry");
+        timer = player.PowerParryDuration;
     }
 
     public override void Update()
     {
-        if (TryHandleDash()) return;
-
-        if (!player.ParryHeld)
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
         {
+            player.SetInvincible(false);
+            player.ExitCounterParry();
+            player.Rigidbody.gravityScale = cachedGravity;
+            player.SetEffectState(PlayerController.PlayerEffectState.None);
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-            return;
-        }
-
-        drainTimer += Time.deltaTime;
-        float drain = player.CounterDrainPerSecond * Time.deltaTime;
-        if (!player.TryConsumeEnergy(drain))
-        {
-            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-            return;
         }
     }
 
-    public override void Exit()
+    public override void FixedUpdate()
     {
-        player.ExitCounterParry();
+        player.Rigidbody.linearVelocity = Vector2.zero;
     }
 }

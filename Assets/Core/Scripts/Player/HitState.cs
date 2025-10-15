@@ -22,7 +22,7 @@ public sealed class HitState : PlayerState
         {
             player.SetInvincible(false);
             if (player.Health <= 0f)
-                stateMachine.ChangeState(new DieState(player, stateMachine));
+                stateMachine.ChangeState(new DeathState(player, stateMachine));
             else
                 stateMachine.ChangeState(new LocomotionState(player, stateMachine));
         }

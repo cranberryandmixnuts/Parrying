@@ -10,22 +10,35 @@ public sealed class ParryState : PlayerState
 
     public override void Enter()
     {
+        player.CancelJump(true);
+        if (!player.isGround) player.airParryAvailable = false;
+        if (player.isGround)
+        {
+            player.currentSpeedAbs = 0f;
+            player.Rigidbody.linearVelocity = new Vector2(0f, player.Rigidbody.linearVelocity.y);
+        }
+
         timer = player.ParryWindow;
         player.EnterParryWindow();
-        if (player.isGround) player.Animator.Play("Ground Normal Parry");
-        else player.Animator.Play("Air Normal Parry");
+        if (player.isGround) player.Animator.Play("Ground Normal Parry"); else player.Animator.Play("Air Normal Parry");
     }
 
     public override void Update()
     {
-        if (TryHandleDash()) return;
-
         timer -= Time.deltaTime;
         if (timer <= 0f)
-            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-
-        if (player.ParryHeld && player.Energy >= player.CounterEnterCost)
-            stateMachine.ChangeState(new CounterParryState(player, stateMachine));
+        {
+            if (player.isGround && player.HasParryBuffer())
+            {
+                player.ConsumeParryPressed();
+                player.ConsumeParryBuffer();
+                stateMachine.ChangeState(new ParryState(player, stateMachine));
+            }
+            else
+            {
+                stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+            }
+        }
     }
 
     public override void Exit()

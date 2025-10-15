@@ -10,21 +10,20 @@ public sealed class DashState : PlayerState
 
     public override void Enter()
     {
+        player.CancelJump(true);
         player.lastDashTime = Time.time;
         player.dashTimer = player.DashDuration;
         cachedGravity = player.Rigidbody.gravityScale;
         player.Rigidbody.gravityScale = 0f;
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
-        if(player.isGround) player.Animator.Play("Ground Dash");
-        else player.Animator.Play("Air Dash");
+        if (player.isGround) player.Animator.Play("Ground Dash"); else player.Animator.Play("Air Dash");
         if (!player.isGround) player.canAirDash = false;
     }
 
     public override void Update()
     {
         player.dashTimer -= Time.deltaTime;
-        if (player.dashTimer <= 0f)
-            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+        if (player.dashTimer <= 0f) stateMachine.ChangeState(new LocomotionState(player, stateMachine));
     }
 
     public override void FixedUpdate()
@@ -36,5 +35,7 @@ public sealed class DashState : PlayerState
     {
         player.Rigidbody.gravityScale = cachedGravity;
         player.SetEffectState(PlayerController.PlayerEffectState.None);
+        player.postDashCarryDir = player.facingDirection;
+        player.postDashCarryTimer = player.PostDashCarryWindow;
     }
 }

@@ -1,14 +1,14 @@
 using UnityEngine;
 
-public sealed class DieState : PlayerState
+public sealed class DeathState : PlayerState
 {
     public override PlayerStateType StateType => PlayerStateType.Death;
 
-    public DieState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public DeathState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
 
     public override void Enter()
     {
-        player.SetEffectState(PlayerController.PlayerEffectState.Dying);
+        player.SetEffectState(PlayerController.PlayerEffectState.Death);
         player.Animator.Play("Death");
         player.Rigidbody.linearVelocity = Vector2.zero;
         Collider2D col = player.BoxCollider;
