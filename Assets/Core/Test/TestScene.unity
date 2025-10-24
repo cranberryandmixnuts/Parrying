@@ -622,7 +622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1070786891
 Transform:
   m_ObjectHideFlags: 0
@@ -1393,7 +1393,7 @@ MonoBehaviour:
   powerParryPrepTick: 0.1
   powerParryPrepCost: 0.05
   powerParryDuration: 0.5
-  healEnergyPerSecond: 1.2
+  healEnergyPerSecond: 1
   healHealthPerSecond: 1
   healEndLag: 0.3
   groundLayer:
@@ -1403,9 +1403,9 @@ MonoBehaviour:
   hitStunDuration: 0.25
   knockbackDuration: 0.1
   knockbackForce: 10
-  accelTime: 0.3
-  airReleaseDecelTime: 0.4
-  startSpeedRatio: 0.45
+  accelTime: 0.25
+  airReleaseDecelTime: 0.3
+  startSpeedRatio: 0.35
   postDashCarryWindow: 0.1
   isGround: 0
   facingDirection: 1

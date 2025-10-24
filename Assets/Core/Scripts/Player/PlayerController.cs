@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
     public float PowerParryDuration => powerParryDuration;
 
     [Header("Heal")]
-    [SerializeField] private float healEnergyPerSecond = 1.2f;
+    [SerializeField] private float healEnergyPerSecond = 1.0f;
     [SerializeField] private float healHealthPerSecond = 1.0f;
     [SerializeField] private float healEndLag = 0.3f;
     public float HealEnergyPerSecond => healEnergyPerSecond;
