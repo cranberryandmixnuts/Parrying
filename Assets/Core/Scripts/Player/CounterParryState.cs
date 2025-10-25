@@ -4,6 +4,7 @@ public sealed class CounterParryState : PlayerState
 {
     private float timer;
     private float cachedGravity;
+    [SerializeField] private static float postInvuln = 0.15f;
 
     public override PlayerStateType StateType => PlayerStateType.CounterParry;
 
@@ -18,6 +19,7 @@ public sealed class CounterParryState : PlayerState
         player.currentSpeedAbs = 0f;
         player.SetInvincible(true);
         player.EnterCounterParry();
+        player.counterParryFirstResolved = false;
         if (player.isGround) player.Animator.Play("Ground Counter Parry"); else player.Animator.Play("Air Counter Parry");
         timer = player.PowerParryDuration;
     }
@@ -31,6 +33,7 @@ public sealed class CounterParryState : PlayerState
             player.ExitCounterParry();
             player.Rigidbody.gravityScale = cachedGravity;
             player.SetEffectState(PlayerController.PlayerEffectState.None);
+            if (player.counterParryFirstResolved) player.AddParryGrace(postInvuln);
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
         }
     }

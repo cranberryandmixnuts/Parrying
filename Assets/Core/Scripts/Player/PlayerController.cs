@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float parryEnergyGain = 1.0f;
     [SerializeField] private float parryHitstop = 0.15f;
     public float ParryWindow => parryWindow;
+    public float ParryEnergyGain => parryEnergyGain;
 
     [Header("Power Parry")]
     [SerializeField] private float powerParryHoldTime = 0.1f;
@@ -138,6 +139,13 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool inPowerParryPrep;
     [HideInInspector] public float powerParryPrepTickTimer;
     [HideInInspector] public bool powerParryPrepLocked;
+
+    [HideInInspector] public float parryWindowStartTime;
+    [HideInInspector] public float parryWindowDuration;
+    [HideInInspector] public bool parryHadSuccessThisWindow;
+    [HideInInspector] public bool counterParryFirstResolved;
+    private float parryGraceEndTime;
+    public bool IsParryGraceActive => Time.time < parryGraceEndTime;
 
     private PlayerStateMachine stateMachine;
     private bool isInvincible = false;
@@ -344,6 +352,34 @@ public class PlayerController : MonoBehaviour
     {
         parryWindowActive = false;
         if (CurrentEffectState == PlayerEffectState.Parry) SetEffectState(PlayerEffectState.None);
+    }
+
+    public void NotifyParryWindowBegin(float duration)
+    {
+        parryWindowStartTime = Time.time;
+        parryWindowDuration = duration;
+        parryHadSuccessThisWindow = false;
+    }
+
+    public void NotifyParryWindowEnd()
+    {
+        parryWindowDuration = 0f;
+    }
+
+    public void AddParryGrace(float duration)
+    {
+        if (duration > 0f) parryGraceEndTime = Mathf.Max(parryGraceEndTime, Time.time + duration);
+    }
+
+    public void ImmediateReParry()
+    {
+        if (stateMachine != null) stateMachine.ChangeState(new ParryState(this, stateMachine));
+    }
+
+    public void ApplyRawDamage(float amount)
+    {
+        Health = Mathf.Clamp(Health - amount, 0f, maxHealth);
+        if (Health <= 0f) stateMachine.ChangeState(new DeathState(this, stateMachine)); else stateMachine.ChangeState(new HitState(this, stateMachine));
     }
 
     public void EnterCounterParry()

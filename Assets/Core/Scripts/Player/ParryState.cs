@@ -19,6 +19,7 @@ public sealed class ParryState : PlayerState
         }
 
         timer = player.ParryWindow;
+        player.NotifyParryWindowBegin(timer);
         player.EnterParryWindow();
         if (player.isGround) player.Animator.Play("Ground Normal Parry"); else player.Animator.Play("Air Normal Parry");
     }
@@ -43,6 +44,7 @@ public sealed class ParryState : PlayerState
 
     public override void Exit()
     {
+        player.NotifyParryWindowEnd();
         player.ExitParryWindow();
     }
 }

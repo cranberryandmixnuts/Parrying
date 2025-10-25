@@ -28,6 +28,7 @@ public sealed class ProjectileSpawner : MonoBehaviour
         }
         Projectile p = Instantiate(ProjectilePrefab, transform.position, Quaternion.identity);
         p.HitMask = ProjectileHitMask;
+        p.Source = transform;
         p.Init(dir);
     }
 }

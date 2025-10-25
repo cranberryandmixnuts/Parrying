@@ -88,6 +88,14 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
             {
                 if (hitSet.Contains(hits[k])) continue;
                 hitSet.Add(hits[k]);
+
+                IMeleeHitResponder r = hits[k].GetComponent<IMeleeHitResponder>();
+                if (r != null)
+                {
+                    MeleeHitResult res = r.OnMeleeHit(this, hits[k], Damage);
+                    if (res == MeleeHitResult.Ignore) continue;
+                }
+
                 IDamageable d = hits[k].GetComponent<IDamageable>();
                 if (d != null) d.Hit(Damage);
             }

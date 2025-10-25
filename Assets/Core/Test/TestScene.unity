@@ -1199,6 +1199,7 @@ GameObject:
   - component: {fileID: 2838046105132486482}
   - component: {fileID: 6806864931138348590}
   - component: {fileID: 6806864931138348596}
+  - component: {fileID: 6806864931138348597}
   - component: {fileID: 2057162027275007409}
   - component: {fileID: 6806864931138348594}
   - component: {fileID: 6806864931138348595}
@@ -1427,6 +1428,22 @@ MonoBehaviour:
   inPowerParryPrep: 0
   powerParryPrepTickTimer: 0
   powerParryPrepLocked: 0
+  parryWindowStartTime: 0
+  parryWindowDuration: 0
+  parryHadSuccessThisWindow: 0
+  counterParryFirstResolved: 0
+--- !u!114 &6806864931138348597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5246335069868684135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c1cb7e24910b842887f72cd3efd686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerParryResponder
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

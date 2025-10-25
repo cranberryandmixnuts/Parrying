@@ -7,14 +7,14 @@ public sealed class Projectile : MonoBehaviour
     public float MaxDistance = 20f;
     public LayerMask HitMask;
     public int Damage = 1;
+    public Transform Source;
 
     private Vector2 dir = Vector2.right;
-    private Vector2 lastPos;
     private float traveled;
+    private bool deadly = true;
 
     private void OnEnable()
     {
-        lastPos = transform.position;
         traveled = 0f;
     }
 
@@ -29,14 +29,53 @@ public sealed class Projectile : MonoBehaviour
         Vector2 p = transform.position;
         Vector2 step = dir * Speed * Time.fixedDeltaTime;
         float dist = step.magnitude;
-        RaycastHit2D hit = Physics2D.CircleCast(p, Radius, dir, dist, HitMask);
-        if (hit.collider != null)
+
+        if (deadly)
         {
-            IDamageable d = hit.collider.GetComponent<IDamageable>();
-            if (d != null) d.Hit(Damage);
-            Destroy(gameObject);
-            return;
+            RaycastHit2D hit = Physics2D.CircleCast(p, Radius, dir, dist, HitMask);
+            if (hit.collider != null)
+            {
+                IProjectileResponder r = hit.collider.GetComponent<IProjectileResponder>();
+                if (r != null)
+                {
+                    ProjectileHitResponse resp = r.OnProjectileHit(this, hit.collider);
+                    if (resp == ProjectileHitResponse.IgnoreContinue)
+                    {
+                        transform.position = p + step;
+                        traveled += dist;
+                        if (traveled >= MaxDistance) Destroy(gameObject);
+                        return;
+                    }
+                    if (resp == ProjectileHitResponse.NeutralizeContinue)
+                    {
+                        deadly = false;
+                        transform.position = p + step;
+                        traveled += dist;
+                        if (traveled >= MaxDistance) Destroy(gameObject);
+                        return;
+                    }
+                    if (resp == ProjectileHitResponse.ReflectToSource)
+                    {
+                        if (Source != null)
+                        {
+                            Vector2 toSource = ((Vector2)Source.position - p).normalized;
+                            dir = toSource.sqrMagnitude > 0f ? toSource : -dir;
+                        }
+                        Speed *= 2f;
+                        transform.position = p + step;
+                        traveled += dist;
+                        if (traveled >= MaxDistance) Destroy(gameObject);
+                        return;
+                    }
+                }
+
+                IDamageable d = hit.collider.GetComponent<IDamageable>();
+                if (d != null) d.Hit(Damage);
+                Destroy(gameObject);
+                return;
+            }
         }
+
         transform.position = p + step;
         traveled += dist;
         if (traveled >= MaxDistance) Destroy(gameObject);
