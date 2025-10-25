@@ -1,7 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public sealed class Projectile : MonoBehaviour
 {
+    public static readonly List<Projectile> ActiveProjectiles = new List<Projectile>();
+
     public float Radius = 0.2f;
     public float Speed = 12f;
     public float MaxDistance = 20f;
@@ -12,16 +15,48 @@ public sealed class Projectile : MonoBehaviour
     private Vector2 dir = Vector2.right;
     private float traveled;
     private bool deadly = true;
+    public bool IsDeadly => deadly;
 
     private void OnEnable()
     {
         traveled = 0f;
+        if (!ActiveProjectiles.Contains(this)) ActiveProjectiles.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        ActiveProjectiles.Remove(this);
     }
 
     public void Init(Vector2 direction)
     {
         dir = direction.normalized;
         transform.right = dir;
+    }
+
+    public void Neutralize()
+    {
+        deadly = false;
+    }
+
+    public void ConsumeAndDestroy()
+    {
+        Destroy(gameObject);
+    }
+
+    public void ReflectToSource()
+    {
+        Vector2 selfPos = transform.position;
+        if (Source != null)
+        {
+            Vector2 toSource = ((Vector2)Source.position - selfPos).normalized;
+            if (toSource.sqrMagnitude > 0f)
+                dir = toSource;
+            else
+                dir = -dir;
+        }
+        Speed *= 2f;
+        traveled = 0f;
     }
 
     private void FixedUpdate()
@@ -36,9 +71,12 @@ public sealed class Projectile : MonoBehaviour
             if (hit.collider != null)
             {
                 IProjectileResponder r = hit.collider.GetComponent<IProjectileResponder>();
+                IDamageable d = hit.collider.GetComponent<IDamageable>();
+
                 if (r != null)
                 {
                     ProjectileHitResponse resp = r.OnProjectileHit(this, hit.collider);
+
                     if (resp == ProjectileHitResponse.IgnoreContinue)
                     {
                         transform.position = p + step;
@@ -46,31 +84,42 @@ public sealed class Projectile : MonoBehaviour
                         if (traveled >= MaxDistance) Destroy(gameObject);
                         return;
                     }
+
                     if (resp == ProjectileHitResponse.NeutralizeContinue)
                     {
-                        deadly = false;
+                        Neutralize();
                         transform.position = p + step;
                         traveled += dist;
                         if (traveled >= MaxDistance) Destroy(gameObject);
                         return;
                     }
+
                     if (resp == ProjectileHitResponse.ReflectToSource)
                     {
-                        if (Source != null)
-                        {
-                            Vector2 toSource = ((Vector2)Source.position - p).normalized;
-                            dir = toSource.sqrMagnitude > 0f ? toSource : -dir;
-                        }
-                        Speed *= 2f;
+                        ReflectToSource();
                         transform.position = p + step;
                         traveled += dist;
                         if (traveled >= MaxDistance) Destroy(gameObject);
+                        return;
+                    }
+
+                    if (resp == ProjectileHitResponse.ConsumedAlready)
+                    {
+                        Destroy(gameObject);
+                        return;
+                    }
+
+                    if (resp == ProjectileHitResponse.Consume)
+                    {
+                        if (d != null) d.Hit(Damage, p);
+                        Destroy(gameObject);
                         return;
                     }
                 }
 
-                IDamageable d = hit.collider.GetComponent<IDamageable>();
-                if (d != null) d.Hit(Damage);
+                if (d != null)
+                    d.Hit(Damage, p);
+
                 Destroy(gameObject);
                 return;
             }
@@ -78,6 +127,7 @@ public sealed class Projectile : MonoBehaviour
 
         transform.position = p + step;
         traveled += dist;
-        if (traveled >= MaxDistance) Destroy(gameObject);
+        if (traveled >= MaxDistance)
+            Destroy(gameObject);
     }
 }

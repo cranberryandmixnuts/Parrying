@@ -2,7 +2,16 @@ using UnityEngine;
 
 public sealed class HealState : PlayerState
 {
-    private bool enteredLoop;
+    private enum HealPhase
+    {
+        Enter,
+        Loop,
+        Exit
+    }
+
+    private HealPhase phase;
+    private bool allowLoop;
+    private float healTickTimer;
 
     public override PlayerStateType StateType => PlayerStateType.Heal;
 
@@ -10,39 +19,102 @@ public sealed class HealState : PlayerState
 
     public override void Enter()
     {
-        enteredLoop = false;
+        player.currentSpeedAbs = 0f;
+        player.Rigidbody.linearVelocity = Vector2.zero;
+
         player.EnterHeal();
         player.Animator.Play("Enter_Heal");
+        phase = HealPhase.Enter;
+        allowLoop = true;
+        healTickTimer = 0f;
     }
 
     public override void Update()
     {
-        if (!enteredLoop)
+        if (phase == HealPhase.Enter)
         {
-            var s = player.Animator.GetCurrentAnimatorStateInfo(0);
-            if (!s.IsName("Enter_Heal") || s.normalizedTime >= 0.95f)
+            if (!player.HealHeld)
+                allowLoop = false;
+
+            AnimatorStateInfo s = player.Animator.GetCurrentAnimatorStateInfo(0);
+            bool doneEnter = !s.IsName("Enter_Heal") || s.normalizedTime >= 0.99f;
+
+            if (doneEnter)
             {
-                player.Animator.Play("Healing");
-                enteredLoop = true;
+                bool canLoop =
+                    allowLoop &&
+                    player.HealHeld &&
+                    player.isGround &&
+                    player.Energy >= player.HealEnergyPerTick &&
+                    player.Health < player.MaxHealth;
+
+                if (canLoop)
+                {
+                    player.Animator.Play("Healing");
+                    phase = HealPhase.Loop;
+                }
+                else
+                {
+                    player.Animator.Play("Exit_Heal");
+                    phase = HealPhase.Exit;
+                }
             }
         }
-
-        if (!player.isGround || player.Energy <= 0f || player.Health >= player.MaxHealth || !player.HealHeld)
+        else if (phase == HealPhase.Loop)
         {
-            if (!player.HealHeld) player.Animator.Play("Exit_Heal");
-            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-            return;
+            bool canStay =
+                player.HealHeld &&
+                player.isGround &&
+                player.Energy >= player.HealEnergyPerTick &&
+                player.Health < player.MaxHealth;
+
+            if (!canStay)
+            {
+                player.Animator.Play("Exit_Heal");
+                phase = HealPhase.Exit;
+            }
+            else
+            {
+                healTickTimer += Time.deltaTime;
+
+                while (healTickTimer >= player.HealTickInterval)
+                {
+                    healTickTimer -= player.HealTickInterval;
+
+                    bool ok = player.TryConsumeEnergy(player.HealEnergyPerTick);
+                    if (!ok)
+                    {
+                        player.Animator.Play("Exit_Heal");
+                        phase = HealPhase.Exit;
+                        break;
+                    }
+
+                    player.Heal(player.HealHealthPerTick);
+
+                    if (player.Health >= player.MaxHealth)
+                    {
+                        player.Animator.Play("Exit_Heal");
+                        phase = HealPhase.Exit;
+                        break;
+                    }
+                }
+            }
         }
-
-        float e = player.HealEnergyPerSecond * Time.deltaTime;
-        float h = player.HealHealthPerSecond * Time.deltaTime;
-
-        if (player.TryConsumeEnergy(e)) player.Heal(h); else stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+        else if (phase == HealPhase.Exit)
+        {
+            AnimatorStateInfo s2 = player.Animator.GetCurrentAnimatorStateInfo(0);
+            bool doneExit = !s2.IsName("Exit_Heal") || s2.normalizedTime >= 0.99f;
+            if (doneExit)
+            {
+                stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+            }
+        }
     }
 
     public override void Exit()
     {
         player.ExitHeal();
-        if (player.HealEndLag > 0f) player.StartHealEndLag();
+        if (player.HealEndLag > 0f)
+            player.StartHealEndLag();
     }
 }

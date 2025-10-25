@@ -18,12 +18,23 @@ public sealed class DashState : PlayerState
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
         if (player.isGround) player.Animator.Play("Ground Dash"); else player.Animator.Play("Air Dash");
         if (!player.isGround) player.canAirDash = false;
+
+        player.SetInvincible(true);
+
+        Projectile proj;
+        if (player.TryDetectIncomingAttack(out proj))
+        {
+            player.GainEnergy(player.DashExtremeGain);
+        }
     }
 
     public override void Update()
     {
         player.dashTimer -= Time.deltaTime;
-        if (player.dashTimer <= 0f) stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+        if (player.dashTimer <= 0f)
+        {
+            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+        }
     }
 
     public override void FixedUpdate()
@@ -34,6 +45,7 @@ public sealed class DashState : PlayerState
     public override void Exit()
     {
         player.Rigidbody.gravityScale = cachedGravity;
+        player.SetInvincible(false);
         player.SetEffectState(PlayerController.PlayerEffectState.None);
         player.postDashCarryDir = player.facingDirection;
         player.postDashCarryTimer = player.PostDashCarryWindow;

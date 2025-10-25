@@ -20,25 +20,45 @@ public sealed class ParryState : PlayerState
 
         timer = player.ParryWindow;
         player.NotifyParryWindowBegin(timer);
+        player.parryHadSuccessThisWindow = false;
+        player.SetInvincible(false);
         player.EnterParryWindow();
         if (player.isGround) player.Animator.Play("Ground Normal Parry"); else player.Animator.Play("Air Normal Parry");
     }
 
     public override void Update()
     {
+        if (!player.parryHadSuccessThisWindow)
+        {
+            Projectile proj;
+            if (player.TryDetectIncomingAttack(out proj))
+            {
+                float elapsed = Time.time - player.parryWindowStartTime;
+                float frac = player.parryWindowDuration > 0f ? elapsed / player.parryWindowDuration : 1f;
+
+                if (frac <= 0.6f)
+                {
+                    player.GainEnergy(player.PerfectParryEnergyGain);
+                    player.parryHadSuccessThisWindow = true;
+                    player.SetInvincible(true);
+                    if (proj != null) proj.Neutralize();
+                }
+                else
+                {
+                    int chip = proj != null ? Mathf.CeilToInt(proj.Damage * 0.5f) : 0;
+                    if (chip > 0) player.ApplyChipDamageNoHit(chip);
+                    player.GainEnergy(player.ImperfectParryEnergyGain);
+                    player.parryHadSuccessThisWindow = true;
+                    player.SetInvincible(true);
+                    if (proj != null) proj.ConsumeAndDestroy();
+                }
+            }
+        }
+
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
-            if (player.isGround && player.HasParryBuffer())
-            {
-                player.ConsumeParryPressed();
-                player.ConsumeParryBuffer();
-                stateMachine.ChangeState(new ParryState(player, stateMachine));
-            }
-            else
-            {
-                stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-            }
+            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
         }
     }
 
@@ -46,5 +66,6 @@ public sealed class ParryState : PlayerState
     {
         player.NotifyParryWindowEnd();
         player.ExitParryWindow();
+        player.SetInvincible(false);
     }
 }

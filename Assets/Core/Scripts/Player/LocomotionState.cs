@@ -24,12 +24,13 @@ public sealed class LocomotionState : PlayerState
         {
             player.parryHoldTimer += Time.deltaTime;
 
-            if (!prepLocked && player.Energy > 0f && !player.inPowerParryPrep && player.parryHoldTimer >= player.PowerParryHoldTime)
+            if (!prepLocked && !player.inPowerParryPrep && player.parryHoldTimer >= player.PowerParryHoldTime)
             {
                 if (player.TryConsumeEnergy(player.PowerParryPrepEnterCost))
                 {
                     player.inPowerParryPrep = true;
                     player.powerParryPrepTickTimer = 0f;
+                    player.powerParryPrepElapsed = 0f;
                 }
                 else
                 {
@@ -40,16 +41,21 @@ public sealed class LocomotionState : PlayerState
 
             if (player.inPowerParryPrep)
             {
-                player.powerParryPrepTickTimer += Time.deltaTime;
-                if (player.powerParryPrepTickTimer >= player.PowerParryPrepTick)
+                player.powerParryPrepElapsed += Time.deltaTime;
+
+                if (player.powerParryPrepElapsed >= player.PowerParryNoDrainTime)
                 {
-                    int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.PowerParryPrepTick);
-                    player.powerParryPrepTickTimer -= ticks * player.PowerParryPrepTick;
-                    float cost = ticks * player.PowerParryPrepCost;
-                    if (!player.TryConsumeEnergy(cost))
+                    player.powerParryPrepTickTimer += Time.deltaTime;
+                    if (player.powerParryPrepTickTimer >= player.PowerParryPrepTick)
                     {
-                        player.inPowerParryPrep = false;
-                        player.powerParryPrepLocked = true;
+                        int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.PowerParryPrepTick);
+                        player.powerParryPrepTickTimer -= ticks * player.PowerParryPrepTick;
+                        int cost = ticks * player.PowerParryPrepCost;
+                        if (!player.TryConsumeEnergy(cost))
+                        {
+                            player.inPowerParryPrep = false;
+                            player.powerParryPrepLocked = true;
+                        }
                     }
                 }
             }
@@ -66,7 +72,10 @@ public sealed class LocomotionState : PlayerState
                 return;
             }
 
-            if (player.powerParryPrepLocked) player.powerParryPrepLocked = false;
+            if (player.powerParryPrepLocked)
+                player.powerParryPrepLocked = false;
+
+            player.parryHoldTimer = 0f;
         }
 
         if (canNormalParry && !player.inPowerParryPrep && (!holding || player.parryHoldTimer < player.PowerParryHoldTime))
@@ -77,7 +86,14 @@ public sealed class LocomotionState : PlayerState
             return;
         }
 
-        if (player.HealHeld && player.isGround && player.Health < player.MaxHealth && player.Energy > 0f)
+        bool canStartHeal =
+            player.HealHeld &&
+            player.isGround &&
+            player.Health < player.MaxHealth &&
+            player.Energy >= player.HealEnergyPerTick &&
+            player.CanStartHeal();
+
+        if (canStartHeal)
         {
             stateMachine.ChangeState(new HealState(player, stateMachine));
             return;
@@ -94,7 +110,8 @@ public sealed class LocomotionState : PlayerState
             startedJump = true;
         }
 
-        if (!player.JumpHeld && player.isJumping) player.StopRising();
+        if (!player.JumpHeld && player.isJumping)
+            player.StopRising();
 
         if (startedJump) return;
 
@@ -102,11 +119,15 @@ public sealed class LocomotionState : PlayerState
         {
             if (player.isGround)
             {
-                if (Mathf.Abs(player.CurrentVelocity.x) > 0.01f || Mathf.Abs(player.MoveInput) > 0.01f) player.Animator.Play("Run"); else player.Animator.Play("Idle");
+                if (Mathf.Abs(player.CurrentVelocity.x) > 0.01f || Mathf.Abs(player.MoveInput) > 0.01f)
+                    player.Animator.Play("Run");
+                else
+                    player.Animator.Play("Idle");
             }
             else
             {
-                if (player.Rigidbody.linearVelocity.y < 0f) player.Animator.Play("Fall");
+                if (player.Rigidbody.linearVelocity.y < 0f)
+                    player.Animator.Play("Fall");
             }
         }
     }
@@ -116,6 +137,18 @@ public sealed class LocomotionState : PlayerState
         player.HandleMove(player.MoveSpeed);
         player.HandleJump();
 
-        if (player.isJumping && player.jumpTimeCounter >= player.MaxJumpTime) player.isJumping = false;
+        if (player.isJumping && player.jumpTimeCounter >= player.MaxJumpTime)
+            player.isJumping = false;
+    }
+
+    private bool TryHandleDash()
+    {
+        if (!player.DashPressed) return false;
+        if (Time.time < player.lastDashTime + player.DashCooldown) return false;
+        if (!(player.isGround || player.canAirDash)) return false;
+
+        player.ConsumeDashPressed();
+        stateMachine.ChangeState(new DashState(player, stateMachine));
+        return true;
     }
 }

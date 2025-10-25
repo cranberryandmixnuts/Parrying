@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     public static PlayerController Instance { get; private set; }
     public Animator Animator { get; private set; }
@@ -30,20 +30,23 @@ public class PlayerController : MonoBehaviour
 
     public bool JumpPressed
     {
-        set { if (value) jumpBufferTimer = jumpBufferTime; }
+        set
+        {
+            if (value) jumpBufferTimer = jumpBufferTime;
+        }
     }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
 
     [Header("Stats")]
-    [SerializeField] private float maxHealth = 10f;
-    [SerializeField] private float maxEnergy = 5f;
-    [SerializeField] private float startHealth = 10f;
-    [SerializeField] private float startEnergy = 5f; //0f;
-    public float MaxHealth => maxHealth;
-    public float MaxEnergy => maxEnergy;
-    public float Health { get; private set; }
-    public float Energy { get; private set; }
+    [SerializeField] private int maxHealth = 1000;
+    [SerializeField] private int maxEnergy = 500;
+    [SerializeField] private int startHealth = 1000;
+    [SerializeField] private int startEnergy = 500;
+    public int MaxHealth => maxHealth;
+    public int MaxEnergy => maxEnergy;
+    public int Health { get; private set; }
+    public int Energy { get; private set; }
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 10f;
@@ -63,35 +66,44 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashSpeed = 50f;
     [SerializeField] private float dashDuration = 0.1f;
     [SerializeField] private float dashCooldown = 0.8f;
+    [SerializeField] private int dashExtremeGain = 50;
     public float DashSpeed => dashSpeed;
     public float DashDuration => dashDuration;
     public float DashCooldown => dashCooldown;
+    public int DashExtremeGain => dashExtremeGain;
 
     [Header("Parry")]
     [SerializeField] private float parryWindow = 0.2f;
-    [SerializeField] private float parryEnergyGain = 1.0f;
     [SerializeField] private float parryHitstop = 0.15f;
+    [SerializeField] private int perfectParryEnergyGain = 100;
+    [SerializeField] private int imperfectParryEnergyGain = 50;
     public float ParryWindow => parryWindow;
-    public float ParryEnergyGain => parryEnergyGain;
+    public float ParryHitstop => parryHitstop;
+    public int PerfectParryEnergyGain => perfectParryEnergyGain;
+    public int ImperfectParryEnergyGain => imperfectParryEnergyGain;
 
     [Header("Power Parry")]
     [SerializeField] private float powerParryHoldTime = 0.1f;
-    [SerializeField] private float powerParryPrepEnterCost = 3f;
     [SerializeField] private float powerParryPrepTick = 0.1f;
-    [SerializeField] private float powerParryPrepCost = 0.05f;
-    [SerializeField] private float powerParryDuration = 0.5f;
+    [SerializeField] private int powerParryPrepEnterCost = 300;
+    [SerializeField] private int powerParryPrepCost = 5;
+    [SerializeField] private float powerParryNoDrainTime = 0.6f;
+    [SerializeField] private float powerParryDuration = 0.6f;
     public float PowerParryHoldTime => powerParryHoldTime;
-    public float PowerParryPrepEnterCost => powerParryPrepEnterCost;
     public float PowerParryPrepTick => powerParryPrepTick;
-    public float PowerParryPrepCost => powerParryPrepCost;
+    public int PowerParryPrepEnterCost => powerParryPrepEnterCost;
+    public int PowerParryPrepCost => powerParryPrepCost;
+    public float PowerParryNoDrainTime => powerParryNoDrainTime;
     public float PowerParryDuration => powerParryDuration;
 
     [Header("Heal")]
-    [SerializeField] private float healEnergyPerSecond = 1.0f;
-    [SerializeField] private float healHealthPerSecond = 1.0f;
+    [SerializeField] private float healTickInterval = 0.1f;
+    [SerializeField] private int healEnergyPerTick = 10;
+    [SerializeField] private int healHealthPerTick = 10;
     [SerializeField] private float healEndLag = 0.3f;
-    public float HealEnergyPerSecond => healEnergyPerSecond;
-    public float HealHealthPerSecond => healHealthPerSecond;
+    public float HealTickInterval => healTickInterval;
+    public int HealEnergyPerTick => healEnergyPerTick;
+    public int HealHealthPerTick => healHealthPerTick;
     public float HealEndLag => healEndLag;
 
     [Header("Ground Check")]
@@ -103,13 +115,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float knockbackDuration = 0.1f;
     [SerializeField] private float knockbackForce = 10f;
     public float HitStunDuration => hitStunDuration;
+    public float KnockbackForce => knockbackForce;
 
     [Header("Move Inertia")]
     [SerializeField] private float accelTime = 0.3f;
     [SerializeField] private float airReleaseDecelTime = 0.4f;
-    [SerializeField] [Range(0f, 1f)] private float startSpeedRatio = 0.45f;
+    [SerializeField][Range(0f, 1f)] private float startSpeedRatio = 0.45f;
     [SerializeField] private float postDashCarryWindow = 0.1f;
     public float PostDashCarryWindow => postDashCarryWindow;
+
+    [Header("Parry Detect")]
+    [SerializeField] private CircleCollider2D parryDetectCollider;
+    [SerializeField] private LayerMask parryDetectMask;
 
     public bool isGround;
 
@@ -139,6 +156,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool inPowerParryPrep;
     [HideInInspector] public float powerParryPrepTickTimer;
     [HideInInspector] public bool powerParryPrepLocked;
+    [HideInInspector] public float powerParryPrepElapsed;
 
     [HideInInspector] public float parryWindowStartTime;
     [HideInInspector] public float parryWindowDuration;
@@ -146,6 +164,8 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool counterParryFirstResolved;
     private float parryGraceEndTime;
     public bool IsParryGraceActive => Time.time < parryGraceEndTime;
+
+    [HideInInspector] public Vector2 lastHitKnockDir;
 
     private PlayerStateMachine stateMachine;
     private bool isInvincible = false;
@@ -175,8 +195,8 @@ public class PlayerController : MonoBehaviour
         if (groundCheckBox == null)
             throw new InvalidOperationException("GroundCheck BoxCollider2D is required");
 
-        Health = Mathf.Clamp(startHealth, 0f, maxHealth);
-        Energy = Mathf.Clamp(startEnergy, 0f, maxEnergy);
+        Health = Mathf.Clamp(startHealth, 0, maxHealth);
+        Energy = Mathf.Clamp(startEnergy, 0, maxEnergy);
     }
 
     private void Start()
@@ -295,7 +315,6 @@ public class PlayerController : MonoBehaviour
 
             lastMoveSign = inputSign;
             facingDirection = inputSign > 0 ? 1 : -1;
-            // transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
         }
 
         float vx = (inputSign != 0 ? inputSign : (currentSpeedAbs > 0.001f ? lastMoveSign : 0)) * currentSpeedAbs;
@@ -325,21 +344,21 @@ public class PlayerController : MonoBehaviour
         if (cutVelocity) StopRising();
     }
 
-    public void Heal(float amount)
+    public void Heal(int amount)
     {
-        Health = Mathf.Clamp(Health + amount, 0f, maxHealth);
+        Health = Mathf.Clamp(Health + amount, 0, maxHealth);
     }
 
-    public bool TryConsumeEnergy(float amount)
+    public bool TryConsumeEnergy(int amount)
     {
         if (Energy < amount) return false;
-        Energy = Mathf.Clamp(Energy - amount, 0f, maxEnergy);
+        Energy = Mathf.Clamp(Energy - amount, 0, maxEnergy);
         return true;
     }
 
-    public void GainEnergy(float amount)
+    public void GainEnergy(int amount)
     {
-        Energy = Mathf.Clamp(Energy + amount, 0f, maxEnergy);
+        Energy = Mathf.Clamp(Energy + amount, 0, maxEnergy);
     }
 
     public void EnterParryWindow()
@@ -352,34 +371,6 @@ public class PlayerController : MonoBehaviour
     {
         parryWindowActive = false;
         if (CurrentEffectState == PlayerEffectState.Parry) SetEffectState(PlayerEffectState.None);
-    }
-
-    public void NotifyParryWindowBegin(float duration)
-    {
-        parryWindowStartTime = Time.time;
-        parryWindowDuration = duration;
-        parryHadSuccessThisWindow = false;
-    }
-
-    public void NotifyParryWindowEnd()
-    {
-        parryWindowDuration = 0f;
-    }
-
-    public void AddParryGrace(float duration)
-    {
-        if (duration > 0f) parryGraceEndTime = Mathf.Max(parryGraceEndTime, Time.time + duration);
-    }
-
-    public void ImmediateReParry()
-    {
-        if (stateMachine != null) stateMachine.ChangeState(new ParryState(this, stateMachine));
-    }
-
-    public void ApplyRawDamage(float amount)
-    {
-        Health = Mathf.Clamp(Health - amount, 0f, maxHealth);
-        if (Health <= 0f) stateMachine.ChangeState(new DeathState(this, stateMachine)); else stateMachine.ChangeState(new HitState(this, stateMachine));
     }
 
     public void EnterCounterParry()
@@ -423,66 +414,20 @@ public class PlayerController : MonoBehaviour
         healLocked = false;
     }
 
+    public bool CanStartHeal()
+    {
+        return !healLocked;
+    }
+
     public void ExitParryFlags()
     {
         parryWindowActive = false;
         counterParryActive = false;
     }
 
-    public void OnIncomingAttack(AttackData data)
-    {
-        if (isInvincible) return;
-
-        if (data.Parryable && counterParryActive)
-        {
-            GainEnergy(parryEnergyGain);
-            StartCoroutine(CoHitstop(parryHitstop));
-            return;
-        }
-
-        if (data.Parryable && parryWindowActive)
-        {
-            GainEnergy(parryEnergyGain);
-            StartCoroutine(CoHitstop(parryHitstop));
-            return;
-        }
-
-        TakeDamage(data);
-    }
-
-    private void TakeDamage(AttackData data)
-    {
-        Health = Mathf.Clamp(Health - data.Damage, 0f, maxHealth);
-        if (Health <= 0f)
-        {
-            stateMachine.ChangeState(new DeathState(this, stateMachine));
-            return;
-        }
-
-        Vector2 dir = data.Direction.sqrMagnitude < 0.0001f ? new Vector2(-facingDirection, 1f) : data.Direction;
-        ApplyKnockback(dir, knockbackForce);
-        stateMachine.ChangeState(new HitState(this, stateMachine));
-    }
-
-    private IEnumerator CoHitstop(float duration)
-    {
-        float prev = Time.timeScale;
-        Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = prev;
-    }
-
     public void Die()
     {
         stateMachine.ChangeState(new DeathState(this, stateMachine));
-    }
-
-    public void ApplyKnockback(Vector2 direction, float force)
-    {
-        isKnockback = true;
-        knockbackTimer = knockbackDuration;
-        rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
-        SetEffectState(PlayerEffectState.Hit);
     }
 
     public void SetInvincible(bool v)
@@ -500,9 +445,108 @@ public class PlayerController : MonoBehaviour
         DashPressed = false;
     }
 
-    public bool HasParryBuffer() => parryBufferTimer > 0f;
-    public void SetParryBuffer() { parryBufferTimer = 0.06f; }
-    public void ConsumeParryBuffer() { parryBufferTimer = 0f; }
+    public bool HasParryBuffer()
+    {
+        return parryBufferTimer > 0f;
+    }
+
+    public void SetParryBuffer()
+    {
+        parryBufferTimer = 0.06f;
+    }
+
+    public void ConsumeParryBuffer()
+    {
+        parryBufferTimer = 0f;
+    }
+
+    public void NotifyParryWindowBegin(float duration)
+    {
+        parryWindowStartTime = Time.time;
+        parryWindowDuration = duration;
+        parryHadSuccessThisWindow = false;
+    }
+
+    public void NotifyParryWindowEnd()
+    {
+        parryWindowDuration = 0f;
+    }
+
+    public void AddParryGrace(float duration)
+    {
+        if (duration > 0f) parryGraceEndTime = Mathf.Max(parryGraceEndTime, Time.time + duration);
+    }
+
+    public void ApplyChipDamageNoHit(int amount)
+    {
+        Health = Mathf.Clamp(Health - amount, 0, maxHealth);
+        if (Health <= 0) stateMachine.ChangeState(new DeathState(this, stateMachine));
+    }
+
+    private void ForceBreakPowerParryPrep()
+    {
+        if (inPowerParryPrep) inPowerParryPrep = false;
+        powerParryPrepLocked = true;
+        parryHoldTimer = 0f;
+        powerParryPrepTickTimer = 0f;
+        powerParryPrepElapsed = 0f;
+    }
+
+    public void Hit(int damage, Vector2 attackPos)
+    {
+        if (isInvincible) return;
+        if (IsParryGraceActive) return;
+
+        ForceBreakPowerParryPrep();
+
+        Health = Mathf.Clamp(Health - damage, 0, maxHealth);
+
+        Vector2 dir = ((Vector2)transform.position - attackPos).normalized;
+        if (dir == Vector2.zero) dir = Vector2.up;
+        lastHitKnockDir = dir;
+
+        if (Health <= 0)
+        {
+            stateMachine.ChangeState(new DeathState(this, stateMachine));
+            return;
+        }
+
+        stateMachine.ChangeState(new HitState(this, stateMachine));
+    }
+
+    public bool TryDetectIncomingAttack(out Projectile projectile)
+    {
+        projectile = null;
+        if (parryDetectCollider == null) return false;
+
+        float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
+        float scaleY = Mathf.Abs(parryDetectCollider.transform.lossyScale.y);
+        float worldRadius = parryDetectCollider.radius * Mathf.Max(scaleX, scaleY);
+        Vector2 center = parryDetectCollider.bounds.center;
+        float r2 = worldRadius * worldRadius;
+
+        float bestDistSq = float.PositiveInfinity;
+        Projectile bestProj = null;
+
+        for (int i = 0; i < Projectile.ActiveProjectiles.Count; i++)
+        {
+            Projectile pr = Projectile.ActiveProjectiles[i];
+            if (pr == null) continue;
+            if (!pr.IsDeadly) continue;
+
+            Vector2 prPos = pr.transform.position;
+            float d2 = (prPos - center).sqrMagnitude;
+            if (d2 <= r2 && d2 < bestDistSq)
+            {
+                bestDistSq = d2;
+                bestProj = pr;
+            }
+        }
+
+        if (bestProj == null) return false;
+        projectile = bestProj;
+        return true;
+    }
 
     public Rigidbody2D Rigidbody => rb;
     public BoxCollider2D BoxCollider => boxCol;

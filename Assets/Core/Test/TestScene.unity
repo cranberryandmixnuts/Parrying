@@ -154,8 +154,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -227.53, y: 161.29}
-  m_SizeDelta: {x: 344.95, y: 127.42}
+  m_AnchoredPosition: {x: -0.0025787, y: 161.29}
+  m_SizeDelta: {x: 800, y: 127.42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &376554534
 MonoBehaviour:
@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f7ecc85ddf25f449ae793b497cdb08e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatsText
-  format: HP {0:0.#}/{1:0.#}  EN {2:0.#}/{3:0.#}
+  Text: {fileID: 376554535}
 --- !u!114 &376554535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,8 +279,8 @@ GameObject:
   m_Component:
   - component: {fileID: 486873836}
   - component: {fileID: 486873837}
-  m_Layer: 3
-  m_Name: Collidervisualization
+  m_Layer: 0
+  m_Name: '[temp]Collidervisualization'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -606,6 +606,74 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1231797101}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1058911193
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1058911194}
+  - component: {fileID: 1058911195}
+  m_Layer: 0
+  m_Name: ParryCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1058911194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058911193}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1405086, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 2838046105132486482}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &1058911195
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058911193}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.5
 --- !u!1 &1070786890
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,7 +721,7 @@ MonoBehaviour:
   ProjectilePrefab: {fileID: 3268580091865540069, guid: 04cdef1ccf5b63e4e880f7babb4696b2, type: 3}
   Target: {fileID: 2838046105132486482}
   Interval: 1.2
-  SpreadAngle: 6
+  SpreadAngle: 0
   ProjectileHitMask:
     serializedVersion: 2
     m_Bits: 72
@@ -1076,7 +1144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3351578637523860164}
   - component: {fileID: 3351578637523860165}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1124,6 +1192,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3351578637523860164}
+  - {fileID: 1058911194}
   - {fileID: 486873836}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1349,10 +1418,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   keyData: {fileID: 11400000, guid: c821d049d65037d4d90d3be257eea45b, type: 2}
-  maxHealth: 10
-  maxEnergy: 5
-  startHealth: 10
-  startEnergy: 5
+  maxHealth: 1000
+  maxEnergy: 500
+  startHealth: 1000
+  startEnergy: 500
   moveSpeed: 10
   jumpForceCurve:
     serializedVersion: 2
@@ -1386,16 +1455,20 @@ MonoBehaviour:
   dashSpeed: 30
   dashDuration: 0.16
   dashCooldown: 0.8
+  dashExtremeGain: 50
   parryWindow: 0.2
-  parryEnergyGain: 1
   parryHitstop: 0.15
+  perfectParryEnergyGain: 100
+  imperfectParryEnergyGain: 50
   powerParryHoldTime: 0.5
-  powerParryPrepEnterCost: 3
   powerParryPrepTick: 0.1
-  powerParryPrepCost: 0.05
+  powerParryPrepEnterCost: 300
+  powerParryPrepCost: 5
+  powerParryNoDrainTime: 0.6
   powerParryDuration: 0.5
-  healEnergyPerSecond: 1
-  healHealthPerSecond: 1
+  healTickInterval: 0.1
+  healEnergyPerTick: 10
+  healHealthPerTick: 10
   healEndLag: 0.3
   groundLayer:
     serializedVersion: 2
@@ -1408,6 +1481,10 @@ MonoBehaviour:
   airReleaseDecelTime: 0.3
   startSpeedRatio: 0.35
   postDashCarryWindow: 0.1
+  parryDetectCollider: {fileID: 1058911195}
+  parryDetectMask:
+    serializedVersion: 2
+    m_Bits: 384
   isGround: 0
   facingDirection: 1
   isJumping: 0
@@ -1428,10 +1505,12 @@ MonoBehaviour:
   inPowerParryPrep: 0
   powerParryPrepTickTimer: 0
   powerParryPrepLocked: 0
+  powerParryPrepElapsed: 0
   parryWindowStartTime: 0
   parryWindowDuration: 0
   parryHadSuccessThisWindow: 0
   counterParryFirstResolved: 0
+  lastHitKnockDir: {x: 0, y: 0}
 --- !u!114 &6806864931138348597
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,7 +5,8 @@ public enum ProjectileHitResponse
     Consume,
     IgnoreContinue,
     NeutralizeContinue,
-    ReflectToSource
+    ReflectToSource,
+    ConsumedAlready
 }
 
 public interface IProjectileResponder

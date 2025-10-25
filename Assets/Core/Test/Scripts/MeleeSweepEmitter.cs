@@ -59,8 +59,8 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
             float ang = Mathf.Lerp(a0, a1, u);
             tip = PointOnCircle(pivot, RadiusTip, ang);
             mid = PointOnCircle(pivot, RadiusMid, ang);
-            SweepSegment(prevTip, tip);
-            SweepSegment(prevMid, mid);
+            SweepSegment(prevTip, tip, pivot);
+            SweepSegment(prevMid, mid, pivot);
             prevTip = tip;
             prevMid = mid;
             DrawArc(pivot, Mathf.LerpAngle(a0, a1, 0f), ang);
@@ -73,7 +73,7 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
         lr.enabled = false;
     }
 
-    private void SweepSegment(Vector2 a, Vector2 b)
+    private void SweepSegment(Vector2 a, Vector2 b, Vector3 pivotPos)
     {
         float len = Vector2.Distance(a, b);
         int steps = Mathf.Max(1, Mathf.CeilToInt(len / (Thickness * 0.5f)));
@@ -97,7 +97,7 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
                 }
 
                 IDamageable d = hits[k].GetComponent<IDamageable>();
-                if (d != null) d.Hit(Damage);
+                if (d != null) d.Hit(Damage, pivotPos);
             }
         }
     }
