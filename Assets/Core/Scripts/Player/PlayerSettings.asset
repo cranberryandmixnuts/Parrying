@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc6cd8c7dfa7e5d4283aaea27a655b6b, type: 3}
+  m_Name: PlayerSettings
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSettings
+  maxHealth: 1000
+  maxEnergy: 500
+  startHealth: 1000
+  startEnergy: 500
+  moveSpeed: 10
+  jumpForceCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0027770996
+      value: 1.0031738
+      inSlope: -0.10122602
+      outSlope: -0.10122602
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33454332
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -2.233912
+      outSlope: -2.233912
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.04680447
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  maxJumpTime: 0.3
+  maxJumpForce: 20
+  jumpHeightMultiplier: 1
+  jumpBufferTime: 0.1
+  coyoteTime: 0.1
+  dashSpeed: 30
+  dashDuration: 0.16
+  dashCooldown: 0.8
+  dashExtremeGain: 50
+  parryWindow: 0.2
+  parryHitstop: 0.15
+  perfectParryEnergyGain: 100
+  imperfectParryEnergyGain: 50
+  powerParryHoldTime: 0.2
+  powerParryPrepTick: 0.1
+  powerParryPrepEnterCost: 300
+  powerParryPrepCost: 5
+  powerParryNoDrainTime: 0.6
+  powerParryDuration: 0.5
+  healTickInterval: 0.1
+  healEnergyPerTick: 10
+  healHealthPerTick: 10
+  healEndLag: 0.3
+  hitStunDuration: 0.25
+  knockbackDuration: 0.1
+  knockbackForce: 10
+  accelTime: 0.25
+  airReleaseDecelTime: 0.3
+  startSpeedRatio: 0.35
+  postDashCarryWindow: 0.1

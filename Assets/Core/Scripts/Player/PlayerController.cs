@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public event Action<PlayerEffectState> OnEffectStateChanged;
 
+    [SerializeField] private PlayerSettings settings;
     [SerializeField] private KeyData keyData;
 
     public float MoveInput { get; private set; }
@@ -32,97 +33,53 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         set
         {
-            if (value) jumpBufferTimer = jumpBufferTime;
+            if (value) jumpBufferTimer = settings.jumpBufferTime;
         }
     }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
 
-    [Header("Stats")]
-    [SerializeField] private int maxHealth = 1000;
-    [SerializeField] private int maxEnergy = 500;
-    [SerializeField] private int startHealth = 1000;
-    [SerializeField] private int startEnergy = 500;
-    public int MaxHealth => maxHealth;
-    public int MaxEnergy => maxEnergy;
+    public int MaxHealth => settings.maxHealth;
+    public int MaxEnergy => settings.maxEnergy;
     public int Health { get; private set; }
     public int Energy { get; private set; }
 
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 10f;
-    public float MoveSpeed => moveSpeed;
+    public float MoveSpeed => settings.moveSpeed;
     public Vector2 CurrentVelocity => rb.linearVelocity;
 
-    [Header("Jump")]
-    [SerializeField] private AnimationCurve jumpForceCurve;
-    [SerializeField] private float maxJumpTime = 0.4f;
-    [SerializeField] private float maxJumpForce = 20f;
-    [SerializeField] private float jumpHeightMultiplier = 1f;
-    [SerializeField] private float jumpBufferTime = 0.1f;
-    [SerializeField] private float coyoteTime = 0.1f;
-    public float MaxJumpTime => maxJumpTime;
+    public float MaxJumpTime => settings.maxJumpTime;
 
-    [Header("Dash")]
-    [SerializeField] private float dashSpeed = 50f;
-    [SerializeField] private float dashDuration = 0.1f;
-    [SerializeField] private float dashCooldown = 0.8f;
-    [SerializeField] private int dashExtremeGain = 50;
-    public float DashSpeed => dashSpeed;
-    public float DashDuration => dashDuration;
-    public float DashCooldown => dashCooldown;
-    public int DashExtremeGain => dashExtremeGain;
+    public float DashSpeed => settings.dashSpeed;
+    public float DashDuration => settings.dashDuration;
+    public float DashCooldown => settings.dashCooldown;
+    public int DashExtremeGain => settings.dashExtremeGain;
 
-    [Header("Parry")]
-    [SerializeField] private float parryWindow = 0.2f;
-    [SerializeField] private float parryHitstop = 0.15f;
-    [SerializeField] private int perfectParryEnergyGain = 100;
-    [SerializeField] private int imperfectParryEnergyGain = 50;
-    public float ParryWindow => parryWindow;
-    public float ParryHitstop => parryHitstop;
-    public int PerfectParryEnergyGain => perfectParryEnergyGain;
-    public int ImperfectParryEnergyGain => imperfectParryEnergyGain;
+    public float ParryWindow => settings.parryWindow;
+    public float ParryHitstop => settings.parryHitstop;
+    public int PerfectParryEnergyGain => settings.perfectParryEnergyGain;
+    public int ImperfectParryEnergyGain => settings.imperfectParryEnergyGain;
 
-    [Header("Power Parry")]
-    [SerializeField] private float powerParryHoldTime = 0.1f;
-    [SerializeField] private float powerParryPrepTick = 0.1f;
-    [SerializeField] private int powerParryPrepEnterCost = 300;
-    [SerializeField] private int powerParryPrepCost = 5;
-    [SerializeField] private float powerParryNoDrainTime = 0.6f;
-    [SerializeField] private float powerParryDuration = 0.6f;
-    public float PowerParryHoldTime => powerParryHoldTime;
-    public float PowerParryPrepTick => powerParryPrepTick;
-    public int PowerParryPrepEnterCost => powerParryPrepEnterCost;
-    public int PowerParryPrepCost => powerParryPrepCost;
-    public float PowerParryNoDrainTime => powerParryNoDrainTime;
-    public float PowerParryDuration => powerParryDuration;
+    public float PowerParryHoldTime => settings.powerParryHoldTime;
+    public float PowerParryPrepTick => settings.powerParryPrepTick;
+    public int PowerParryPrepEnterCost => settings.powerParryPrepEnterCost;
+    public int PowerParryPrepCost => settings.powerParryPrepCost;
+    public float PowerParryNoDrainTime => settings.powerParryNoDrainTime;
+    public float PowerParryDuration => settings.powerParryDuration;
 
-    [Header("Heal")]
-    [SerializeField] private float healTickInterval = 0.1f;
-    [SerializeField] private int healEnergyPerTick = 10;
-    [SerializeField] private int healHealthPerTick = 10;
-    [SerializeField] private float healEndLag = 0.3f;
-    public float HealTickInterval => healTickInterval;
-    public int HealEnergyPerTick => healEnergyPerTick;
-    public int HealHealthPerTick => healHealthPerTick;
-    public float HealEndLag => healEndLag;
+    public float HealTickInterval => settings.healTickInterval;
+    public int HealEnergyPerTick => settings.healEnergyPerTick;
+    public int HealHealthPerTick => settings.healHealthPerTick;
+    public float HealEndLag => settings.healEndLag;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private BoxCollider2D groundCheckBox;
 
-    [Header("Hit")]
-    [SerializeField] private float hitStunDuration = 0.25f;
-    [SerializeField] private float knockbackDuration = 0.1f;
-    [SerializeField] private float knockbackForce = 10f;
-    public float HitStunDuration => hitStunDuration;
-    public float KnockbackForce => knockbackForce;
+    public float HitStunDuration => settings.hitStunDuration;
+    public float KnockbackForce => settings.knockbackForce;
+    public float KnockbackDuration => settings.knockbackDuration;
 
-    [Header("Move Inertia")]
-    [SerializeField] private float accelTime = 0.3f;
-    [SerializeField] private float airReleaseDecelTime = 0.4f;
-    [SerializeField][Range(0f, 1f)] private float startSpeedRatio = 0.45f;
-    [SerializeField] private float postDashCarryWindow = 0.1f;
-    public float PostDashCarryWindow => postDashCarryWindow;
+    public float PostDashCarryWindow => settings.postDashCarryWindow;
 
     [Header("Parry Detect")]
     [SerializeField] private CircleCollider2D parryDetectCollider;
@@ -190,13 +147,15 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         Instance = this;
 
+        if (settings == null)
+            throw new InvalidOperationException("PlayerSettings is required");
         if (keyData == null)
             throw new InvalidOperationException("KeyData is required");
         if (groundCheckBox == null)
             throw new InvalidOperationException("GroundCheck BoxCollider2D is required");
 
-        Health = Mathf.Clamp(startHealth, 0, maxHealth);
-        Energy = Mathf.Clamp(startEnergy, 0, maxEnergy);
+        Health = Mathf.Clamp(settings.startHealth, 0, settings.maxHealth);
+        Energy = Mathf.Clamp(settings.startEnergy, 0, settings.maxEnergy);
     }
 
     private void Start()
@@ -260,7 +219,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         isGround = groundCheckBox.IsTouchingLayers(groundLayer);
 
-        if (isGround) coyoteTimer = coyoteTime;
+        if (isGround) coyoteTimer = settings.coyoteTime;
         else coyoteTimer -= Time.deltaTime;
 
         if (isGround) canAirDash = true;
@@ -282,9 +241,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (isGround) currentSpeedAbs = 0f;
             else
             {
-                if (airReleaseDecelTime > 0f)
+                if (settings.airReleaseDecelTime > 0f)
                 {
-                    float decel = (currentSpeedAbs / airReleaseDecelTime) * dt;
+                    float decel = (currentSpeedAbs / settings.airReleaseDecelTime) * dt;
                     currentSpeedAbs = Mathf.Max(0f, currentSpeedAbs - decel);
                 }
                 else currentSpeedAbs = 0f;
@@ -301,13 +260,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
             else
             {
-                float startSpeed = Mathf.Max(0.0001f, startSpeedRatio * speed);
+                float startSpeed = Mathf.Max(0.0001f, settings.startSpeedRatio * speed);
                 if (directionChanged || currentSpeedAbs <= 0f) currentSpeedAbs = startSpeed;
 
-                if (accelTime <= 0f) currentSpeedAbs = speed;
+                if (settings.accelTime <= 0f) currentSpeedAbs = speed;
                 else
                 {
-                    float accel = (speed - currentSpeedAbs) / accelTime * dt;
+                    float accel = (speed - currentSpeedAbs) / settings.accelTime * dt;
                     currentSpeedAbs = Mathf.Clamp(currentSpeedAbs + accel, 0f, speed);
                 }
             }
@@ -325,8 +284,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (isJumping && CurrentStateType == PlayerStateType.Locomotion)
         {
             jumpTimeCounter += Time.fixedDeltaTime;
-            float t = jumpTimeCounter / maxJumpTime;
-            float force = jumpForceCurve.Evaluate(t) * maxJumpForce * jumpHeightMultiplier;
+            float t = jumpTimeCounter / settings.maxJumpTime;
+            float force = settings.jumpForceCurve.Evaluate(t) * settings.maxJumpForce * settings.jumpHeightMultiplier;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, force);
         }
     }
@@ -334,7 +293,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void StopRising()
     {
         if (rb.linearVelocity.y > 0f) rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.3f);
-        jumpTimeCounter = maxJumpTime;
+        jumpTimeCounter = settings.maxJumpTime;
     }
 
     public void CancelJump(bool cutVelocity)
@@ -345,19 +304,19 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void Heal(int amount)
     {
-        Health = Mathf.Clamp(Health + amount, 0, maxHealth);
+        Health = Mathf.Clamp(Health + amount, 0, settings.maxHealth);
     }
 
     public bool TryConsumeEnergy(int amount)
     {
         if (Energy < amount) return false;
-        Energy = Mathf.Clamp(Energy - amount, 0, maxEnergy);
+        Energy = Mathf.Clamp(Energy - amount, 0, settings.maxEnergy);
         return true;
     }
 
     public void GainEnergy(int amount)
     {
-        Energy = Mathf.Clamp(Energy + amount, 0, maxEnergy);
+        Energy = Mathf.Clamp(Energy + amount, 0, settings.maxEnergy);
     }
 
     public void EnterParryWindow()
@@ -403,7 +362,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private IEnumerator CoHealEndLag()
     {
         healLocked = true;
-        float t = healEndLag;
+        float t = settings.healEndLag;
         while (t > 0f)
         {
             t -= Time.deltaTime;
@@ -477,7 +436,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void ApplyChipDamageNoHit(int amount)
     {
-        Health = Mathf.Clamp(Health - amount, 0, maxHealth);
+        Health = Mathf.Clamp(Health - amount, 0, settings.maxHealth);
         if (Health <= 0) stateMachine.ChangeState(new DeathState(this, stateMachine));
     }
 
@@ -497,7 +456,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         ForceBreakPowerParryPrep();
 
-        Health = Mathf.Clamp(Health - damage, 0, maxHealth);
+        Health = Mathf.Clamp(Health - damage, 0, settings.maxHealth);
 
         Vector2 dir = ((Vector2)transform.position - attackPos).normalized;
         if (dir == Vector2.zero) dir = Vector2.up;
@@ -583,6 +542,22 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         return count;
+    }
+
+    private IEnumerator CoHitstop(float duration)
+    {
+        float prev = Time.timeScale;
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = prev;
+    }
+
+    public void ApplyKnockback(Vector2 direction, float force)
+    {
+        isKnockback = true;
+        knockbackTimer = settings.knockbackDuration;
+        rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+        SetEffectState(PlayerEffectState.Hit);
     }
 
     public Rigidbody2D Rigidbody => rb;

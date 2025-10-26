@@ -1653,70 +1653,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 652146b8e97ca7a41b6b726b12e9f625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
   keyData: {fileID: 11400000, guid: c821d049d65037d4d90d3be257eea45b, type: 2}
-  maxHealth: 1000
-  maxEnergy: 500
-  startHealth: 1000
-  startEnergy: 500
-  moveSpeed: 10
-  jumpForceCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -2.461049
-      outSlope: -2.461049
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.042554796
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  maxJumpTime: 0.3
-  maxJumpForce: 20
-  jumpHeightMultiplier: 1
-  jumpBufferTime: 0.1
-  coyoteTime: 0.1
-  dashSpeed: 30
-  dashDuration: 0.16
-  dashCooldown: 0.8
-  dashExtremeGain: 50
-  parryWindow: 0.2
-  parryHitstop: 0.15
-  perfectParryEnergyGain: 100
-  imperfectParryEnergyGain: 50
-  powerParryHoldTime: 0.2
-  powerParryPrepTick: 0.1
-  powerParryPrepEnterCost: 300
-  powerParryPrepCost: 5
-  powerParryNoDrainTime: 0.6
-  powerParryDuration: 0.5
-  healTickInterval: 0.1
-  healEnergyPerTick: 10
-  healHealthPerTick: 10
-  healEndLag: 0.3
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   groundCheckBox: {fileID: 3351578637523860165}
-  hitStunDuration: 0.25
-  knockbackDuration: 0.1
-  knockbackForce: 10
-  accelTime: 0.25
-  airReleaseDecelTime: 0.3
-  startSpeedRatio: 0.35
-  postDashCarryWindow: 0.1
   parryDetectCollider: {fileID: 1058911195}
   parryDetectMask:
     serializedVersion: 2
