@@ -11,7 +11,10 @@ public sealed class ParryState : PlayerState
     public override void Enter()
     {
         player.CancelJump(true);
-        if (!player.isGround) player.airParryAvailable = false;
+
+        if (!player.isGround)
+            player.airParryAvailable = false;
+
         if (player.isGround)
         {
             player.currentSpeedAbs = 0f;
@@ -23,7 +26,11 @@ public sealed class ParryState : PlayerState
         player.parryHadSuccessThisWindow = false;
         player.SetInvincible(false);
         player.EnterParryWindow();
-        if (player.isGround) player.Animator.Play("Ground Normal Parry"); else player.Animator.Play("Air Normal Parry");
+
+        if (player.isGround)
+            player.Animator.Play("Ground Normal Parry");
+        else
+            player.Animator.Play("Air Normal Parry");
     }
 
     public override void Update()
@@ -36,25 +43,35 @@ public sealed class ParryState : PlayerState
                 float elapsed = Time.time - player.parryWindowStartTime;
                 float frac = player.parryWindowDuration > 0f ? elapsed / player.parryWindowDuration : 1f;
 
-                if (frac <= 0.6f)
+                if (frac <= 0.5f)
                 {
                     player.GainEnergy(player.PerfectParryEnergyGain);
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
-                    if (proj != null) proj.Neutralize();
+
+                    if (proj != null)
+                        proj.Neutralize();
+
+                    if (!player.isGround)
+                        player.airParryAvailable = true;
 
                     GameEffects.Instance.DoPerfectParryImpact();
                 }
                 else
                 {
                     int chip = proj != null ? Mathf.CeilToInt(proj.Damage * 0.5f) : 0;
-                    if (chip > 0) player.ApplyChipDamageNoHit(chip);
+                    if (chip > 0)
+                        player.ApplyChipDamageNoHit(chip);
+
                     player.GainEnergy(player.ImperfectParryEnergyGain);
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
-                    if (proj != null) proj.ConsumeAndDestroy();
 
-                    GameEffects.Instance.DoImperfectParryImpact();
+                    if (proj != null)
+                        proj.ConsumeAndDestroy();
+
+                    if (!player.isGround)
+                        player.airParryAvailable = true;
                 }
             }
         }

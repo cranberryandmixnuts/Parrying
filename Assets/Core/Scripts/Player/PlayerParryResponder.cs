@@ -17,8 +17,11 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
             if (!p.counterParryFirstResolved)
             {
                 p.counterParryFirstResolved = true;
+
                 IParryStack s = projectile.Source != null ? projectile.Source.GetComponentInParent<IParryStack>() : null;
-                if (s != null) s.AddOrRemove(-1);
+                if (s != null)
+                    s.AddOrRemove(-1);
+
                 p.SetInvincible(true);
 
                 GameEffects.Instance.DoCounterParryImpact();
@@ -36,11 +39,14 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 float elapsed = Time.time - p.parryWindowStartTime;
                 float frac = p.parryWindowDuration > 0f ? elapsed / p.parryWindowDuration : 1f;
 
-                if (frac <= 0.6f)
+                if (frac <= 0.5f)
                 {
                     p.GainEnergy(p.PerfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
+
+                    if (!p.isGround)
+                        p.airParryAvailable = true;
 
                     GameEffects.Instance.DoPerfectParryImpact();
 
@@ -49,12 +55,15 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 else
                 {
                     int chip = Mathf.CeilToInt(projectile.Damage * 0.5f);
-                    if (chip > 0) p.ApplyChipDamageNoHit(chip);
+                    if (chip > 0)
+                        p.ApplyChipDamageNoHit(chip);
+
                     p.GainEnergy(p.ImperfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
 
-                    GameEffects.Instance.DoImperfectParryImpact();
+                    if (!p.isGround)
+                        p.airParryAvailable = true;
 
                     return ProjectileHitResponse.ConsumedAlready;
                 }
@@ -76,8 +85,11 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
             if (!p.counterParryFirstResolved)
             {
                 p.counterParryFirstResolved = true;
+
                 IParryStack s = emitter != null ? emitter.GetComponentInParent<IParryStack>() : null;
-                if (s != null) s.AddOrRemove(-1);
+                if (s != null)
+                    s.AddOrRemove(-1);
+
                 p.SetInvincible(true);
 
                 GameEffects.Instance.DoCounterParryImpact();
@@ -95,11 +107,14 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 float elapsed = Time.time - p.parryWindowStartTime;
                 float frac = p.parryWindowDuration > 0f ? elapsed / p.parryWindowDuration : 1f;
 
-                if (frac <= 0.6f)
+                if (frac <= 0.5f)
                 {
                     p.GainEnergy(p.PerfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
+
+                    if (!p.isGround)
+                        p.airParryAvailable = true;
 
                     GameEffects.Instance.DoPerfectParryImpact();
 
@@ -108,12 +123,15 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 else
                 {
                     int chip = Mathf.CeilToInt(damage * 0.5f);
-                    if (chip > 0) p.ApplyChipDamageNoHit(chip);
+                    if (chip > 0)
+                        p.ApplyChipDamageNoHit(chip);
+
                     p.GainEnergy(p.ImperfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
 
-                    GameEffects.Instance.DoImperfectParryImpact();
+                    if (!p.isGround)
+                        p.airParryAvailable = true;
 
                     return MeleeHitResult.Ignore;
                 }

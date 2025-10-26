@@ -258,8 +258,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void UpdateGround()
     {
-        Bounds b = groundCheckBox.bounds;
-        isGround = Physics2D.OverlapBox(b.center, b.size, 0f, groundLayer) != null;
+        isGround = groundCheckBox.IsTouchingLayers(groundLayer);
 
         if (isGround) coyoteTimer = coyoteTime;
         else coyoteTimer -= Time.deltaTime;
@@ -519,7 +518,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
         float scaleY = Mathf.Abs(parryDetectCollider.transform.lossyScale.y);
-        float worldRadius = parryDetectCollider.radius * Mathf.Max(scaleX, scaleY);
+        float scale = Mathf.Max(scaleX, scaleY);
+        float worldRadius = parryDetectCollider.radius * scale;
         Vector2 center = parryDetectCollider.bounds.center;
         float r2 = worldRadius * worldRadius;
 
@@ -544,6 +544,45 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (bestProj == null) return false;
         projectile = bestProj;
         return true;
+    }
+
+    public int CountIncomingAttacks(bool extremeDashRangeBoost)
+    {
+        float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
+        float scaleY = Mathf.Abs(parryDetectCollider.transform.lossyScale.y);
+        float scale = Mathf.Max(scaleX, scaleY);
+        if (extremeDashRangeBoost) scale += 1.5f;
+
+        float worldRadius = parryDetectCollider.radius * scale;
+        Vector2 center = parryDetectCollider.bounds.center;
+        float r2 = worldRadius * worldRadius;
+
+        int count = 0;
+
+        for (int i = 0; i < Projectile.ActiveProjectiles.Count; i++)
+        {
+            Projectile pr = Projectile.ActiveProjectiles[i];
+            if (pr == null) continue;
+            if (!pr.IsDeadly) continue;
+
+            Vector2 prPos = pr.transform.position;
+            float d2 = (prPos - center).sqrMagnitude;
+            if (d2 <= r2) count++;
+        }
+
+        for (int i = 0; i < MeleeSweepEmitter.ActiveSweeps.Count; i++)
+        {
+            MeleeSweepEmitter sw = MeleeSweepEmitter.ActiveSweeps[i];
+
+            Vector3 pivotPos3 = sw.Pivot != null ? sw.Pivot.position : sw.transform.position;
+            Vector2 pivotPos = pivotPos3;
+            float threatRadius = Mathf.Max(sw.RadiusTip, sw.RadiusMid) + sw.Thickness * 0.5f;
+            float maxReach = threatRadius + worldRadius;
+            float d2 = (pivotPos - center).sqrMagnitude;
+            if (d2 <= maxReach * maxReach) count++;
+        }
+
+        return count;
     }
 
     public Rigidbody2D Rigidbody => rb;

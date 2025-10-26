@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public sealed class MeleeSweepEmitter : MonoBehaviour
 {
+    public static readonly List<MeleeSweepEmitter> ActiveSweeps = new List<MeleeSweepEmitter>();
+
     public Transform Pivot;
     public float RadiusTip = 2.6f;
     public float RadiusMid = 1.6f;
@@ -53,6 +55,8 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
         prevMid = mid;
         lr.enabled = true;
 
+        if (!ActiveSweeps.Contains(this)) ActiveSweeps.Add(this);
+
         while (Time.time < t1)
         {
             float u = Mathf.InverseLerp(t0, t1, Time.time);
@@ -66,6 +70,8 @@ public sealed class MeleeSweepEmitter : MonoBehaviour
             DrawArc(pivot, Mathf.LerpAngle(a0, a1, 0f), ang);
             yield return new WaitForFixedUpdate();
         }
+
+        ActiveSweeps.Remove(this);
 
         DrawArc(pivot, a0, a1);
         yield return new WaitForSeconds(VfxFade);
