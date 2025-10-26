@@ -42,6 +42,8 @@ public sealed class ParryState : PlayerState
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
                     if (proj != null) proj.Neutralize();
+
+                    GameEffects.Instance.DoPerfectParryImpact();
                 }
                 else
                 {
@@ -51,6 +53,8 @@ public sealed class ParryState : PlayerState
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
                     if (proj != null) proj.ConsumeAndDestroy();
+
+                    GameEffects.Instance.DoImperfectParryImpact();
                 }
             }
         }

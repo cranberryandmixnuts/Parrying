@@ -20,8 +20,12 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 IParryStack s = projectile.Source != null ? projectile.Source.GetComponentInParent<IParryStack>() : null;
                 if (s != null) s.AddOrRemove(-1);
                 p.SetInvincible(true);
+
+                GameEffects.Instance.DoCounterParryImpact();
+
                 return ProjectileHitResponse.ReflectToSource;
             }
+
             return ProjectileHitResponse.IgnoreContinue;
         }
 
@@ -37,6 +41,9 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                     p.GainEnergy(p.PerfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
+
+                    GameEffects.Instance.DoPerfectParryImpact();
+
                     return ProjectileHitResponse.NeutralizeContinue;
                 }
                 else
@@ -46,6 +53,9 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                     p.GainEnergy(p.ImperfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
+
+                    GameEffects.Instance.DoImperfectParryImpact();
+
                     return ProjectileHitResponse.ConsumedAlready;
                 }
             }
@@ -69,8 +79,12 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 IParryStack s = emitter != null ? emitter.GetComponentInParent<IParryStack>() : null;
                 if (s != null) s.AddOrRemove(-1);
                 p.SetInvincible(true);
+
+                GameEffects.Instance.DoCounterParryImpact();
+
                 return MeleeHitResult.Ignore;
             }
+
             return MeleeHitResult.Ignore;
         }
 
@@ -86,6 +100,9 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                     p.GainEnergy(p.PerfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
+
+                    GameEffects.Instance.DoPerfectParryImpact();
+
                     return MeleeHitResult.Ignore;
                 }
                 else
@@ -95,6 +112,9 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                     p.GainEnergy(p.ImperfectParryEnergyGain);
                     p.parryHadSuccessThisWindow = true;
                     p.SetInvincible(true);
+
+                    GameEffects.Instance.DoImperfectParryImpact();
+
                     return MeleeHitResult.Ignore;
                 }
             }

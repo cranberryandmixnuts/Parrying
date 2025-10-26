@@ -398,7 +398,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void StartHealEndLag()
     {
-        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(CoHealEndLag());
     }
 
@@ -517,7 +516,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool TryDetectIncomingAttack(out Projectile projectile)
     {
         projectile = null;
-        if (parryDetectCollider == null) return false;
 
         float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
         float scaleY = Mathf.Abs(parryDetectCollider.transform.lossyScale.y);

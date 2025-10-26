@@ -25,6 +25,8 @@ public sealed class DashState : PlayerState
         if (player.TryDetectIncomingAttack(out proj))
         {
             player.GainEnergy(player.DashExtremeGain);
+
+            GameEffects.Instance.DoExtremeDashImpact();
         }
     }
 

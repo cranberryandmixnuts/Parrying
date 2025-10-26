@@ -39,6 +39,8 @@ public sealed class CounterParryState : PlayerState
                     if (s != null) s.AddOrRemove(-1);
                     proj.ReflectToSource();
                 }
+
+                GameEffects.Instance.DoCounterParryImpact();
             }
         }
 
