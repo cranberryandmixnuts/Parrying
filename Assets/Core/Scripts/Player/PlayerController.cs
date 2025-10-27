@@ -83,7 +83,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("Parry Detect")]
     [SerializeField] private CircleCollider2D parryDetectCollider;
-    [SerializeField] private LayerMask parryDetectMask;
 
     public bool isGround;
 
@@ -129,8 +128,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     private bool isKnockback = false;
     private float knockbackTimer = 0f;
 
-    private bool parryWindowActive = false;
-    private bool counterParryActive = false;
     private bool healLocked = false;
 
     private void Awake()
@@ -146,13 +143,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
         Instance = this;
-
-        if (settings == null)
-            throw new InvalidOperationException("PlayerSettings is required");
-        if (keyData == null)
-            throw new InvalidOperationException("KeyData is required");
-        if (groundCheckBox == null)
-            throw new InvalidOperationException("GroundCheck BoxCollider2D is required");
 
         Health = Mathf.Clamp(settings.startHealth, 0, settings.maxHealth);
         Energy = Mathf.Clamp(settings.startEnergy, 0, settings.maxEnergy);
@@ -321,25 +311,21 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void EnterParryWindow()
     {
-        parryWindowActive = true;
         SetEffectState(PlayerEffectState.Parry);
     }
 
     public void ExitParryWindow()
     {
-        parryWindowActive = false;
         if (CurrentEffectState == PlayerEffectState.Parry) SetEffectState(PlayerEffectState.None);
     }
 
     public void EnterCounterParry()
     {
-        counterParryActive = true;
         SetEffectState(PlayerEffectState.CounterParry);
     }
 
     public void ExitCounterParry()
     {
-        counterParryActive = false;
         if (CurrentEffectState == PlayerEffectState.CounterParry) SetEffectState(PlayerEffectState.None);
     }
 
@@ -374,12 +360,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool CanStartHeal()
     {
         return !healLocked;
-    }
-
-    public void ExitParryFlags()
-    {
-        parryWindowActive = false;
-        counterParryActive = false;
     }
 
     public void Die()

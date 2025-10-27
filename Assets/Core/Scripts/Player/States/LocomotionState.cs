@@ -9,7 +9,6 @@ public sealed class LocomotionState : PlayerState
     public override void Enter()
     {
         player.SetEffectState(PlayerController.PlayerEffectState.None);
-        player.ExitParryFlags();
     }
 
     public override void Update()
@@ -141,7 +140,7 @@ public sealed class LocomotionState : PlayerState
             player.isJumping = false;
     }
 
-    private bool TryHandleDash()
+    private new bool TryHandleDash()
     {
         if (!player.DashPressed) return false;
         if (Time.time < player.lastDashTime + player.DashCooldown) return false;
