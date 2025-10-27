@@ -54,7 +54,7 @@ MonoBehaviour:
   parryHitstop: 0.15
   perfectParryEnergyGain: 100
   imperfectParryEnergyGain: 50
-  powerParryHoldTime: 0.2
+  powerParryHoldTime: 0.3
   powerParryPrepTick: 0.1
   powerParryPrepEnterCost: 300
   powerParryPrepCost: 5

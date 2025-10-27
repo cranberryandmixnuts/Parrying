@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public sealed class Projectile : MonoBehaviour
 {
-    public static readonly List<Projectile> ActiveProjectiles = new List<Projectile>();
+    public static readonly List<Projectile> ActiveProjectiles = new();
 
     public float Radius = 0.2f;
     public float Speed = 12f;
@@ -62,7 +62,7 @@ public sealed class Projectile : MonoBehaviour
     private void FixedUpdate()
     {
         Vector2 p = transform.position;
-        Vector2 step = dir * Speed * Time.fixedDeltaTime;
+        Vector2 step = Speed * Time.fixedDeltaTime * dir;
         float dist = step.magnitude;
 
         if (deadly)
@@ -111,14 +111,13 @@ public sealed class Projectile : MonoBehaviour
 
                     if (resp == ProjectileHitResponse.Consume)
                     {
-                        if (d != null) d.Hit(Damage, p);
+                        d?.Hit(Damage, p);
                         Destroy(gameObject);
                         return;
                     }
                 }
 
-                if (d != null)
-                    d.Hit(Damage, p);
+                d?.Hit(Damage, p);
 
                 Destroy(gameObject);
                 return;

@@ -33,7 +33,7 @@ public sealed class PlayerSettings : ScriptableObject
     public int imperfectParryEnergyGain = 50;
 
     [Header("Power Parry")]
-    public float powerParryHoldTime = 0.2f;
+    public float powerParryHoldTime = 0.3f;
     public float powerParryPrepTick = 0.1f;
     public int powerParryPrepEnterCost = 300;
     public int powerParryPrepCost = 5;
