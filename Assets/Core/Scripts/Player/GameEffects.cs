@@ -29,7 +29,6 @@ public sealed class GameEffects : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         if (targetCamera == null) targetCamera = Camera.main;
     }
