@@ -37,8 +37,7 @@ public sealed class ParryState : PlayerState
     {
         if (!player.parryHadSuccessThisWindow)
         {
-            Projectile proj;
-            if (player.TryDetectIncomingAttack(out proj))
+            if (player.TryDetectIncomingAttack(out Projectile proj))
             {
                 float elapsed = Time.time - player.parryWindowStartTime;
                 float frac = player.parryWindowDuration > 0f ? elapsed / player.parryWindowDuration : 1f;

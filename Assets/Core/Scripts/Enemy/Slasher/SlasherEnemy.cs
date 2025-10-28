@@ -1,31 +1,40 @@
 using UnityEngine;
 
-public sealed class SlasherEnemy : MonoBehaviour
+public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
 {
     private enum SlasherState
     {
         Idle,
         Walk,
         Chase,
+        BackWalk,
         Attack,
         Hit,
         Death
     }
 
-    [Header("Distances")]
-    [SerializeField] private float detectDistance = 8f;
-    [SerializeField] private float chaseDistance = 5f;
-    [SerializeField] private float attackRange = 1.5f;
+    [Header("Ranges")]
+    [SerializeField] private Collider2D walkRange;
+    [SerializeField] private Collider2D backOffRange;
 
     [Header("Movement Speeds")]
     [SerializeField] private float walkSpeed = 1.5f;
     [SerializeField] private float chaseSpeed = 4f;
 
-    [Header("Attack")]
+    [Header("Attack Timing")]
     [SerializeField] private int attackDamage = 1;
     [SerializeField] private float attackWindup = 0.25f;
+    [SerializeField] private float swingDuration = 0.15f;
     [SerializeField] private float attackRecover = 0.3f;
+    [SerializeField] private float attackCooldownMin = 3f;
+    [SerializeField] private float attackCooldownMax = 5f;
+
+    [Header("Attack Geometry")]
     [SerializeField] private Transform attackOrigin;
+    [SerializeField] private float swingStartAngleDeg = -30f;
+    [SerializeField] private float swingEndAngleDeg = 60f;
+    [SerializeField] private float swingLength = 2f;
+    [SerializeField] private LayerMask playerHitMask;
 
     [Header("Reactions")]
     [SerializeField] private float hitStunDuration = 0.4f;
@@ -35,6 +44,7 @@ public sealed class SlasherEnemy : MonoBehaviour
     [SerializeField] private string idleAnimName = "Idle";
     [SerializeField] private string walkAnimName = "Walk";
     [SerializeField] private string chaseAnimName = "Chase";
+    [SerializeField] private string backWalkAnimName = "BackWalk";
     [SerializeField] private string attackAnimName = "Attack";
     [SerializeField] private string hitAnimName = "Hit";
     [SerializeField] private string deathAnimName = "Death";
@@ -44,22 +54,31 @@ public sealed class SlasherEnemy : MonoBehaviour
     private PlayerController player;
 
     private SlasherState currentState;
-    private bool playerDetected;
+
     private float stateTimer;
-    private bool attackDidStrike;
+    private float attackCooldownTimer;
+
     private int facingDirection = 1;
+
+    private int attackPhase;
+    private float attackPhaseTimer;
+    private bool attackResolved;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
-        currentState = SlasherState.Idle;
-        playerDetected = false;
-        stateTimer = 0f;
-        attackDidStrike = false;
+        currentState = SlasherState.Chase;
 
-        PlayAnimation(idleAnimName);
+        stateTimer = 0f;
+        attackCooldownTimer = 0f;
+
+        attackPhase = 0;
+        attackPhaseTimer = 0f;
+        attackResolved = false;
+
+        PlayAnimation(chaseAnimName);
     }
 
     private void Start()
@@ -69,132 +88,121 @@ public sealed class SlasherEnemy : MonoBehaviour
 
     private void Update()
     {
-        if (currentState != SlasherState.Death)
-            FacePlayer();
+        if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
 
-        switch (currentState)
-        {
-            case SlasherState.Idle:
-                UpdateIdle();
-                break;
-            case SlasherState.Walk:
-                UpdateWalk();
-                break;
-            case SlasherState.Chase:
-                UpdateChase();
-                break;
-            case SlasherState.Attack:
-                UpdateAttack();
-                break;
-            case SlasherState.Hit:
-                UpdateHit();
-                break;
-            case SlasherState.Death:
-                UpdateDeath();
-                break;
-        }
+        if (currentState != SlasherState.Death) FacePlayer();
+
+        if (currentState == SlasherState.Idle)
+            UpdateIdle();
+        else if (currentState == SlasherState.Walk)
+            UpdateWalk();
+        else if (currentState == SlasherState.Chase)
+            UpdateChase();
+        else if (currentState == SlasherState.BackWalk)
+            UpdateBackWalk();
+        else if (currentState == SlasherState.Attack)
+            UpdateAttack();
+        else if (currentState == SlasherState.Hit)
+            UpdateHit();
+        else if (currentState == SlasherState.Death)
+            UpdateDeath();
     }
 
     private void FixedUpdate()
     {
-        switch (currentState)
-        {
-            case SlasherState.Walk:
-                MoveTowardsPlayer(walkSpeed);
-                break;
-            case SlasherState.Chase:
-                MoveTowardsPlayer(chaseSpeed);
-                break;
-            default:
-                StopHorizontal();
-                break;
-        }
+        if (currentState == SlasherState.Walk)
+            MoveTowardsPlayer(walkSpeed);
+        else if (currentState == SlasherState.Chase)
+            MoveTowardsPlayer(chaseSpeed);
+        else if (currentState == SlasherState.BackWalk)
+            MoveAwayFromPlayer(walkSpeed);
+        else
+            StopHorizontal();
     }
 
     private void UpdateIdle()
     {
-        float dist = DistanceToPlayer();
-        if (dist <= detectDistance)
-        {
-            playerDetected = true;
-            ChooseMovementState();
-        }
+        ChooseMovementState();
     }
 
     private void UpdateWalk()
     {
-        float dist = DistanceToPlayer();
-
-        if (dist <= attackRange)
-        {
-            EnterState(SlasherState.Attack);
-            return;
-        }
-
-        if (dist > chaseDistance)
-        {
-            EnterState(SlasherState.Chase);
-            return;
-        }
+        ChooseMovementState();
     }
 
     private void UpdateChase()
     {
-        float dist = DistanceToPlayer();
+        ChooseMovementState();
+    }
 
-        if (dist <= attackRange)
+    private void UpdateBackWalk()
+    {
+        if (attackCooldownTimer <= 0f && IsPlayerInSwingCone())
         {
             EnterState(SlasherState.Attack);
             return;
         }
 
-        if (dist <= chaseDistance)
+        if (!InBackOffRange())
         {
-            EnterState(SlasherState.Walk);
+            ChooseMovementState();
+            return;
+        }
+
+        if (!IsPlayerInSwingCone())
+        {
+            ChooseMovementState();
             return;
         }
     }
 
     private void UpdateAttack()
     {
-        stateTimer -= Time.deltaTime;
-
-        if (!attackDidStrike)
+        if (attackPhase == 0)
         {
-            if (stateTimer <= 0f)
+            attackPhaseTimer -= Time.deltaTime;
+            if (attackPhaseTimer <= 0f)
             {
-                ResolveStrike();
-
-                if (currentState == SlasherState.Attack)
-                {
-                    attackDidStrike = true;
-                    stateTimer = attackRecover;
-                }
+                attackPhase = 1;
+                attackPhaseTimer = swingDuration;
+                attackResolved = false;
             }
-
-            return;
         }
+        else if (attackPhase == 1)
+        {
+            PerformSwingStep();
 
-        if (stateTimer <= 0f)
-            ChooseMovementState();
+            attackPhaseTimer -= Time.deltaTime;
+            if (attackPhaseTimer <= 0f)
+            {
+                attackPhase = 2;
+                attackPhaseTimer = attackRecover;
+                StartAttackCooldown();
+            }
+        }
+        else if (attackPhase == 2)
+        {
+            attackPhaseTimer -= Time.deltaTime;
+            if (attackPhaseTimer <= 0f) ChooseMovementState();
+        }
     }
 
     private void UpdateHit()
     {
         stateTimer -= Time.deltaTime;
-        if (stateTimer <= 0f)
-            ChooseMovementState();
+        if (stateTimer <= 0f) ChooseMovementState();
     }
 
     private void UpdateDeath()
     {
         stateTimer -= Time.deltaTime;
-        if (stateTimer <= 0f)
-            Destroy(gameObject);
+        if (stateTimer <= 0f) Destroy(gameObject);
     }
 
     private void EnterState(SlasherState newState)
     {
+        if (currentState == newState) return;
+
         currentState = newState;
 
         if (currentState == SlasherState.Idle)
@@ -209,11 +217,16 @@ public sealed class SlasherEnemy : MonoBehaviour
         {
             PlayAnimation(chaseAnimName);
         }
+        else if (currentState == SlasherState.BackWalk)
+        {
+            PlayAnimation(backWalkAnimName);
+        }
         else if (currentState == SlasherState.Attack)
         {
             PlayAnimation(attackAnimName);
-            attackDidStrike = false;
-            stateTimer = attackWindup;
+            attackPhase = 0;
+            attackPhaseTimer = attackWindup;
+            attackResolved = false;
         }
         else if (currentState == SlasherState.Hit)
         {
@@ -229,66 +242,120 @@ public sealed class SlasherEnemy : MonoBehaviour
 
     private void ChooseMovementState()
     {
-        float dist = DistanceToPlayer();
-        playerDetected = true;
+        if (currentState == SlasherState.Death) return;
 
-        if (currentState == SlasherState.Death)
-            return;
+        bool inCone = IsPlayerInSwingCone();
+        bool inWalk = InWalkRange();
+        bool inBack = InBackOffRange();
 
-        if (dist <= attackRange)
+        SlasherState nextState;
+
+        if (inCone)
         {
-            EnterState(SlasherState.Attack);
-            return;
+            if (attackCooldownTimer <= 0f)
+            {
+                nextState = SlasherState.Attack;
+            }
+            else
+            {
+                if (inBack)
+                    nextState = SlasherState.BackWalk;
+                else
+                    nextState = SlasherState.Idle;
+            }
+        }
+        else
+        {
+            if (inWalk)
+                nextState = SlasherState.Walk;
+            else
+                nextState = SlasherState.Chase;
         }
 
-        if (dist > chaseDistance)
-        {
-            EnterState(SlasherState.Chase);
-            return;
-        }
-
-        EnterState(SlasherState.Walk);
+        EnterState(nextState);
     }
 
-    private void ResolveStrike()
+    private void PerformSwingStep()
     {
-        float dist = DistanceToPlayer();
-        if (dist > attackRange)
-            return;
+        if (attackResolved) return;
 
-        PlayerController.PlayerEffectState effect = player.CurrentEffectState;
+        Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
 
-        if (effect == PlayerController.PlayerEffectState.CounterParry)
+        float norm = 1f - (attackPhaseTimer / swingDuration);
+        if (norm < 0f) norm = 0f;
+        if (norm > 1f) norm = 1f;
+
+        float angleDeg = Mathf.Lerp(swingStartAngleDeg, swingEndAngleDeg, norm);
+        Vector2 dir = DirFromAngle(angleDeg);
+
+        RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
+
+        if (hit.collider != null)
         {
-            EnterState(SlasherState.Death);
-            return;
-        }
+            PlayerController.PlayerEffectState effect = player.CurrentEffectState;
 
-        if (effect == PlayerController.PlayerEffectState.Parry)
-        {
-            EnterState(SlasherState.Hit);
-            return;
-        }
+            if (effect == PlayerController.PlayerEffectState.CounterParry)
+            {
+                EnterState(SlasherState.Death);
+                attackResolved = true;
+                return;
+            }
 
-        Vector2 atkPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
-        player.Hit(attackDamage, atkPos);
+            if (effect == PlayerController.PlayerEffectState.Parry && IsPerfectParry())
+            {
+                EnterState(SlasherState.Hit);
+                StartAttackCooldown();
+                attackResolved = true;
+                return;
+            }
+
+            Vector2 hitPos = originPos + dir * hit.distance;
+            player.Hit(attackDamage, hitPos);
+
+            attackResolved = true;
+            attackPhase = 2;
+            attackPhaseTimer = attackRecover;
+            StartAttackCooldown();
+        }
     }
 
-    private float DistanceToPlayer()
+    private bool IsPerfectParry()
     {
-        Vector2 a = transform.position;
-        Vector2 b = player.transform.position;
-        return Vector2.Distance(a, b);
+        return false;
+    }
+
+    private void StartAttackCooldown()
+    {
+        attackCooldownTimer = Random.Range(attackCooldownMin, attackCooldownMax);
     }
 
     private void MoveTowardsPlayer(float speed)
     {
         Vector2 a = transform.position;
         Vector2 b = player.transform.position;
+
         float dx = b.x - a.x;
-        float dirSign = dx > 0f ? 1f : (dx < 0f ? -1f : 0f);
+        float dirSign = 0f;
+        if (dx > 0f) dirSign = 1f;
+        else if (dx < 0f) dirSign = -1f;
+
         Vector2 v = rb.linearVelocity;
         v.x = dirSign * speed;
+        rb.linearVelocity = new Vector2(v.x, rb.linearVelocity.y);
+    }
+
+    private void MoveAwayFromPlayer(float speed)
+    {
+        Vector2 a = transform.position;
+        Vector2 b = player.transform.position;
+
+        float dx = b.x - a.x;
+        float dirSign = 0f;
+        if (dx > 0f) dirSign = 1f;
+        else if (dx < 0f) dirSign = -1f;
+
+        Vector2 v = rb.linearVelocity;
+        v.x = -dirSign * speed;
         rb.linearVelocity = new Vector2(v.x, rb.linearVelocity.y);
     }
 
@@ -310,7 +377,86 @@ public sealed class SlasherEnemy : MonoBehaviour
 
     private void PlayAnimation(string clipName)
     {
-        if (animator != null && !string.IsNullOrEmpty(clipName))
-            animator.Play(clipName);
+        if (animator != null && !string.IsNullOrEmpty(clipName)) animator.Play(clipName);
+    }
+
+    private bool CheckRange(Collider2D col, Vector3 pos)
+    {
+        if (col == null) return false;
+        return col.OverlapPoint(pos);
+    }
+
+    private bool InWalkRange()
+    {
+        return CheckRange(walkRange, player.transform.position);
+    }
+
+    private bool InBackOffRange()
+    {
+        return CheckRange(backOffRange, player.transform.position);
+    }
+
+    private bool IsPlayerInSwingCone()
+    {
+        Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
+        Vector2 toPlayer = (Vector2)player.transform.position - originPos;
+
+        float dist = toPlayer.magnitude;
+        if (dist > swingLength) return false;
+
+        Vector2 forward = Vector2.right * facingDirection;
+        float ang = Vector2.SignedAngle(forward, toPlayer);
+
+        float minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
+        float maxAng = Mathf.Max(swingStartAngleDeg, swingEndAngleDeg);
+
+        if (ang < minAng || ang > maxAng) return false;
+
+        return true;
+    }
+
+    private Vector2 DirFromAngle(float angleDeg)
+    {
+        Vector2 forward = Vector2.right * facingDirection;
+        Quaternion rot = Quaternion.AngleAxis(angleDeg, Vector3.forward);
+        Vector2 dir = rot * forward;
+        return dir.normalized;
+    }
+
+    public ProjectileHitResponse OnProjectileHit(Projectile projectile, Collider2D myCollider)
+    {
+        return ProjectileHitResponse.IgnoreContinue;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackOrigin != null)
+        {
+            Vector3 originPos = attackOrigin.position;
+
+            Gizmos.color = Color.red;
+
+            int steps = 16;
+            float minA = swingStartAngleDeg;
+            float maxA = swingEndAngleDeg;
+
+            Vector3 prevPoint = originPos;
+            bool prevSet = false;
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (steps == 0) ? 0f : (float)i / steps;
+                float a = Mathf.Lerp(minA, maxA, t);
+                Vector2 dir = DirFromAngle(a);
+                Vector3 point = originPos + (Vector3)(dir * swingLength);
+
+                if (prevSet) Gizmos.DrawLine(prevPoint, point);
+
+                prevPoint = point;
+                prevSet = true;
+
+                if (i == 0 || i == steps) Gizmos.DrawLine(originPos, point);
+            }
+        }
     }
 }
