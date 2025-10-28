@@ -267,6 +267,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         float vx = (inputSign != 0 ? inputSign : (currentSpeedAbs > 0.001f ? lastMoveSign : 0)) * currentSpeedAbs;
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
+
+        //transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f); 디버그용 임시주석처리
     }
 
     public void HandleJump()
@@ -490,7 +492,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
         float scaleY = Mathf.Abs(parryDetectCollider.transform.lossyScale.y);
         float scale = Mathf.Max(scaleX, scaleY);
-        if (extremeDashRangeBoost) scale += 1.5f;
+        if (extremeDashRangeBoost) scale += 1f;
 
         float worldRadius = parryDetectCollider.radius * scale;
         Vector2 center = parryDetectCollider.bounds.center;

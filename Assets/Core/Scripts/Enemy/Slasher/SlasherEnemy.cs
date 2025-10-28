@@ -47,12 +47,12 @@ public sealed class SlasherEnemy : MonoBehaviour
     private bool playerDetected;
     private float stateTimer;
     private bool attackDidStrike;
+    private int facingDirection = 1;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        player = PlayerController.Instance;
 
         currentState = SlasherState.Idle;
         playerDetected = false;
@@ -60,6 +60,11 @@ public sealed class SlasherEnemy : MonoBehaviour
         attackDidStrike = false;
 
         PlayAnimation(idleAnimName);
+    }
+
+    private void Start()
+    {
+        player = PlayerController.Instance;
     }
 
     private void Update()
@@ -297,10 +302,10 @@ public sealed class SlasherEnemy : MonoBehaviour
     private void FacePlayer()
     {
         float dx = player.transform.position.x - transform.position.x;
-        if (dx > 0f)
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        else if (dx < 0f)
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        if (dx > 0f) facingDirection = 1;
+        else if (dx < 0f) facingDirection = -1;
+
+        transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
     }
 
     private void PlayAnimation(string clipName)
