@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IDamageable
@@ -81,14 +82,18 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public float PostDashCarryWindow => settings.postDashCarryWindow;
 
-    [Header("Parry Detect")]
+    [Header("Detect")]
     [SerializeField] private CircleCollider2D parryDetectCollider;
+    [SerializeField] private CircleCollider2D dashDetectCollider;
 
     public bool isGround;
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCol;
     private SpriteRenderer spriteRenderer;
+
+    public List<ParryCandidate> parryCandidates = new();
+    public List<Vector2> dashCandidates = new();
 
     [HideInInspector] public int facingDirection = 1;
     [HideInInspector] public bool isJumping;
@@ -357,6 +362,50 @@ public class PlayerController : MonoBehaviour, IDamageable
             yield return null;
         }
         healLocked = false;
+    }
+
+    public void RegisterParryCandidate(IParryReactive attacker, Vector2 hitPoint)
+    {
+        ParryCandidate c;
+        c.attacker = attacker;
+        c.hitPoint = hitPoint;
+        Vector2 p = transform.position;
+        c.sqrDistance = ((Vector2)p - hitPoint).sqrMagnitude;
+        parryCandidates.Add(c);
+    }
+
+    public void ClearParryCandidate(IParryReactive attacker)
+    {
+        for (int i = parryCandidates.Count - 1; i >= 0; i--)
+        {
+            if (parryCandidates[i].attacker == attacker)
+                parryCandidates.RemoveAt(i);
+        }
+    }
+
+    public void RegisterDashCandidate(Vector2 hitPoint)
+    {
+        dashCandidates.Add(hitPoint);
+    }
+
+    public void GetParryDetectCircle(out Vector2 center, out float radius)
+    {
+        float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
+        float scaleY = Mathf.Abs(parryDetectCollider.transform.lossyScale.y);
+        float scale = Mathf.Max(scaleX, scaleY);
+
+        radius = parryDetectCollider.radius * scale;
+        center = parryDetectCollider.bounds.center;
+    }
+
+    public void GetDashDetectCircle(out Vector2 center, out float radius)
+    {
+        float scaleX = Mathf.Abs(dashDetectCollider.transform.lossyScale.x);
+        float scaleY = Mathf.Abs(dashDetectCollider.transform.lossyScale.y);
+        float scale = Mathf.Max(scaleX, scaleY);
+
+        radius = dashDetectCollider.radius * scale;
+        center = dashDetectCollider.bounds.center;
     }
 
     public bool CanStartHeal()

@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
+public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryReactive
 {
     private enum SlasherState
     {
@@ -31,8 +32,8 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
 
     [Header("Attack Geometry")]
     [SerializeField] private Transform attackOrigin;
-    [SerializeField] private float swingStartAngleDeg = -30f;
-    [SerializeField] private float swingEndAngleDeg = 60f;
+    [SerializeField] private float swingStartAngleDeg = -60f;
+    [SerializeField] private float swingEndAngleDeg = 30f;
     [SerializeField] private float swingLength = 2f;
     [SerializeField] private LayerMask playerHitMask;
 
@@ -178,6 +179,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
                 attackPhase = 2;
                 attackPhaseTimer = attackRecover;
                 StartAttackCooldown();
+                player.ClearParryCandidate(this);
             }
         }
         else if (attackPhase == 2)
@@ -288,27 +290,26 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
         float angleDeg = Mathf.Lerp(swingStartAngleDeg, swingEndAngleDeg, norm);
         Vector2 dir = DirFromAngle(angleDeg);
 
+        Vector2 segEnd = originPos + dir * swingLength;
+
+        player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
+
+        bool parryZoneHit = SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius);
+
+        if (parryZoneHit)
+            player.RegisterParryCandidate(this, segEnd);
+
+        player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
+
+        bool dashZoneHit = SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius);
+
+        if (dashZoneHit)
+            player.RegisterDashCandidate(segEnd);
+
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
 
         if (hit.collider != null)
         {
-            PlayerController.PlayerEffectState effect = player.CurrentEffectState;
-
-            if (effect == PlayerController.PlayerEffectState.CounterParry)
-            {
-                EnterState(SlasherState.Death);
-                attackResolved = true;
-                return;
-            }
-
-            if (effect == PlayerController.PlayerEffectState.Parry && IsPerfectParry())
-            {
-                EnterState(SlasherState.Hit);
-                StartAttackCooldown();
-                attackResolved = true;
-                return;
-            }
-
             Vector2 hitPos = originPos + dir * hit.distance;
             player.Hit(attackDamage, hitPos);
 
@@ -316,11 +317,22 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
             attackPhase = 2;
             attackPhaseTimer = attackRecover;
             StartAttackCooldown();
+            player.ClearParryCandidate(this);
         }
     }
 
-    private bool IsPerfectParry()
+    private bool SegmentIntersectsCircle(Vector2 a, Vector2 b, Vector2 c, float r)
     {
+        Vector2 ab = b - a;
+        float abLenSq = ab.sqrMagnitude;
+        float t = Vector2.Dot(c - a, ab) / abLenSq;
+        if (t < 0f) t = 0f;
+        else if (t > 1f) t = 1f;
+
+        Vector2 closest = a + ab * t;
+        float distSq = (c - closest).sqrMagnitude;
+        float rSq = r * r;
+        if (distSq <= rSq) return true;
         return false;
     }
 
@@ -382,7 +394,6 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
 
     private bool CheckRange(Collider2D col, Vector3 pos)
     {
-        if (col == null) return false;
         return col.OverlapPoint(pos);
     }
 
@@ -428,35 +439,66 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder
         return ProjectileHitResponse.IgnoreContinue;
     }
 
+    public void OnPerfectParry(Vector2 hitPoint)
+    {
+        if (currentState == SlasherState.Attack)
+        {
+            EnterState(SlasherState.Hit);
+            StartAttackCooldown();
+            attackResolved = true;
+            attackPhase = 2;
+            attackPhaseTimer = attackRecover;
+            player.ClearParryCandidate(this);
+        }
+    }
+
+    public void OnImperfectParry(Vector2 hitPoint)
+    {
+        if (currentState == SlasherState.Attack)
+        {
+            attackResolved = true;
+            attackPhase = 2;
+            attackPhaseTimer = attackRecover;
+            StartAttackCooldown();
+            player.ClearParryCandidate(this);
+        }
+    }
+
+    public void OnCounterParry(Vector2 hitPoint)
+    {
+        EnterState(SlasherState.Death);
+        attackResolved = true;
+        player.ClearParryCandidate(this);
+    }
+
     private void OnDrawGizmosSelected()
     {
-        if (attackOrigin != null)
+        if (attackOrigin == null) return;
+
+        Vector3 originPos = attackOrigin.position;
+
+        Gizmos.color = Color.red;
+
+        int steps = 16;
+        float minA = swingStartAngleDeg;
+        float maxA = swingEndAngleDeg;
+
+        Vector3 prevPoint = originPos;
+        bool prevSet = false;
+
+        for (int i = 0; i <= steps; i++)
         {
-            Vector3 originPos = attackOrigin.position;
+            float t = (steps == 0) ? 0f : (float)i / steps;
+            float a = Mathf.Lerp(minA, maxA, t);
+            Vector2 dir = DirFromAngle(a);
+            Vector3 point = originPos + (Vector3)(dir * swingLength);
 
-            Gizmos.color = Color.red;
+            if (prevSet) Gizmos.DrawLine(prevPoint, point);
 
-            int steps = 16;
-            float minA = swingStartAngleDeg;
-            float maxA = swingEndAngleDeg;
+            prevPoint = point;
+            prevSet = true;
 
-            Vector3 prevPoint = originPos;
-            bool prevSet = false;
-
-            for (int i = 0; i <= steps; i++)
-            {
-                float t = (steps == 0) ? 0f : (float)i / steps;
-                float a = Mathf.Lerp(minA, maxA, t);
-                Vector2 dir = DirFromAngle(a);
-                Vector3 point = originPos + (Vector3)(dir * swingLength);
-
-                if (prevSet) Gizmos.DrawLine(prevPoint, point);
-
-                prevPoint = point;
-                prevSet = true;
-
-                if (i == 0 || i == steps) Gizmos.DrawLine(originPos, point);
-            }
+            if (i == 0 || i == steps) Gizmos.DrawLine(originPos, point);
         }
     }
 }

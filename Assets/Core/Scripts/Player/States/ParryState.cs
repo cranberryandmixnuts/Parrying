@@ -37,8 +37,11 @@ public sealed class ParryState : PlayerState
     {
         if (!player.parryHadSuccessThisWindow)
         {
-            if (player.TryDetectIncomingAttack(out Projectile proj))
+            if (player.parryCandidates != null && player.parryCandidates.Count > 0)
             {
+                player.parryCandidates.Sort((a, b) => a.sqrDistance.CompareTo(b.sqrDistance));
+                var c = player.parryCandidates[0];
+
                 float elapsed = Time.time - player.parryWindowStartTime;
                 float frac = player.parryWindowDuration > 0f ? elapsed / player.parryWindowDuration : 1f;
 
@@ -47,31 +50,21 @@ public sealed class ParryState : PlayerState
                     player.GainEnergy(player.PerfectParryEnergyGain);
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
-
-                    if (proj != null)
-                        proj.Neutralize();
-
-                    if (!player.isGround)
-                        player.airParryAvailable = true;
-
+                    if (!player.isGround) player.airParryAvailable = true;
                     GameEffects.Instance.DoPerfectParryImpact();
+                    c.attacker?.OnPerfectParry(c.hitPoint);
                 }
                 else
                 {
-                    int chip = proj != null ? Mathf.CeilToInt(proj.Damage * 0.5f) : 0;
-                    if (chip > 0)
-                        player.ApplyChipDamageNoHit(chip);
-
                     player.GainEnergy(player.ImperfectParryEnergyGain);
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
-
-                    if (proj != null)
-                        proj.ConsumeAndDestroy();
-
-                    if (!player.isGround)
-                        player.airParryAvailable = true;
+                    if (!player.isGround) player.airParryAvailable = true;
+                    c.attacker?.OnImperfectParry(c.hitPoint);
                 }
+
+                player.ClearParryCandidate(c.attacker);
+                player.parryCandidates.Clear();
             }
         }
 

@@ -27,20 +27,18 @@ public sealed class CounterParryState : PlayerState
     {
         if (!player.counterParryFirstResolved)
         {
-            Projectile proj;
-            if (player.TryDetectIncomingAttack(out proj))
+            if (player.parryCandidates != null && player.parryCandidates.Count > 0)
             {
+                player.parryCandidates.Sort((a, b) => a.sqrDistance.CompareTo(b.sqrDistance));
+                var c = player.parryCandidates[0];
+
                 player.counterParryFirstResolved = true;
                 player.SetInvincible(true);
-
-                if (proj != null)
-                {
-                    IParryStack s = proj.Source != null ? proj.Source.GetComponentInParent<IParryStack>() : null;
-                    if (s != null) s.AddOrRemove(-1);
-                    proj.ReflectToSource();
-                }
-
+                c.attacker?.OnCounterParry(c.hitPoint);
                 GameEffects.Instance.DoCounterParryImpact();
+
+                player.ClearParryCandidate(c.attacker);
+                player.parryCandidates.Clear();
             }
         }
 

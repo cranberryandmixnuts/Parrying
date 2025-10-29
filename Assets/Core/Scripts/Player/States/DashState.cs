@@ -28,7 +28,8 @@ public sealed class DashState : PlayerState
 
         player.SetInvincible(true);
 
-        int detectedCount = player.CountIncomingAttacks(true);
+        int detectedCount = player.dashCandidates != null ? player.dashCandidates.Count : 0;
+        player.dashCandidates.Clear();
 
         if (detectedCount > 0)
         {
@@ -40,9 +41,7 @@ public sealed class DashState : PlayerState
             if (detectedCount >= 3) gain += 10;
 
             player.GainEnergy(gain);
-
             dashMoveSpeed = player.DashSpeed * 1.1f;
-
             GameEffects.Instance.DoExtremeDashImpact();
         }
         else
