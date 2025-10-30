@@ -114,7 +114,7 @@ MonoBehaviour:
   walkSpeed: 1
   attackSpeed: 7
   stopFriction: 20
-  attackCooldownRange: {x: 2, y: 4}
+  attackCooldownRange: {x: 1.5, y: 3}
   chargeWindupDuration: 1
   missBehindDuration: 1
   overshootAfterParryDuration: 0.5
@@ -195,7 +195,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.50148475, y: 1.4422237}
+  m_Size: {x: 1.442224, y: 1.4422237}
   m_EdgeRadius: 0
 --- !u!95 &1120926643435323292
 Animator:
@@ -363,7 +363,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.6, y: 1.55}
+  m_Size: {x: 1.55, y: 1.55}
   m_EdgeRadius: 0
 --- !u!1 &5101282223791708455
 GameObject:
@@ -392,8 +392,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.07, z: 0}
-  m_LocalScale: {x: 0.5, y: 1.4460905, z: 0.5}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1.442224, y: 1.4460905, z: 0.5}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4926757014146769628}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -24,7 +24,7 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
     [SerializeField] private float stopFriction = 20f;
 
     [Header("Timing")]
-    [SerializeField] private Vector2 attackCooldownRange = new(2f, 4f);
+    [SerializeField] private Vector2 attackCooldownRange = new(1.5f, 3f);
     [SerializeField] private float chargeWindupDuration = 1f;
     [SerializeField] private float missBehindDuration = 1f;
     [SerializeField] private float overshootAfterParryDuration = 0.5f;

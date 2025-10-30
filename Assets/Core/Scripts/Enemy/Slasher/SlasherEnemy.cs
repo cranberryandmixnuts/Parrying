@@ -25,7 +25,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
     [SerializeField] private float chaseSpeed = 4f;
 
     [Header("Attack Timing")]
-    [SerializeField] private Vector2 attackCooldownRange = new(2f, 4f);
+    [SerializeField] private Vector2 attackCooldownRange = new(1.5f, 3f);
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackWindup = 0.25f;
     [SerializeField] private float swingDuration = 0.15f;
