@@ -5,6 +5,13 @@ public struct ParryCandidate
     public IParryReactive attacker;
     public Vector2 hitPoint;
     public float sqrDistance;
+    public int ImperfectParryDamage;
+}
+
+public struct DashCandidate
+{
+    public Vector2 point;
+    public int frame;
 }
 
 public interface IParryReactive

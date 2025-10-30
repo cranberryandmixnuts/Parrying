@@ -116,11 +116,11 @@ MonoBehaviour:
   stopFriction: 20
   attackCooldownRange: {x: 2, y: 4}
   chargeWindupDuration: 1
-  missBehindDuration: 2
+  missBehindDuration: 1
   overshootAfterParryDuration: 0.5
   backWalkDurationMin: 1
   backWalkDurationMax: 3
-  contactDamage: 1
+  contactDamage: 10
   playerHitMask:
     serializedVersion: 2
     m_Bits: 8

@@ -28,17 +28,25 @@ public sealed class DashState : PlayerState
 
         player.SetInvincible(true);
 
-        int detectedCount = player.dashCandidates != null ? player.dashCandidates.Count : 0;
+        int f = Time.frameCount;
+        int detected = 0;
+        int n = player.dashCandidates.Count;
+        for (int i = 0; i < n; i++)
+        {
+            if (player.dashCandidates[i].frame == f) detected++;
+            else if (player.dashCandidates[i].frame == f - 1) detected++;
+        }
+
         player.dashCandidates.Clear();
 
-        if (detectedCount > 0)
+        if (detected > 0)
         {
             extremeDashSuccess = true;
 
             int gain = 0;
-            if (detectedCount >= 1) gain += 50;
-            if (detectedCount >= 2) gain += 30;
-            if (detectedCount >= 3) gain += 10;
+            if (detected >= 1) gain += 50;
+            if (detected >= 2) gain += 30;
+            if (detected >= 3) gain += 10;
 
             player.GainEnergy(gain);
             dashMoveSpeed = player.DashSpeed * 1.1f;

@@ -271,12 +271,12 @@ MonoBehaviour:
   backOffRange: {fileID: 382006843200575904}
   walkSpeed: 1.5
   chaseSpeed: 3.5
-  attackDamage: 1
+  attackDamage: 10
   attackWindup: 0.25
   swingDuration: 0.15
   attackRecover: 0.3
-  attackCooldownMin: 3
-  attackCooldownMax: 5
+  attackCooldownMin: 2
+  attackCooldownMax: 4
   attackOrigin: {fileID: 2318388014847201655}
   swingStartAngleDeg: -30
   swingEndAngleDeg: 60

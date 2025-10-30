@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryReactive
 {
     private enum SlasherState
@@ -23,12 +25,11 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
     [SerializeField] private float chaseSpeed = 4f;
 
     [Header("Attack Timing")]
-    [SerializeField] private int attackDamage = 1;
+    [SerializeField] private Vector2 attackCooldownRange = new(2f, 4f);
+    [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackWindup = 0.25f;
     [SerializeField] private float swingDuration = 0.15f;
     [SerializeField] private float attackRecover = 0.3f;
-    [SerializeField] private float attackCooldownMin = 3f;
-    [SerializeField] private float attackCooldownMax = 5f;
 
     [Header("Attack Geometry")]
     [SerializeField] private Transform attackOrigin;
@@ -200,9 +201,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
         Vector2 dir = DirFromAngle(angleDeg);
         Vector2 segEnd = originPos + dir * swingLength;
 
-        Vector2 dashCenter;
-        float dashRadius;
-        player.GetDashDetectCircle(out dashCenter, out dashRadius);
+        player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
 
         if (SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius))
             player.RegisterDashCandidate(segEnd);
@@ -316,7 +315,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
         bool parryZoneHit = SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius);
 
         if (parryZoneHit)
-            player.RegisterParryCandidate(this, segEnd);
+            player.RegisterParryCandidate(this, segEnd, attackDamage);
 
         player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
 
@@ -357,7 +356,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
 
     private void StartAttackCooldown()
     {
-        attackCooldownTimer = Random.Range(attackCooldownMin, attackCooldownMax);
+        attackCooldownTimer = Random.Range(attackCooldownRange.x, attackCooldownRange.y);
     }
 
     private void MoveTowardsPlayer(float speed)

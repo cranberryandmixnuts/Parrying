@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour, IDamageable
 {
     public static PlayerController Instance { get; private set; }
@@ -86,14 +90,15 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private CircleCollider2D parryDetectCollider;
     [SerializeField] private CircleCollider2D dashDetectCollider;
 
-    public bool isGround;
+    [HideInInspector] public bool isGround;
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCol;
     private SpriteRenderer spriteRenderer;
 
-    public List<ParryCandidate> parryCandidates = new();
-    public List<Vector2> dashCandidates = new();
+    [HideInInspector] public List<ParryCandidate> parryCandidates = new();
+    [HideInInspector] public List<DashCandidate> dashCandidates = new();
+
 
     [HideInInspector] public int facingDirection = 1;
     [HideInInspector] public bool isJumping;
@@ -181,6 +186,15 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void FixedUpdate()
     {
         stateMachine.FixedUpdate();
+    }
+
+    private void LateUpdate()
+    {
+        int f = Time.frameCount;
+        for (int i = dashCandidates.Count - 1; i >= 0; i--)
+        {
+            if (dashCandidates[i].frame < f) dashCandidates.RemoveAt(i);
+        }
     }
 
     private void PollInput()
@@ -364,13 +378,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         healLocked = false;
     }
 
-    public void RegisterParryCandidate(IParryReactive attacker, Vector2 hitPoint)
+    public void RegisterParryCandidate(IParryReactive attacker, Vector2 hitPoint, int damage)
     {
         ParryCandidate c;
         c.attacker = attacker;
         c.hitPoint = hitPoint;
         Vector2 p = transform.position;
         c.sqrDistance = ((Vector2)p - hitPoint).sqrMagnitude;
+        c.ImperfectParryDamage = damage / 2;
         parryCandidates.Add(c);
     }
 
@@ -383,9 +398,24 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    public void RegisterDashCandidate(Vector2 hitPoint)
+    public void RegisterDashCandidate(Vector2 point)
     {
-        dashCandidates.Add(hitPoint);
+        DashCandidate c;
+        c.point = point;
+        c.frame = Time.frameCount;
+        dashCandidates.Add(c);
+    }
+
+    public int GetDashCandidateCountCurrentFrame()
+    {
+        int f = Time.frameCount;
+        int cnt = 0;
+        int n = dashCandidates.Count;
+        for (int i = 0; i < n; i++)
+        {
+            if (dashCandidates[i].frame == f) cnt++;
+        }
+        return cnt;
     }
 
     public void GetParryDetectCircle(out Vector2 center, out float radius)

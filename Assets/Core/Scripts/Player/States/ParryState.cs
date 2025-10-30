@@ -57,6 +57,7 @@ public sealed class ParryState : PlayerState
                 else
                 {
                     player.GainEnergy(player.ImperfectParryEnergyGain);
+                    player.ApplyChipDamageNoHit(c.ImperfectParryDamage);
                     player.parryHadSuccessThisWindow = true;
                     player.SetInvincible(true);
                     if (!player.isGround) player.airParryAvailable = true;

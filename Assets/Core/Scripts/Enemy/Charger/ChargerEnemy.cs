@@ -1,5 +1,7 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, IParryStack
 {
     private enum State
@@ -22,15 +24,15 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
     [SerializeField] private float stopFriction = 20f;
 
     [Header("Timing")]
-    [SerializeField] private Vector2 attackCooldownRange = new(3f, 5f);
+    [SerializeField] private Vector2 attackCooldownRange = new(2f, 4f);
     [SerializeField] private float chargeWindupDuration = 1f;
-    [SerializeField] private float missBehindDuration = 2f;
+    [SerializeField] private float missBehindDuration = 1f;
     [SerializeField] private float overshootAfterParryDuration = 0.5f;
     [SerializeField] private float backWalkDurationMin = 1f;
     [SerializeField] private float backWalkDurationMax = 3f;
 
     [Header("Attack")]
-    [SerializeField] private int contactDamage = 1;
+    [SerializeField] private int contactDamage = 10;
     [SerializeField] private LayerMask playerHitMask;
 
     private PlayerController player;
@@ -305,25 +307,22 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
     {
         Vector2 hitPoint = attackCollider.bounds.center;
 
-        if (lethalActive)
+        if (!lethalActive) return;
+
+        player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
+        if (IsColliderWithinCircle(attackCollider, parryCenter, parryRadius))
+            player.RegisterParryCandidate(this, hitPoint, contactDamage);
+
+        player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
+        if (IsColliderWithinCircle(attackCollider, dashCenter, dashRadius))
+            player.RegisterDashCandidate(hitPoint);
+
+        if (OverlapsPlayerBody())
         {
-            player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
-
-            if (IsColliderWithinCircle(attackCollider, parryCenter, parryRadius))
-                player.RegisterParryCandidate(this, hitPoint);
-
-            player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
-
-            if (IsColliderWithinCircle(attackCollider, dashCenter, dashRadius))
-                player.RegisterDashCandidate(hitPoint);
-
-            if (OverlapsPlayerBody())
-            {
-                player.Hit(contactDamage, hitPoint);
-                lethalActive = false;
-                overshootTimer = overshootAfterParryDuration;
-                player.ClearParryCandidate(this);
-            }
+            player.Hit(contactDamage, hitPoint);
+            lethalActive = false;
+            overshootTimer = overshootAfterParryDuration;
+            player.ClearParryCandidate(this);
         }
     }
 
