@@ -18,8 +18,8 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
 
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 1f;
-    [SerializeField] private float attackSpeed = 10f;
-    [SerializeField] private float stopFriction = 30f;
+    [SerializeField] private float attackSpeed = 7f;
+    [SerializeField] private float stopFriction = 20f;
 
     [Header("Timing")]
     [SerializeField] private Vector2 attackCooldownRange = new(3f, 5f);

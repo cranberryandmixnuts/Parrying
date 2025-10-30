@@ -161,6 +161,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
     {
         if (attackPhase == 0)
         {
+            RegisterDashAssistRay();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f)
             {
@@ -168,11 +169,12 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
                 attackPhaseTimer = swingDuration;
                 attackResolved = false;
             }
+            return;
         }
-        else if (attackPhase == 1)
+
+        if (attackPhase == 1)
         {
             PerformSwingStep();
-
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f)
             {
@@ -181,12 +183,29 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
                 StartAttackCooldown();
                 player.ClearParryCandidate(this);
             }
+            return;
         }
-        else if (attackPhase == 2)
+
+        if (attackPhase == 2)
         {
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f) ChooseMovementState();
         }
+    }
+
+    private void RegisterDashAssistRay()
+    {
+        Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
+        float angleDeg = swingStartAngleDeg;
+        Vector2 dir = DirFromAngle(angleDeg);
+        Vector2 segEnd = originPos + dir * swingLength;
+
+        Vector2 dashCenter;
+        float dashRadius;
+        player.GetDashDetectCircle(out dashCenter, out dashRadius);
+
+        if (SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius))
+            player.RegisterDashCandidate(segEnd);
     }
 
     private void UpdateHit()

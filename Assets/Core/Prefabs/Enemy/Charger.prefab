@@ -112,8 +112,8 @@ MonoBehaviour:
   attackCollider: {fileID: 8564602250147577036}
   tooCloseRangeCollider: {fileID: 8406319504030424716}
   walkSpeed: 1
-  attackSpeed: 10
-  stopFriction: 30
+  attackSpeed: 7
+  stopFriction: 20
   attackCooldownRange: {x: 2, y: 4}
   chargeWindupDuration: 1
   missBehindDuration: 2
@@ -246,7 +246,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.07, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4926757014146769628}

@@ -270,7 +270,7 @@ MonoBehaviour:
   walkRange: {fileID: 4459469633811326657}
   backOffRange: {fileID: 382006843200575904}
   walkSpeed: 1.5
-  chaseSpeed: 4
+  chaseSpeed: 3.5
   attackDamage: 1
   attackWindup: 0.25
   swingDuration: 0.15
