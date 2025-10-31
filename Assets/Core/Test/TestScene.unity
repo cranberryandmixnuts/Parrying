@@ -1488,7 +1488,6 @@ GameObject:
   - component: {fileID: 3347595226018224800}
   - component: {fileID: 6384776150218970448}
   - component: {fileID: 8455161177830103594}
-  - component: {fileID: 7930991534563363761}
   - component: {fileID: 6522723919292424473}
   - component: {fileID: 4361631999354907746}
   - component: {fileID: 7885939296022928749}
@@ -1830,7 +1829,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 6
+  m_GravityScale: 5
   m_Material: {fileID: 6200000, guid: 274e427576c208f429fe2e80d46f75b3, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -1995,18 +1994,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &7930991534563363761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1564451344360679241}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62c1cb7e24910b842887f72cd3efd686, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerParryResponder
 --- !u!114 &8455161177830103594
 MonoBehaviour:
   m_ObjectHideFlags: 0
