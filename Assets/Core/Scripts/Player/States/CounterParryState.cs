@@ -29,24 +29,30 @@ public sealed class CounterParryState : PlayerState
         {
             if (player.parryCandidates != null && player.parryCandidates.Count > 0)
             {
-                player.parryCandidates.Sort((a, b) => a.sqrDistance.CompareTo(b.sqrDistance));
                 var c = player.parryCandidates[0];
+                UnityEngine.Object uo = c.attacker as UnityEngine.Object;
 
-                player.counterParryFirstResolved = true;
-                player.SetInvincible(true);
-                c.attacker?.OnCounterParry(c.hitPoint);
-                GameEffects.Instance.DoCounterParryImpact();
+                if (uo == null)
+                {
+                    player.ClearParryCandidate(c.attacker);
+                    player.parryCandidates.Clear();
+                }
+                else
+                {
+                    player.counterParryFirstResolved = true;
+                    player.SetInvincible(true);
+                    c.attacker.OnCounterParry(c.hitPoint);
+                    GameEffects.Instance.DoCounterParryImpact();
 
-                player.ClearParryCandidate(c.attacker);
-                player.parryCandidates.Clear();
+                    player.ClearParryCandidate(c.attacker);
+                    player.parryCandidates.Clear();
+                }
             }
         }
 
         timer -= Time.deltaTime;
         if (timer <= 0f)
-        {
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-        }
     }
 
     public override void FixedUpdate()

@@ -39,41 +39,48 @@ public sealed class ParryState : PlayerState
         {
             if (player.parryCandidates != null && player.parryCandidates.Count > 0)
             {
-                player.parryCandidates.Sort((a, b) => a.sqrDistance.CompareTo(b.sqrDistance));
                 var c = player.parryCandidates[0];
+                UnityEngine.Object uo = c.attacker as UnityEngine.Object;
 
-                float elapsed = Time.time - player.parryWindowStartTime;
-                float frac = player.parryWindowDuration > 0f ? elapsed / player.parryWindowDuration : 1f;
-
-                if (frac <= 0.5f)
+                if (uo == null)
                 {
-                    player.GainEnergy(player.PerfectParryEnergyGain);
-                    player.parryHadSuccessThisWindow = true;
-                    player.SetInvincible(true);
-                    if (!player.isGround) player.airParryAvailable = true;
-                    GameEffects.Instance.DoPerfectParryImpact();
-                    c.attacker?.OnPerfectParry(c.hitPoint);
+                    player.ClearParryCandidate(c.attacker);
+                    player.parryCandidates.Clear();
                 }
                 else
                 {
-                    player.GainEnergy(player.ImperfectParryEnergyGain);
-                    player.ApplyChipDamageNoHit(c.ImperfectParryDamage);
-                    player.parryHadSuccessThisWindow = true;
-                    player.SetInvincible(true);
-                    if (!player.isGround) player.airParryAvailable = true;
-                    c.attacker?.OnImperfectParry(c.hitPoint);
-                }
+                    float elapsed = Time.time - player.parryWindowStartTime;
+                    float frac = player.parryWindowDuration > 0f ? elapsed / player.parryWindowDuration : 1f;
 
-                player.ClearParryCandidate(c.attacker);
-                player.parryCandidates.Clear();
+                    if (frac <= 0.5f)
+                    {
+                        GameEffects.Instance.DoPerfectParryImpact();
+                        player.GainEnergy(player.PerfectParryEnergyGain);
+                        player.parryHadSuccessThisWindow = true;
+                        player.SetInvincible(true);
+                        c.attacker.OnPerfectParry(c.hitPoint);
+                    }
+                    else
+                    {
+                        int chip = c.ImperfectParryDamage > 0 ? Mathf.CeilToInt(c.ImperfectParryDamage) : 0;
+                        if (chip > 0) player.ApplyChipDamageNoHit(chip);
+                        player.GainEnergy(player.ImperfectParryEnergyGain);
+                        player.parryHadSuccessThisWindow = true;
+                        player.SetInvincible(true);
+                        c.attacker.OnImperfectParry(c.hitPoint);
+                    }
+
+                    if (!player.isGround) player.airParryAvailable = true;
+
+                    player.ClearParryCandidate(c.attacker);
+                    player.parryCandidates.Clear();
+                }
             }
         }
 
         timer -= Time.deltaTime;
         if (timer <= 0f)
-        {
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-        }
     }
 
     public override void Exit()
