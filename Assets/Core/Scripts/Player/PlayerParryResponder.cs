@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
-public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, IMeleeHitResponder
+public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder
 {
     private PlayerController p;
 
@@ -19,8 +19,7 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
                 p.counterParryFirstResolved = true;
 
                 IParryStack s = projectile.Source != null ? projectile.Source.GetComponentInParent<IParryStack>() : null;
-                if (s != null)
-                    s.AddOrRemove(-1);
+                s?.AddOrRemove(-1);
 
                 p.SetInvincible(true);
 
@@ -76,73 +75,5 @@ public sealed class PlayerParryResponder : MonoBehaviour, IProjectileResponder, 
             return ProjectileHitResponse.IgnoreContinue;
 
         return ProjectileHitResponse.Consume;
-    }
-
-    public MeleeHitResult OnMeleeHit(MeleeSweepEmitter emitter, Collider2D myCollider, int damage)
-    {
-        if (p.CurrentStateType == PlayerStateType.CounterParry)
-        {
-            if (!p.counterParryFirstResolved)
-            {
-                p.counterParryFirstResolved = true;
-
-                IParryStack s = emitter != null ? emitter.GetComponentInParent<IParryStack>() : null;
-                if (s != null)
-                    s.AddOrRemove(-1);
-
-                p.SetInvincible(true);
-
-                GameEffects.Instance.DoCounterParryImpact();
-
-                return MeleeHitResult.Ignore;
-            }
-
-            return MeleeHitResult.Ignore;
-        }
-
-        if (p.CurrentStateType == PlayerStateType.Parry)
-        {
-            if (!p.parryHadSuccessThisWindow)
-            {
-                float elapsed = Time.time - p.parryWindowStartTime;
-                float frac = p.parryWindowDuration > 0f ? elapsed / p.parryWindowDuration : 1f;
-
-                if (frac <= 0.5f)
-                {
-                    p.GainEnergy(p.PerfectParryEnergyGain);
-                    p.parryHadSuccessThisWindow = true;
-                    p.SetInvincible(true);
-
-                    if (!p.isGround)
-                        p.airParryAvailable = true;
-
-                    GameEffects.Instance.DoPerfectParryImpact();
-
-                    return MeleeHitResult.Ignore;
-                }
-                else
-                {
-                    int chip = Mathf.CeilToInt(damage * 0.5f);
-                    if (chip > 0)
-                        p.ApplyChipDamageNoHit(chip);
-
-                    p.GainEnergy(p.ImperfectParryEnergyGain);
-                    p.parryHadSuccessThisWindow = true;
-                    p.SetInvincible(true);
-
-                    if (!p.isGround)
-                        p.airParryAvailable = true;
-
-                    return MeleeHitResult.Ignore;
-                }
-            }
-
-            return MeleeHitResult.Ignore;
-        }
-
-        if (p.IsParryGraceActive || p.CurrentStateType == PlayerStateType.Dash)
-            return MeleeHitResult.Ignore;
-
-        return MeleeHitResult.Damage;
     }
 }

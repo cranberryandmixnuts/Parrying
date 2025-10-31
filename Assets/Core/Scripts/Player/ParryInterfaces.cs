@@ -20,11 +20,6 @@ public enum MeleeHitResult
     Ignore
 }
 
-public interface IMeleeHitResponder
-{
-    MeleeHitResult OnMeleeHit(MeleeSweepEmitter emitter, Collider2D myCollider, int damage);
-}
-
 public interface IParryStack
 {
     void AddOrRemove(int delta);

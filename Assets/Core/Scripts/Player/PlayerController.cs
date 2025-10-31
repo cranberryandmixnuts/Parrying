@@ -590,35 +590,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (d2 <= r2) count++;
         }
 
-        for (int i = 0; i < MeleeSweepEmitter.ActiveSweeps.Count; i++)
-        {
-            MeleeSweepEmitter sw = MeleeSweepEmitter.ActiveSweeps[i];
-
-            Vector3 pivotPos3 = sw.Pivot != null ? sw.Pivot.position : sw.transform.position;
-            Vector2 pivotPos = pivotPos3;
-            float threatRadius = Mathf.Max(sw.RadiusTip, sw.RadiusMid) + sw.Thickness * 0.5f;
-            float maxReach = threatRadius + worldRadius;
-            float d2 = (pivotPos - center).sqrMagnitude;
-            if (d2 <= maxReach * maxReach) count++;
-        }
-
         return count;
-    }
-
-    private IEnumerator CoHitstop(float duration)
-    {
-        float prev = Time.timeScale;
-        Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = prev;
-    }
-
-    public void ApplyKnockback(Vector2 direction, float force)
-    {
-        isKnockback = true;
-        knockbackTimer = settings.knockbackDuration;
-        rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
-        SetEffectState(PlayerEffectState.Hit);
     }
 
     public Rigidbody2D Rigidbody => rb;
