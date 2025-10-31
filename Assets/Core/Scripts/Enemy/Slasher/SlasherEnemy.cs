@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
-public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryReactive
+public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
 {
     private enum SlasherState
     {
@@ -450,11 +450,6 @@ public sealed class SlasherEnemy : MonoBehaviour, IProjectileResponder, IParryRe
         Quaternion rot = Quaternion.AngleAxis(angleDeg, Vector3.forward);
         Vector2 dir = rot * forward;
         return dir.normalized;
-    }
-
-    public ProjectileHitResponse OnProjectileHit(Projectile projectile, Collider2D myCollider)
-    {
-        return ProjectileHitResponse.IgnoreContinue;
     }
 
     public void OnPerfectParry(Vector2 hitPoint)
