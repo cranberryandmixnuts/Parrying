@@ -110,12 +110,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChargerEnemy
   attackCollider: {fileID: 8564602250147577036}
-  tooCloseRangeCollider: {fileID: 8406319504030424716}
+  backOffRange: {fileID: 8406319504030424716}
   walkSpeed: 1
   attackSpeed: 7
   stopFriction: 20
   attackCooldownRange: {x: 1.5, y: 3}
-  chargeWindupDuration: 1
   missBehindDuration: 1
   overshootAfterParryDuration: 0.5
   backWalkDurationMin: 1

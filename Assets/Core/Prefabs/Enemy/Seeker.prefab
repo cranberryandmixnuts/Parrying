@@ -115,10 +115,9 @@ MonoBehaviour:
   moveSpeedFar: 1
   maxPlayerDistForSpeed: 10
   driftStopRadius: 0.15
-  fireWindup: 0.4
   fireIntervalRange: {x: 2, y: 4}
   fireRecoilForce: 2
-  deathDespawn: 1
+  fireShootPercent: 0.6
 --- !u!50 &7558984504270906672
 Rigidbody2D:
   serializedVersion: 5

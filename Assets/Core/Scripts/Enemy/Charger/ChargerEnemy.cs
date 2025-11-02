@@ -12,9 +12,16 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         Death
     }
 
+    private const string AnimWalk = "Walk";
+    private const string AnimBackWalk = "BackWalk";
+    private const string AnimCharge = "Charge";
+    private const string AnimAttack = "Attack";
+    private const string AnimStop = "Stop";
+    private const string AnimDeath = "Death";
+
     [Header("Ranges")]
     [SerializeField] private Collider2D attackCollider;
-    [SerializeField] private Collider2D tooCloseRangeCollider;
+    [SerializeField] private Collider2D backOffRange;
 
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 1f;
@@ -23,7 +30,6 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
 
     [Header("Timing")]
     [SerializeField] private Vector2 attackCooldownRange = new(1.5f, 3f);
-    [SerializeField] private float chargeWindupDuration = 1f;
     [SerializeField] private float missBehindDuration = 1f;
     [SerializeField] private float overshootAfterParryDuration = 0.5f;
     [SerializeField] private float backWalkDurationMin = 1f;
@@ -32,12 +38,6 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
     [Header("Attack")]
     [SerializeField] private int contactDamage = 10;
     [SerializeField] private LayerMask playerHitMask;
-    [SerializeField] private string walkAnim = "Walk";
-    [SerializeField] private string backWalkAnim = "BackWalk";
-    [SerializeField] private string chargeAnim = "Charge";
-    [SerializeField] private string attackAnim = "Attack";
-    [SerializeField] private string stopAnim = "Stop";
-    [SerializeField] private string deathAnim = "Death";
 
     private State state;
     private float cooldownTimer;
@@ -47,6 +47,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
     private float overshootTimer;
     private float backWalkTimer;
     private float stopTimer;
+    private float deathTimer;
     private bool lethalActive;
 
     private readonly Collider2D[] overlapResults = new Collider2D[8];
@@ -60,9 +61,8 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
 
     protected override void OnUpdate()
     {
-        if (state == State.Death) return;
-
-        cooldownTimer -= Time.deltaTime;
+        if (state == State.Walk || state == State.BackWalk)
+            FacePlayer();
 
         if (state == State.Walk)
             UpdateWalk();
@@ -74,6 +74,8 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
             UpdateAttack();
         else if (state == State.Stop)
             UpdateStop();
+        else if (state == State.Death)
+            UpdateDeath();
     }
 
     protected override void OnFixedUpdate()
@@ -102,13 +104,12 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        FacePlayer();
-        PlayAnim(walkAnim);
+        PlayAnim(AnimWalk);
     }
 
     private void UpdateWalk()
     {
-        FacePlayer();
+        cooldownTimer -= Time.deltaTime;
 
         if (cooldownTimer <= 0f)
         {
@@ -131,13 +132,12 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = Random.Range(backWalkDurationMin, backWalkDurationMax);
-        FacePlayer();
-        PlayAnim(backWalkAnim);
+        PlayAnim(AnimBackWalk);
     }
 
     private void UpdateBackWalk()
     {
-        FacePlayer();
+        cooldownTimer -= Time.deltaTime;
 
         if (cooldownTimer <= 0f)
         {
@@ -156,21 +156,18 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
     private void EnterCharge()
     {
         state = State.Charge;
-        FacePlayer();
         attackDir = FacingDirection;
         lethalActive = false;
         overshootTimer = 0f;
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        chargeTimer = chargeWindupDuration;
-        PlayAnim(chargeAnim);
+        PlayAnim(AnimCharge);
+        chargeTimer = GetAnimLength(AnimCharge);
     }
 
     private void UpdateCharge()
     {
-        ApplyFacing((int)attackDir);
-
         chargeTimer -= Time.deltaTime;
         if (chargeTimer <= 0f)
         {
@@ -187,13 +184,11 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        PlayAnim(attackAnim);
+        PlayAnim(AnimAttack);
     }
 
     private void UpdateAttack()
     {
-        ApplyFacing((int)attackDir);
-
         if (overshootTimer > 0f)
         {
             overshootTimer -= Time.deltaTime;
@@ -229,11 +224,11 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         overshootTimer = 0f;
         behindTimer = 0f;
         backWalkTimer = 0f;
-        stopTimer = 0.2f;
         Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
         Player.ClearParryCandidate(this);
         ResetAttackCooldown();
-        PlayAnim(stopAnim);
+        PlayAnim(AnimStop);
+        stopTimer = GetAnimLength(AnimStop);
     }
 
     private void UpdateStop()
@@ -253,12 +248,19 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         Body.linearVelocity = Vector2.zero;
         Body.simulated = false;
         Player.ClearParryCandidate(this);
-        PlayAnim(deathAnim);
+        PlayAnim(AnimDeath);
+        deathTimer = GetAnimLength(AnimDeath);
+    }
+
+    private void UpdateDeath()
+    {
+        deathTimer -= Time.deltaTime;
+        if (deathTimer <= 0f) Destroy(gameObject);
     }
 
     private bool IsPlayerTooClose()
     {
-        return tooCloseRangeCollider.OverlapPoint(Player.transform.position);
+        return backOffRange.OverlapPoint(Player.transform.position);
     }
 
     private void HandleAttackHitbox()

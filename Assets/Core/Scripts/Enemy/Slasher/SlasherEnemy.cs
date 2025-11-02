@@ -13,6 +13,14 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Death
     }
 
+    private const string AnimIdle = "Idle";
+    private const string AnimWalk = "Walk";
+    private const string AnimChase = "Chase";
+    private const string AnimBackWalk = "BackWalk";
+    private const string AnimAttack = "Attack";
+    private const string AnimHit = "Hit";
+    private const string AnimDeath = "Death";
+
     [Header("Ranges")]
     [SerializeField] private Collider2D walkRange;
     [SerializeField] private Collider2D backOffRange;
@@ -21,13 +29,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     [SerializeField] private float walkSpeed = 1.5f;
     [SerializeField] private float chaseSpeed = 4f;
 
-    [Header("Attack Timing")]
-    [SerializeField] private Vector2 attackCooldownRange = new(1.5f, 3f);
-    [SerializeField] private int attackDamage = 10;
-    [SerializeField] private float attackWindup = 0.25f;
-    [SerializeField] private float swingDuration = 0.15f;
-    [SerializeField] private float attackRecover = 0.3f;
-
     [Header("Attack Geometry")]
     [SerializeField] private Transform attackOrigin;
     [SerializeField] private float swingStartAngleDeg = -60f;
@@ -35,18 +36,12 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     [SerializeField] private float swingLength = 2f;
     [SerializeField] private LayerMask playerHitMask;
 
-    [Header("Reactions")]
-    [SerializeField] private float hitStunDuration = 0.4f;
-    [SerializeField] private float deathDespawnDelay = 1.0f;
+    [Header("Attack Timing (Percent)")]
+    [SerializeField, Range(0f, 1f)] private float attackPrepPercent = 0.2f;
+    [SerializeField, Range(0f, 1f)] private float attackEndPercent = 0.9f;
 
-    [Header("Animation Names")]
-    [SerializeField] private string idleAnimName = "Idle";
-    [SerializeField] private string walkAnimName = "Walk";
-    [SerializeField] private string chaseAnimName = "Chase";
-    [SerializeField] private string backWalkAnimName = "BackWalk";
-    [SerializeField] private string attackAnimName = "Attack";
-    [SerializeField] private string hitAnimName = "Hit";
-    [SerializeField] private string deathAnimName = "Death";
+    [Header("Attack Damage")]
+    [SerializeField] private int attackDamage = 10;
 
     private SlasherState currentState;
     private float stateTimer;
@@ -54,6 +49,15 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private int attackPhase;
     private float attackPhaseTimer;
     private bool attackResolved;
+
+    private float attackWindupRuntime;
+    private float swingDurationRuntime;
+    private float attackRecoverRuntime;
+
+    protected override string DeathAnimName
+    {
+        get { return AnimDeath; }
+    }
 
     protected override void Awake()
     {
@@ -64,19 +68,17 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         attackPhase = 0;
         attackPhaseTimer = 0f;
         attackResolved = false;
-        PlayAnim(chaseAnimName);
-    }
-
-    protected override void Start()
-    {
-        base.Start();
+        PlayAnim(AnimChase);
     }
 
     protected override void OnUpdate()
     {
         if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
 
-        if (currentState != SlasherState.Death) FacePlayer();
+        if (currentState != SlasherState.Attack &&
+            currentState != SlasherState.Hit &&
+            currentState != SlasherState.Death)
+            FacePlayer();
 
         if (currentState == SlasherState.Idle)
             UpdateIdle();
@@ -151,7 +153,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             if (attackPhaseTimer <= 0f)
             {
                 attackPhase = 1;
-                attackPhaseTimer = swingDuration;
+                attackPhaseTimer = swingDurationRuntime;
                 attackResolved = false;
             }
             return;
@@ -164,7 +166,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             if (attackPhaseTimer <= 0f)
             {
                 attackPhase = 2;
-                attackPhaseTimer = attackRecover;
+                attackPhaseTimer = attackRecoverRuntime;
                 StartAttackCooldown();
                 Player.ClearParryCandidate(this);
             }
@@ -210,29 +212,44 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         currentState = newState;
 
         if (currentState == SlasherState.Idle)
-            PlayAnim(idleAnimName);
+            PlayAnim(AnimIdle);
         else if (currentState == SlasherState.Walk)
-            PlayAnim(walkAnimName);
+            PlayAnim(AnimWalk);
         else if (currentState == SlasherState.Chase)
-            PlayAnim(chaseAnimName);
+            PlayAnim(AnimChase);
         else if (currentState == SlasherState.BackWalk)
-            PlayAnim(backWalkAnimName);
+            PlayAnim(AnimBackWalk);
         else if (currentState == SlasherState.Attack)
         {
-            PlayAnim(attackAnimName);
+            PlayAnim(AnimAttack);
+            float clipLen = GetAnimLength(AnimAttack);
+            if (clipLen <= 0f) clipLen = 1f;
+
+            if (attackPrepPercent >= attackEndPercent)
+            {
+                Debug.LogError("SlasherEnemy: attackPrepPercent must be < attackEndPercent. Resetting to 0.25 / 0.75.");
+                attackPrepPercent = 0.25f;
+                attackEndPercent = 0.75f;
+            }
+
+            attackWindupRuntime = clipLen * attackPrepPercent;
+            swingDurationRuntime = clipLen * (attackEndPercent - attackPrepPercent);
+            attackRecoverRuntime = clipLen - (attackWindupRuntime + swingDurationRuntime);
+            if (attackRecoverRuntime < 0.01f) attackRecoverRuntime = 0.01f;
+
             attackPhase = 0;
-            attackPhaseTimer = attackWindup;
+            attackPhaseTimer = attackWindupRuntime;
             attackResolved = false;
         }
         else if (currentState == SlasherState.Hit)
         {
-            PlayAnim(hitAnimName);
-            stateTimer = hitStunDuration;
+            PlayAnim(AnimHit);
+            stateTimer = GetAnimLength(AnimHit);
         }
         else if (currentState == SlasherState.Death)
         {
-            PlayAnim(deathAnimName);
-            stateTimer = deathDespawnDelay;
+            PlayAnim(AnimDeath);
+            stateTimer = GetAnimLength(AnimDeath);
         }
     }
 
@@ -277,7 +294,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
         Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
 
-        float norm = 1f - (attackPhaseTimer / swingDuration);
+        float norm = 1f - (attackPhaseTimer / swingDurationRuntime);
         if (norm < 0f) norm = 0f;
         if (norm > 1f) norm = 1f;
 
@@ -309,7 +326,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
             attackResolved = true;
             attackPhase = 2;
-            attackPhaseTimer = attackRecover;
+            attackPhaseTimer = attackRecoverRuntime;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
         }
@@ -332,7 +349,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     private void StartAttackCooldown()
     {
-        attackCooldownTimer = Random.Range(attackCooldownRange.x, attackCooldownRange.y);
+        attackCooldownTimer = Random.Range(1.5f, 3f);
     }
 
     private void MoveTowardsPlayer(float speed)
@@ -417,7 +434,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             StartAttackCooldown();
             attackResolved = true;
             attackPhase = 2;
-            attackPhaseTimer = attackRecover;
+            attackPhaseTimer = attackRecoverRuntime;
             Player.ClearParryCandidate(this);
         }
     }
@@ -428,7 +445,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         {
             attackResolved = true;
             attackPhase = 2;
-            attackPhaseTimer = attackRecover;
+            attackPhaseTimer = attackRecoverRuntime;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
         }

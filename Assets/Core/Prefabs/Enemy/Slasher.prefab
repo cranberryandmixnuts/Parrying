@@ -271,11 +271,6 @@ MonoBehaviour:
   backOffRange: {fileID: 382006843200575904}
   walkSpeed: 1.5
   chaseSpeed: 3.5
-  attackCooldownRange: {x: 2, y: 4}
-  attackDamage: 10
-  attackWindup: 0.25
-  swingDuration: 0.15
-  attackRecover: 0.3
   attackOrigin: {fileID: 2318388014847201655}
   swingStartAngleDeg: -30
   swingEndAngleDeg: 60
@@ -283,15 +278,9 @@ MonoBehaviour:
   playerHitMask:
     serializedVersion: 2
     m_Bits: 8
-  hitStunDuration: 0.4
-  deathDespawnDelay: 1
-  idleAnimName: Idle
-  walkAnimName: Walk
-  chaseAnimName: Chase
-  backWalkAnimName: BackWalk
-  attackAnimName: Attack
-  hitAnimName: Hit
-  deathAnimName: Death
+  attackPrepPercent: 0.2
+  attackEndPercent: 0.9
+  attackDamage: 10
 --- !u!50 &6574393092186418449
 Rigidbody2D:
   serializedVersion: 5

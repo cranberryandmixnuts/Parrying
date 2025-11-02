@@ -9,6 +9,10 @@ public sealed class SeekerEnemy : EnemyBase
         Death
     }
 
+    private const string AnimDrift = "Drift";
+    private const string AnimFire = "Fire";
+    private const string AnimDeath = "Death";
+
     [SerializeField] private SeekerProjectile projectilePrefab;
     [SerializeField] private Transform firePoint;
 
@@ -21,36 +25,40 @@ public sealed class SeekerEnemy : EnemyBase
     [SerializeField] private float driftStopRadius = 0.15f;
 
     [Header("Fire")]
-    [SerializeField] private float fireWindup = 0.4f;
     [SerializeField] private Vector2 fireIntervalRange = new(2f, 4f);
     [SerializeField] private float fireRecoilForce = 2f;
-
-    [Header("Death")]
-    [SerializeField] private float deathDespawn = 1.0f;
-    [SerializeField] private string driftAnim = "Drift";
-    [SerializeField] private string fireAnim = "Fire";
-    [SerializeField] private string deathAnim = "Death";
+    [SerializeField, Range(0f, 1f)] private float fireShootPercent = 0.6f;
 
     private SeekerState state;
     private float fireCooldown;
     private float fireTimer;
+    private readonly float fireStateLength;
+    private bool fired;
     private float deathTimer;
     private int facingDirection = 1;
     private int keepSide = 1;
+
+    protected override string DeathAnimName
+    {
+        get { return AnimDeath; }
+    }
 
     protected override void Start()
     {
         base.Start();
         fireCooldown = Random.Range(fireIntervalRange.x, fireIntervalRange.y);
         state = SeekerState.Drift;
-        if (Anim != null) Anim.Play(driftAnim);
+        if (Anim != null) Anim.Play(AnimDrift);
     }
 
     protected override void OnUpdate()
     {
-        if (state == SeekerState.Drift) UpdateDrift();
-        else if (state == SeekerState.Fire) UpdateFire();
-        else if (state == SeekerState.Death) UpdateDeath();
+        if (state == SeekerState.Drift)
+            UpdateDrift();
+        else if (state == SeekerState.Fire)
+            UpdateFire();
+        else if (state == SeekerState.Death)
+            UpdateDeath();
     }
 
     protected override void OnFixedUpdate()
@@ -84,7 +92,6 @@ public sealed class SeekerEnemy : EnemyBase
         if (dist <= driftStopRadius)
         {
             Body.linearVelocity = Vector2.zero;
-            FacePlayer();
             return;
         }
 
@@ -103,28 +110,35 @@ public sealed class SeekerEnemy : EnemyBase
     private void EnterFire()
     {
         state = SeekerState.Fire;
-        fireTimer = fireWindup;
         Body.linearVelocity = Vector2.zero;
-        FacePlayer();
-        if (Anim != null) Anim.Play(fireAnim);
+        if (Anim != null) Anim.Play(AnimFire);
+        fireTimer = GetAnimLength(AnimFire);
+        fired = false;
     }
 
     private void UpdateFire()
     {
         fireTimer -= Time.deltaTime;
-        if (fireTimer <= 0f)
+
+        float elapsed = fireStateLength - fireTimer;
+        if (!fired && elapsed >= fireStateLength * fireShootPercent)
         {
             FireOne();
+            fired = true;
+        }
+
+        if (fireTimer <= 0f)
+        {
             fireCooldown = Random.Range(fireIntervalRange.x, fireIntervalRange.y);
             state = SeekerState.Drift;
-            if (Anim != null) Anim.Play(driftAnim);
+            if (Anim != null) Anim.Play(AnimDrift);
         }
     }
 
     private void FireOne()
     {
-        Vector2 dir = facingDirection == 1 ? Vector2.right : Vector2.left;
-        SeekerProjectile proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0f, 0f, facingDirection == 1 ? 0f : 180f));
+        Vector2 dir = transform.right;
+        SeekerProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
         proj.Initialize(this, Player, dir);
         Body.AddForce(-dir * fireRecoilForce, ForceMode2D.Impulse);
     }
@@ -140,8 +154,8 @@ public sealed class SeekerEnemy : EnemyBase
         if (state == SeekerState.Death) return;
         state = SeekerState.Death;
         Body.linearVelocity = Vector2.zero;
-        deathTimer = deathDespawn;
-        if (Anim != null) Anim.Play(deathAnim);
+        if (Anim != null) Anim.Play(AnimDeath);
+        deathTimer = GetAnimLength(AnimDeath);
     }
 
     public void OnHitByReflectedProjectile()
