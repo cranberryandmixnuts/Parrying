@@ -68,7 +68,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         attackPhase = 0;
         attackPhaseTimer = 0f;
         attackResolved = false;
-        PlayAnim(AnimChase);
+        Anim.Play(AnimChase);
     }
 
     protected override void OnUpdate()
@@ -212,18 +212,17 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         currentState = newState;
 
         if (currentState == SlasherState.Idle)
-            PlayAnim(AnimIdle);
+            Anim.Play(AnimIdle);
         else if (currentState == SlasherState.Walk)
-            PlayAnim(AnimWalk);
+            Anim.Play(AnimWalk);
         else if (currentState == SlasherState.Chase)
-            PlayAnim(AnimChase);
+            Anim.Play(AnimChase);
         else if (currentState == SlasherState.BackWalk)
-            PlayAnim(AnimBackWalk);
+            Anim.Play(AnimBackWalk);
         else if (currentState == SlasherState.Attack)
         {
-            PlayAnim(AnimAttack);
+            Anim.Play(AnimAttack);
             float clipLen = GetAnimLength(AnimAttack);
-            if (clipLen <= 0f) clipLen = 1f;
 
             if (attackPrepPercent >= attackEndPercent)
             {
@@ -243,12 +242,12 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         }
         else if (currentState == SlasherState.Hit)
         {
-            PlayAnim(AnimHit);
+            Anim.Play(AnimHit);
             stateTimer = GetAnimLength(AnimHit);
         }
         else if (currentState == SlasherState.Death)
         {
-            PlayAnim(AnimDeath);
+            Anim.Play(AnimDeath);
             stateTimer = GetAnimLength(AnimDeath);
         }
     }
@@ -304,29 +303,21 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Vector2 segEnd = originPos + dir * swingLength;
 
         Player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
-
         bool parryZoneHit = SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius);
-
         if (parryZoneHit)
             Player.RegisterParryCandidate(this, segEnd, attackDamage);
 
         Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
-
         bool dashZoneHit = SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius);
-
         if (dashZoneHit)
             Player.RegisterDashCandidate(segEnd);
 
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
-
         if (hit.collider != null)
         {
             Vector2 hitPos = originPos + dir * hit.distance;
             Player.Hit(attackDamage, hitPos);
-
             attackResolved = true;
-            attackPhase = 2;
-            attackPhaseTimer = attackRecoverRuntime;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
         }
@@ -444,8 +435,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         if (currentState == SlasherState.Attack)
         {
             attackResolved = true;
-            attackPhase = 2;
-            attackPhaseTimer = attackRecoverRuntime;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
         }

@@ -67,24 +67,43 @@ public abstract class EnemyBase : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, FacingDirection == -1 ? 180f : 0f, 0f);
     }
 
-    protected void PlayAnim(string name)
+    protected float GetAnimLength(string stateName)
     {
-        if (Anim != null && !string.IsNullOrEmpty(name)) Anim.Play(name);
-    }
-
-    protected float GetAnimLength(string clipName)
-    {
-        if (Anim == null) return 0f;
-        if (Anim.runtimeAnimatorController == null) return 0f;
-        if (string.IsNullOrEmpty(clipName)) return 0f;
-
-        AnimationClip[] clips = Anim.runtimeAnimatorController.animationClips;
-        for (int i = 0; i < clips.Length; i++)
+        AnimatorStateInfo current = Anim.GetCurrentAnimatorStateInfo(0);
+        if (current.IsName(stateName))
         {
-            if (clips[i].name == clipName)
-                return clips[i].length;
+            float speed = Anim.speed * current.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return current.length / speed;
         }
 
+        AnimatorStateInfo next = Anim.GetNextAnimatorStateInfo(0);
+        if (next.IsName(stateName))
+        {
+            float speed = Anim.speed * next.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return next.length / speed;
+        }
+
+        Anim.Update(0f);
+
+        current = Anim.GetCurrentAnimatorStateInfo(0);
+        if (current.IsName(stateName))
+        {
+            float speed = Anim.speed * current.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return current.length / speed;
+        }
+
+        next = Anim.GetNextAnimatorStateInfo(0);
+        if (next.IsName(stateName))
+        {
+            float speed = Anim.speed * next.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return next.length / speed;
+        }
+
+        Debug.LogError($"EnemyBase: Animator state '{stateName}' not found or not playing.");
         return 0f;
     }
 
@@ -99,12 +118,9 @@ public abstract class EnemyBase : MonoBehaviour
             Body.simulated = false;
         }
 
-        if (Player != null)
-        {
-            if (this is IParryReactive parry) Player.ClearParryCandidate(parry);
-        }
+        if (this is IParryReactive parry) Player.ClearParryCandidate(parry);
 
-        if (Anim != null && !string.IsNullOrEmpty(DeathAnimName)) Anim.Play(DeathAnimName);
+        Anim.Play(DeathAnimName);
 
         float delay = DeathDespawnDelay;
         if (delay > 0f) Destroy(gameObject, delay);

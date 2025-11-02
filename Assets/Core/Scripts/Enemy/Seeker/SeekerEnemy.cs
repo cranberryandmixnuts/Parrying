@@ -48,7 +48,7 @@ public sealed class SeekerEnemy : EnemyBase
         base.Start();
         fireCooldown = Random.Range(fireIntervalRange.x, fireIntervalRange.y);
         state = SeekerState.Drift;
-        if (Anim != null) Anim.Play(AnimDrift);
+        Anim.Play(AnimDrift);
     }
 
     protected override void OnUpdate()
@@ -111,7 +111,7 @@ public sealed class SeekerEnemy : EnemyBase
     {
         state = SeekerState.Fire;
         Body.linearVelocity = Vector2.zero;
-        if (Anim != null) Anim.Play(AnimFire);
+        Anim.Play(AnimFire);
         fireTimer = GetAnimLength(AnimFire);
         fired = false;
     }
@@ -131,7 +131,7 @@ public sealed class SeekerEnemy : EnemyBase
         {
             fireCooldown = Random.Range(fireIntervalRange.x, fireIntervalRange.y);
             state = SeekerState.Drift;
-            if (Anim != null) Anim.Play(AnimDrift);
+            Anim.Play(AnimDrift);
         }
     }
 
@@ -154,7 +154,7 @@ public sealed class SeekerEnemy : EnemyBase
         if (state == SeekerState.Death) return;
         state = SeekerState.Death;
         Body.linearVelocity = Vector2.zero;
-        if (Anim != null) Anim.Play(AnimDeath);
+        Anim.Play(AnimDeath);
         deathTimer = GetAnimLength(AnimDeath);
     }
 

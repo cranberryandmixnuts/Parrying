@@ -104,7 +104,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        PlayAnim(AnimWalk);
+        Anim.Play(AnimWalk);
     }
 
     private void UpdateWalk()
@@ -132,7 +132,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = Random.Range(backWalkDurationMin, backWalkDurationMax);
-        PlayAnim(AnimBackWalk);
+        Anim.Play(AnimBackWalk);
     }
 
     private void UpdateBackWalk()
@@ -162,7 +162,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        PlayAnim(AnimCharge);
+        Anim.Play(AnimCharge);
         chargeTimer = GetAnimLength(AnimCharge);
     }
 
@@ -184,7 +184,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        PlayAnim(AnimAttack);
+        Anim.Play(AnimAttack);
     }
 
     private void UpdateAttack()
@@ -211,10 +211,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
                 return;
             }
         }
-        else
-        {
-            behindTimer = 0f;
-        }
+        else behindTimer = 0f;
     }
 
     private void EnterStop()
@@ -227,7 +224,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
         Player.ClearParryCandidate(this);
         ResetAttackCooldown();
-        PlayAnim(AnimStop);
+        Anim.Play(AnimStop);
         stopTimer = GetAnimLength(AnimStop);
     }
 
@@ -248,7 +245,7 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
         Body.linearVelocity = Vector2.zero;
         Body.simulated = false;
         Player.ClearParryCandidate(this);
-        PlayAnim(AnimDeath);
+        Anim.Play(AnimDeath);
         deathTimer = GetAnimLength(AnimDeath);
     }
 
