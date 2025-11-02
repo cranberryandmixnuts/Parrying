@@ -1,8 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Animator))]
-public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, IParryStack
+public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParryStack
 {
     private enum State
     {
@@ -34,13 +32,14 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
     [Header("Attack")]
     [SerializeField] private int contactDamage = 10;
     [SerializeField] private LayerMask playerHitMask;
-
-    private PlayerController player;
-    private Rigidbody2D rb;
-    private Animator animator;
+    [SerializeField] private string walkAnim = "Walk";
+    [SerializeField] private string backWalkAnim = "BackWalk";
+    [SerializeField] private string chargeAnim = "Charge";
+    [SerializeField] private string attackAnim = "Attack";
+    [SerializeField] private string stopAnim = "Stop";
+    [SerializeField] private string deathAnim = "Death";
 
     private State state;
-    private int facingDirection = 1;
     private float cooldownTimer;
     private float chargeTimer;
     private float attackDir;
@@ -52,71 +51,47 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
 
     private readonly Collider2D[] overlapResults = new Collider2D[8];
 
-    private void Awake()
+    protected override void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-    }
-
-    private void Start()
-    {
-        player = PlayerController.Instance;
+        base.Start();
         ResetAttackCooldown();
         EnterWalk();
     }
 
-    private void Update()
+    protected override void OnUpdate()
     {
         if (state == State.Death) return;
 
         cooldownTimer -= Time.deltaTime;
 
-        switch (state)
-        {
-            case State.Walk:
-                UpdateWalk();
-                break;
-            case State.BackWalk:
-                UpdateBackWalk();
-                break;
-            case State.Charge:
-                UpdateCharge();
-                break;
-            case State.Attack:
-                UpdateAttack();
-                break;
-            case State.Stop:
-                UpdateStop();
-                break;
-        }
+        if (state == State.Walk)
+            UpdateWalk();
+        else if (state == State.BackWalk)
+            UpdateBackWalk();
+        else if (state == State.Charge)
+            UpdateCharge();
+        else if (state == State.Attack)
+            UpdateAttack();
+        else if (state == State.Stop)
+            UpdateStop();
     }
 
-    private void FixedUpdate()
+    protected override void OnFixedUpdate()
     {
-        switch (state)
-        {
-            case State.Walk:
-                rb.linearVelocity = new Vector2(facingDirection * walkSpeed, rb.linearVelocity.y);
-                break;
-            case State.BackWalk:
-                rb.linearVelocity = new Vector2(-facingDirection * walkSpeed, rb.linearVelocity.y);
-                break;
-            case State.Charge:
-                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-                break;
-            case State.Attack:
-                rb.linearVelocity = new Vector2(attackDir * attackSpeed, rb.linearVelocity.y);
-                break;
-            case State.Stop:
-                rb.linearVelocity = new Vector2(Mathf.MoveTowards(rb.linearVelocity.x, 0f, stopFriction * Time.fixedDeltaTime), rb.linearVelocity.y);
-                break;
-            case State.Death:
-                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-                break;
-        }
+        if (state == State.Walk)
+            Body.linearVelocity = new Vector2(FacingDirection * walkSpeed, Body.linearVelocity.y);
+        else if (state == State.BackWalk)
+            Body.linearVelocity = new Vector2(-FacingDirection * walkSpeed, Body.linearVelocity.y);
+        else if (state == State.Charge)
+            Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+        else if (state == State.Attack)
+            Body.linearVelocity = new Vector2(attackDir * attackSpeed, Body.linearVelocity.y);
+        else if (state == State.Stop)
+            Body.linearVelocity = new Vector2(Mathf.MoveTowards(Body.linearVelocity.x, 0f, stopFriction * Time.fixedDeltaTime), Body.linearVelocity.y);
+        else if (state == State.Death)
+            Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
 
-        if (state == State.Attack)
-            HandleAttackHitbox();
+        if (state == State.Attack) HandleAttackHitbox();
     }
 
     private void EnterWalk()
@@ -128,7 +103,7 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
         stopTimer = 0f;
         backWalkTimer = 0f;
         FacePlayer();
-        animator.Play("Walk");
+        PlayAnim(walkAnim);
     }
 
     private void UpdateWalk()
@@ -157,7 +132,7 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
         stopTimer = 0f;
         backWalkTimer = Random.Range(backWalkDurationMin, backWalkDurationMax);
         FacePlayer();
-        animator.Play("BackWalk");
+        PlayAnim(backWalkAnim);
     }
 
     private void UpdateBackWalk()
@@ -182,14 +157,14 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
     {
         state = State.Charge;
         FacePlayer();
-        attackDir = facingDirection;
+        attackDir = FacingDirection;
         lethalActive = false;
         overshootTimer = 0f;
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
         chargeTimer = chargeWindupDuration;
-        animator.Play("Charge");
+        PlayAnim(chargeAnim);
     }
 
     private void UpdateCharge()
@@ -212,7 +187,7 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
-        animator.Play("Attack");
+        PlayAnim(attackAnim);
     }
 
     private void UpdateAttack()
@@ -229,8 +204,8 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
             }
         }
 
-        bool playerIsBehind = (attackDir > 0f && player.transform.position.x < transform.position.x) ||
-                              (attackDir < 0f && player.transform.position.x > transform.position.x);
+        bool playerIsBehind = (attackDir > 0f && Player.transform.position.x < transform.position.x) ||
+                              (attackDir < 0f && Player.transform.position.x > transform.position.x);
 
         if (playerIsBehind)
         {
@@ -255,10 +230,10 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
         behindTimer = 0f;
         backWalkTimer = 0f;
         stopTimer = 0.2f;
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-        player.ClearParryCandidate(this);
+        Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+        Player.ClearParryCandidate(this);
         ResetAttackCooldown();
-        animator.Play("Stop");
+        PlayAnim(stopAnim);
     }
 
     private void UpdateStop()
@@ -275,54 +250,37 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
     {
         state = State.Death;
         lethalActive = false;
-        rb.linearVelocity = Vector2.zero;
-        rb.simulated = false;
-        player.ClearParryCandidate(this);
-        animator.Play("Death");
-    }
-
-    private void FacePlayer()
-    {
-        float dx = player.transform.position.x - transform.position.x;
-        if (dx > 0f) facingDirection = 1;
-        else if (dx < 0f) facingDirection = -1;
-
-        transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
-    }
-
-    private void ApplyFacing(int dir)
-    {
-        if (dir > 0) facingDirection = 1;
-        else if (dir < 0) facingDirection = -1;
-
-        transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
+        Body.linearVelocity = Vector2.zero;
+        Body.simulated = false;
+        Player.ClearParryCandidate(this);
+        PlayAnim(deathAnim);
     }
 
     private bool IsPlayerTooClose()
     {
-        return tooCloseRangeCollider.OverlapPoint(player.transform.position);
+        return tooCloseRangeCollider.OverlapPoint(Player.transform.position);
     }
 
     private void HandleAttackHitbox()
     {
-        Vector2 hitPoint = attackCollider.bounds.center;
-
         if (!lethalActive) return;
 
-        player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
-        if (IsColliderWithinCircle(attackCollider, parryCenter, parryRadius))
-            player.RegisterParryCandidate(this, hitPoint, contactDamage);
+        Vector2 hitPoint = attackCollider.bounds.center;
 
-        player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
+        Player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
+        if (IsColliderWithinCircle(attackCollider, parryCenter, parryRadius))
+            Player.RegisterParryCandidate(this, hitPoint, contactDamage);
+
+        Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
         if (IsColliderWithinCircle(attackCollider, dashCenter, dashRadius))
-            player.RegisterDashCandidate(hitPoint);
+            Player.RegisterDashCandidate(hitPoint);
 
         if (OverlapsPlayerBody())
         {
-            player.Hit(contactDamage, hitPoint);
+            Player.Hit(contactDamage, hitPoint);
             lethalActive = false;
             overshootTimer = overshootAfterParryDuration;
-            player.ClearParryCandidate(this);
+            Player.ClearParryCandidate(this);
         }
     }
 
@@ -347,7 +305,7 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
         {
             if (overlapResults[i] == null) continue;
             PlayerController pc = overlapResults[i].GetComponentInParent<PlayerController>();
-            if (pc == player)
+            if (pc == Player)
                 return true;
         }
 
@@ -366,7 +324,7 @@ public sealed class ChargerEnemy : MonoBehaviour, IDamageable, IParryReactive, I
 
         lethalActive = false;
         overshootTimer = overshootAfterParryDuration;
-        player.ClearParryCandidate(this);
+        Player.ClearParryCandidate(this);
     }
 
     public void OnImperfectParry(Vector2 hitPoint)

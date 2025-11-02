@@ -1,9 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Animator))]
-public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
+public sealed class SlasherEnemy : EnemyBase, IParryReactive
 {
     private enum SlasherState
     {
@@ -51,44 +48,31 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
     [SerializeField] private string hitAnimName = "Hit";
     [SerializeField] private string deathAnimName = "Death";
 
-    private Rigidbody2D rb;
-    private Animator animator;
-    private PlayerController player;
-
     private SlasherState currentState;
-
     private float stateTimer;
     private float attackCooldownTimer;
-
-    private int facingDirection = 1;
-
     private int attackPhase;
     private float attackPhaseTimer;
     private bool attackResolved;
 
-    private void Awake()
+    protected override void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-
+        base.Awake();
         currentState = SlasherState.Chase;
-
         stateTimer = 0f;
         attackCooldownTimer = 0f;
-
         attackPhase = 0;
         attackPhaseTimer = 0f;
         attackResolved = false;
-
-        PlayAnimation(chaseAnimName);
+        PlayAnim(chaseAnimName);
     }
 
-    private void Start()
+    protected override void Start()
     {
-        player = PlayerController.Instance;
+        base.Start();
     }
 
-    private void Update()
+    protected override void OnUpdate()
     {
         if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
 
@@ -110,7 +94,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
             UpdateDeath();
     }
 
-    private void FixedUpdate()
+    protected override void OnFixedUpdate()
     {
         if (currentState == SlasherState.Walk)
             MoveTowardsPlayer(walkSpeed);
@@ -182,7 +166,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
                 attackPhase = 2;
                 attackPhaseTimer = attackRecover;
                 StartAttackCooldown();
-                player.ClearParryCandidate(this);
+                Player.ClearParryCandidate(this);
             }
             return;
         }
@@ -201,10 +185,10 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
         Vector2 dir = DirFromAngle(angleDeg);
         Vector2 segEnd = originPos + dir * swingLength;
 
-        player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
+        Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
 
         if (SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius))
-            player.RegisterDashCandidate(segEnd);
+            Player.RegisterDashCandidate(segEnd);
     }
 
     private void UpdateHit()
@@ -226,36 +210,28 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
         currentState = newState;
 
         if (currentState == SlasherState.Idle)
-        {
-            PlayAnimation(idleAnimName);
-        }
+            PlayAnim(idleAnimName);
         else if (currentState == SlasherState.Walk)
-        {
-            PlayAnimation(walkAnimName);
-        }
+            PlayAnim(walkAnimName);
         else if (currentState == SlasherState.Chase)
-        {
-            PlayAnimation(chaseAnimName);
-        }
+            PlayAnim(chaseAnimName);
         else if (currentState == SlasherState.BackWalk)
-        {
-            PlayAnimation(backWalkAnimName);
-        }
+            PlayAnim(backWalkAnimName);
         else if (currentState == SlasherState.Attack)
         {
-            PlayAnimation(attackAnimName);
+            PlayAnim(attackAnimName);
             attackPhase = 0;
             attackPhaseTimer = attackWindup;
             attackResolved = false;
         }
         else if (currentState == SlasherState.Hit)
         {
-            PlayAnimation(hitAnimName);
+            PlayAnim(hitAnimName);
             stateTimer = hitStunDuration;
         }
         else if (currentState == SlasherState.Death)
         {
-            PlayAnimation(deathAnimName);
+            PlayAnim(deathAnimName);
             stateTimer = deathDespawnDelay;
         }
     }
@@ -310,32 +286,32 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
 
         Vector2 segEnd = originPos + dir * swingLength;
 
-        player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
+        Player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
 
         bool parryZoneHit = SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius);
 
         if (parryZoneHit)
-            player.RegisterParryCandidate(this, segEnd, attackDamage);
+            Player.RegisterParryCandidate(this, segEnd, attackDamage);
 
-        player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
+        Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
 
         bool dashZoneHit = SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius);
 
         if (dashZoneHit)
-            player.RegisterDashCandidate(segEnd);
+            Player.RegisterDashCandidate(segEnd);
 
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
 
         if (hit.collider != null)
         {
             Vector2 hitPos = originPos + dir * hit.distance;
-            player.Hit(attackDamage, hitPos);
+            Player.Hit(attackDamage, hitPos);
 
             attackResolved = true;
             attackPhase = 2;
             attackPhaseTimer = attackRecover;
             StartAttackCooldown();
-            player.ClearParryCandidate(this);
+            Player.ClearParryCandidate(this);
         }
     }
 
@@ -362,78 +338,59 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
     private void MoveTowardsPlayer(float speed)
     {
         Vector2 a = transform.position;
-        Vector2 b = player.transform.position;
+        Vector2 b = Player.transform.position;
 
         float dx = b.x - a.x;
         float dirSign = 0f;
         if (dx > 0f) dirSign = 1f;
         else if (dx < 0f) dirSign = -1f;
 
-        Vector2 v = rb.linearVelocity;
+        Vector2 v = Body.linearVelocity;
         v.x = dirSign * speed;
-        rb.linearVelocity = new Vector2(v.x, rb.linearVelocity.y);
+        Body.linearVelocity = new Vector2(v.x, Body.linearVelocity.y);
     }
 
     private void MoveAwayFromPlayer(float speed)
     {
         Vector2 a = transform.position;
-        Vector2 b = player.transform.position;
+        Vector2 b = Player.transform.position;
 
         float dx = b.x - a.x;
         float dirSign = 0f;
         if (dx > 0f) dirSign = 1f;
         else if (dx < 0f) dirSign = -1f;
 
-        Vector2 v = rb.linearVelocity;
+        Vector2 v = Body.linearVelocity;
         v.x = -dirSign * speed;
-        rb.linearVelocity = new Vector2(v.x, rb.linearVelocity.y);
+        Body.linearVelocity = new Vector2(v.x, Body.linearVelocity.y);
     }
 
     private void StopHorizontal()
     {
-        Vector2 v = rb.linearVelocity;
+        Vector2 v = Body.linearVelocity;
         v.x = 0f;
-        rb.linearVelocity = new Vector2(v.x, rb.linearVelocity.y);
-    }
-
-    private void FacePlayer()
-    {
-        float dx = player.transform.position.x - transform.position.x;
-        if (dx > 0f) facingDirection = 1;
-        else if (dx < 0f) facingDirection = -1;
-
-        transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
-    }
-
-    private void PlayAnimation(string clipName)
-    {
-        if (animator != null && !string.IsNullOrEmpty(clipName)) animator.Play(clipName);
-    }
-
-    private bool CheckRange(Collider2D col, Vector3 pos)
-    {
-        return col.OverlapPoint(pos);
+        Body.linearVelocity = new Vector2(v.x, Body.linearVelocity.y);
     }
 
     private bool InWalkRange()
     {
-        return CheckRange(walkRange, player.transform.position);
+        return walkRange.OverlapPoint(Player.transform.position);
     }
 
     private bool InBackOffRange()
     {
-        return CheckRange(backOffRange, player.transform.position);
+        return backOffRange.OverlapPoint(Player.transform.position);
     }
 
     private bool IsPlayerInSwingCone()
     {
         Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
-        Vector2 toPlayer = (Vector2)player.transform.position - originPos;
+        Vector2 toPlayer = (Vector2)Player.transform.position - originPos;
 
         float dist = toPlayer.magnitude;
         if (dist > swingLength) return false;
 
-        Vector2 forward = Vector2.right * facingDirection;
+        Vector2 forward = Vector2.right * FacingDirection;
         float ang = Vector2.SignedAngle(forward, toPlayer);
 
         float minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
@@ -446,7 +403,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
 
     private Vector2 DirFromAngle(float angleDeg)
     {
-        Vector2 forward = Vector2.right * facingDirection;
+        Vector2 forward = Vector2.right * FacingDirection;
         Quaternion rot = Quaternion.AngleAxis(angleDeg, Vector3.forward);
         Vector2 dir = rot * forward;
         return dir.normalized;
@@ -461,7 +418,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
             attackResolved = true;
             attackPhase = 2;
             attackPhaseTimer = attackRecover;
-            player.ClearParryCandidate(this);
+            Player.ClearParryCandidate(this);
         }
     }
 
@@ -473,7 +430,7 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
             attackPhase = 2;
             attackPhaseTimer = attackRecover;
             StartAttackCooldown();
-            player.ClearParryCandidate(this);
+            Player.ClearParryCandidate(this);
         }
     }
 
@@ -481,37 +438,6 @@ public sealed class SlasherEnemy : MonoBehaviour, IParryReactive
     {
         EnterState(SlasherState.Death);
         attackResolved = true;
-        player.ClearParryCandidate(this);
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (attackOrigin == null) return;
-
-        Vector3 originPos = attackOrigin.position;
-
-        Gizmos.color = Color.red;
-
-        int steps = 16;
-        float minA = swingStartAngleDeg;
-        float maxA = swingEndAngleDeg;
-
-        Vector3 prevPoint = originPos;
-        bool prevSet = false;
-
-        for (int i = 0; i <= steps; i++)
-        {
-            float t = (steps == 0) ? 0f : (float)i / steps;
-            float a = Mathf.Lerp(minA, maxA, t);
-            Vector2 dir = DirFromAngle(a);
-            Vector3 point = originPos + (Vector3)(dir * swingLength);
-
-            if (prevSet) Gizmos.DrawLine(prevPoint, point);
-
-            prevPoint = point;
-            prevSet = true;
-
-            if (i == 0 || i == steps) Gizmos.DrawLine(originPos, point);
-        }
+        Player.ClearParryCandidate(this);
     }
 }

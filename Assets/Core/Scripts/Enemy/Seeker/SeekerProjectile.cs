@@ -58,7 +58,7 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
 
         Vector2 pos = transform.position;
 
-        if (homing)
+        if (homing && target != null)
         {
             Vector2 tgt = target.position;
             Vector2 to = tgt - pos;
@@ -137,8 +137,6 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
     {
         if (consumed) return;
         consumed = true;
-        if (this == null) return;
-        if (gameObject == null) return;
         Destroy(gameObject);
     }
 
