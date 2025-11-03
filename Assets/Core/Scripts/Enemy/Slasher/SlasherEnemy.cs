@@ -31,8 +31,8 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     [Header("Attack Geometry")]
     [SerializeField] private Transform attackOrigin;
-    [SerializeField] private float swingStartAngleDeg = -60f;
-    [SerializeField] private float swingEndAngleDeg = 30f;
+    [SerializeField] private float swingStartAngleDeg = 75f;
+    [SerializeField] private float swingEndAngleDeg = -30f;
     [SerializeField] private float swingLength = 2f;
     [SerializeField] private LayerMask playerHitMask;
 
@@ -42,6 +42,10 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     [Header("Attack Damage")]
     [SerializeField] private int attackDamage = 10;
+
+    [Header("Debug")]
+    [SerializeField] private LineRenderer swingLine;
+    [SerializeField] private float swingLineWidth = 0.05f;
 
     private SlasherState currentState;
     private float stateTimer;
@@ -69,6 +73,11 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         attackPhaseTimer = 0f;
         attackResolved = false;
         Anim.Play(AnimChase);
+
+        swingLine.useWorldSpace = true;
+        swingLine.positionCount = 0;
+        swingLine.startWidth = swingLineWidth;
+        swingLine.endWidth = swingLineWidth;
     }
 
     protected override void OnUpdate()
@@ -148,6 +157,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         if (attackPhase == 0)
         {
+            ClearSwingLine();
             RegisterDashAssistRay();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f)
@@ -169,12 +179,14 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
                 attackPhaseTimer = attackRecoverRuntime;
                 StartAttackCooldown();
                 Player.ClearParryCandidate(this);
+                ClearSwingLine();
             }
             return;
         }
 
         if (attackPhase == 2)
         {
+            ClearSwingLine();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f) ChooseMovementState();
         }
@@ -239,16 +251,19 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             attackPhase = 0;
             attackPhaseTimer = attackWindupRuntime;
             attackResolved = false;
+            ClearSwingLine();
         }
         else if (currentState == SlasherState.Hit)
         {
             Anim.Play(AnimHit);
             stateTimer = GetAnimLength(AnimHit);
+            ClearSwingLine();
         }
         else if (currentState == SlasherState.Death)
         {
             Anim.Play(AnimDeath);
             stateTimer = GetAnimLength(AnimDeath);
+            ClearSwingLine();
         }
     }
 
@@ -313,6 +328,12 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             Player.RegisterDashCandidate(segEnd);
 
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
+
+        if (hit.collider != null)
+            UpdateSwingLine(originPos, dir, hit.distance);
+        else
+            UpdateSwingLine(originPos, dir, swingLength);
+
         if (hit.collider != null)
         {
             Vector2 hitPos = originPos + dir * hit.distance;
@@ -320,6 +341,8 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             attackResolved = true;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
+
+            ClearSwingLine();
         }
     }
 
@@ -427,6 +450,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             attackPhase = 2;
             attackPhaseTimer = attackRecoverRuntime;
             Player.ClearParryCandidate(this);
+            ClearSwingLine();
         }
     }
 
@@ -437,6 +461,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             attackResolved = true;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
+            ClearSwingLine();
         }
     }
 
@@ -445,5 +470,53 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         EnterState(SlasherState.Death);
         attackResolved = true;
         Player.ClearParryCandidate(this);
+        ClearSwingLine();
     }
+
+    //
+    private void OnDrawGizmosSelected()
+    {
+        Vector3 originPos = attackOrigin != null ? attackOrigin.position : transform.position;
+
+        float minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
+        float maxAng = Mathf.Max(swingStartAngleDeg, swingEndAngleDeg);
+        int steps = 24;
+
+        float facing = Application.isPlaying ? FacingDirection : (transform.lossyScale.x >= 0f ? 1f : -1f);
+        Vector2 forward = Vector2.right * facing;
+
+        Gizmos.color = Color.red;
+
+        float step = (maxAng - minAng) / steps;
+        Vector3 prev = originPos + (Vector3)((Quaternion.AngleAxis(minAng, Vector3.forward) * (Vector3)forward).normalized * swingLength);
+
+        for (int i = 1; i <= steps; i++)
+        {
+            float a = minAng + step * i;
+            Vector3 curr = originPos + (Vector3)((Quaternion.AngleAxis(a, Vector3.forward) * (Vector3)forward).normalized * swingLength);
+            Gizmos.DrawLine(prev, curr);
+            prev = curr;
+        }
+
+        Vector3 minDir = (Quaternion.AngleAxis(minAng, Vector3.forward) * (Vector3)forward).normalized * swingLength;
+        Vector3 maxDir = (Quaternion.AngleAxis(maxAng, Vector3.forward) * (Vector3)forward).normalized * swingLength;
+
+        Gizmos.DrawLine(originPos, originPos + minDir);
+        Gizmos.DrawLine(originPos, originPos + maxDir);
+    }
+
+    private void UpdateSwingLine(Vector2 origin, Vector2 dir, float length)
+    {
+        if (swingLine == null) return;
+        swingLine.positionCount = 2;
+        swingLine.SetPosition(0, origin);
+        swingLine.SetPosition(1, origin + dir.normalized * length);
+    }
+
+    private void ClearSwingLine()
+    {
+        if (swingLine == null) return;
+        swingLine.positionCount = 0;
+    }
+    //
 }
