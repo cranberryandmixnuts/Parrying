@@ -28,9 +28,9 @@ public sealed class ParryState : PlayerState
         player.EnterParryWindow();
 
         if (player.isGround)
-            player.Animator.Play("Ground Normal Parry");
+            player.Anim.Play("Ground Normal Parry");
         else
-            player.Animator.Play("Air Normal Parry");
+            player.Anim.Play("Air Normal Parry");
     }
 
     public override void Update()

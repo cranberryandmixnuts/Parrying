@@ -5,12 +5,11 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
-[RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour, IDamageable
 {
     public static PlayerController Instance { get; private set; }
-    public Animator Animator { get; private set; }
+    public Animator Anim { get; private set; }
 
     public enum PlayerEffectState
     {
@@ -83,7 +82,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float HitStunDuration => settings.hitStunDuration;
     public float KnockbackForce => settings.knockbackForce;
     public float KnockbackDuration => settings.knockbackDuration;
-
     public float PostDashCarryWindow => settings.postDashCarryWindow;
 
     [Header("Detect")]
@@ -94,7 +92,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCol;
-    private SpriteRenderer spriteRenderer;
 
     [HideInInspector] public List<ParryCandidate> parryCandidates = new();
     [HideInInspector] public List<DashCandidate> dashCandidates = new();
@@ -144,8 +141,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         rb = GetComponent<Rigidbody2D>();
         boxCol = GetComponent<BoxCollider2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        Animator = GetComponent<Animator>();
+        Anim = GetComponent<Animator>();
 
         if (Instance != null && Instance != this)
         {
@@ -537,6 +533,5 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public Rigidbody2D Rigidbody => rb;
     public BoxCollider2D BoxCollider => boxCol;
-    public SpriteRenderer SpriteRenderer => spriteRenderer;
     public PlayerEffectState CurrentEffectState { get; private set; }
 }

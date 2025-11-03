@@ -19,7 +19,7 @@ public sealed class CounterParryState : PlayerState
         player.EnterCounterParry();
         player.counterParryFirstResolved = false;
         player.SetInvincible(false);
-        if (player.isGround) player.Animator.Play("Ground Counter Parry"); else player.Animator.Play("Air Counter Parry");
+        if (player.isGround) player.Anim.Play("Ground Counter Parry"); else player.Anim.Play("Air Counter Parry");
         timer = player.PowerParryDuration;
     }
 

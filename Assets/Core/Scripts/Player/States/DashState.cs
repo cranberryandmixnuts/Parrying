@@ -20,9 +20,9 @@ public sealed class DashState : PlayerState
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
 
         if (player.isGround)
-            player.Animator.Play("Ground Dash");
+            player.Anim.Play("Ground Dash");
         else
-            player.Animator.Play("Air Dash");
+            player.Anim.Play("Air Dash");
 
         if (!player.isGround) player.canAirDash = false;
 

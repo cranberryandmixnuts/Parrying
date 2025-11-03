@@ -16,7 +16,7 @@ public sealed class HitState : PlayerState
         player.Rigidbody.linearVelocity = Vector2.zero;
         Vector2 dir = player.lastHitKnockDir.sqrMagnitude > 0f ? player.lastHitKnockDir : Vector2.up;
         player.Rigidbody.AddForce(dir.normalized * player.KnockbackForce, ForceMode2D.Impulse);
-        player.Animator.Play("Hit");
+        player.Anim.Play("Hit");
         player.SetEffectState(PlayerController.PlayerEffectState.Hit);
     }
 

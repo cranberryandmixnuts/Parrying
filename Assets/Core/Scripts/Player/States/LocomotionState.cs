@@ -105,7 +105,7 @@ public sealed class LocomotionState : PlayerState
             player.jumpBufferTimer = 0f;
             player.isJumping = true;
             player.jumpTimeCounter = 0f;
-            player.Animator.Play("Jump");
+            player.Anim.Play("Jump");
             startedJump = true;
         }
 
@@ -119,14 +119,14 @@ public sealed class LocomotionState : PlayerState
             if (player.isGround)
             {
                 if (Mathf.Abs(player.CurrentVelocity.x) > 0.01f || Mathf.Abs(player.MoveInput) > 0.01f)
-                    player.Animator.Play("Run");
+                    player.Anim.Play("Run");
                 else
-                    player.Animator.Play("Idle");
+                    player.Anim.Play("Idle");
             }
             else
             {
                 if (player.Rigidbody.linearVelocity.y < 0f)
-                    player.Animator.Play("Fall");
+                    player.Anim.Play("Fall");
             }
         }
     }

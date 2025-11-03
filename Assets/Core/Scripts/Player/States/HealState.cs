@@ -23,7 +23,7 @@ public sealed class HealState : PlayerState
         player.Rigidbody.linearVelocity = Vector2.zero;
 
         player.EnterHeal();
-        player.Animator.Play("Enter_Heal");
+        player.Anim.Play("Enter_Heal");
         phase = HealPhase.Enter;
         allowLoop = true;
         healTickTimer = 0f;
@@ -36,7 +36,7 @@ public sealed class HealState : PlayerState
             if (!player.HealHeld)
                 allowLoop = false;
 
-            AnimatorStateInfo s = player.Animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo s = player.Anim.GetCurrentAnimatorStateInfo(0);
             bool doneEnter = !s.IsName("Enter_Heal") || s.normalizedTime >= 0.99f;
 
             if (doneEnter)
@@ -50,12 +50,12 @@ public sealed class HealState : PlayerState
 
                 if (canLoop)
                 {
-                    player.Animator.Play("Healing");
+                    player.Anim.Play("Healing");
                     phase = HealPhase.Loop;
                 }
                 else
                 {
-                    player.Animator.Play("Exit_Heal");
+                    player.Anim.Play("Exit_Heal");
                     phase = HealPhase.Exit;
                 }
             }
@@ -70,7 +70,7 @@ public sealed class HealState : PlayerState
 
             if (!canStay)
             {
-                player.Animator.Play("Exit_Heal");
+                player.Anim.Play("Exit_Heal");
                 phase = HealPhase.Exit;
             }
             else
@@ -84,7 +84,7 @@ public sealed class HealState : PlayerState
                     bool ok = player.TryConsumeEnergy(player.HealEnergyPerTick);
                     if (!ok)
                     {
-                        player.Animator.Play("Exit_Heal");
+                        player.Anim.Play("Exit_Heal");
                         phase = HealPhase.Exit;
                         break;
                     }
@@ -93,7 +93,7 @@ public sealed class HealState : PlayerState
 
                     if (player.Health >= player.MaxHealth)
                     {
-                        player.Animator.Play("Exit_Heal");
+                        player.Anim.Play("Exit_Heal");
                         phase = HealPhase.Exit;
                         break;
                     }
@@ -102,7 +102,7 @@ public sealed class HealState : PlayerState
         }
         else if (phase == HealPhase.Exit)
         {
-            AnimatorStateInfo s2 = player.Animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo s2 = player.Anim.GetCurrentAnimatorStateInfo(0);
             bool doneExit = !s2.IsName("Exit_Heal") || s2.normalizedTime >= 0.99f;
             if (doneExit)
             {
