@@ -23,8 +23,8 @@ public sealed class ParryState : PlayerState
 
         timer = player.ParryWindow;
         player.NotifyParryWindowBegin(timer);
+        player.Vitals.SetInvincibleTimer(timer);
         player.parryHadSuccessThisWindow = false;
-        player.SetInvincible(false);
         player.EnterParryWindow();
 
         if (player.isGround)
@@ -55,18 +55,16 @@ public sealed class ParryState : PlayerState
                     if (frac <= 0.5f)
                     {
                         GameEffects.Instance.DoPerfectParryImpact();
-                        player.GainEnergy(player.PerfectParryEnergyGain);
+                        player.Vitals.GainEnergy(player.PerfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
-                        player.SetInvincible(true);
                         c.attacker.OnPerfectParry(c.hitPoint);
                     }
                     else
                     {
                         int chip = c.ImperfectParryDamage > 0 ? Mathf.CeilToInt(c.ImperfectParryDamage) : 0;
-                        if (chip > 0) player.ApplyChipDamageNoHit(chip);
-                        player.GainEnergy(player.ImperfectParryEnergyGain);
+                        if (chip > 0) player.Vitals.ApplyDamage(chip, true);
+                        player.Vitals.GainEnergy(player.ImperfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
-                        player.SetInvincible(true);
                         c.attacker.OnImperfectParry(c.hitPoint);
                     }
 
@@ -87,6 +85,5 @@ public sealed class ParryState : PlayerState
     {
         player.NotifyParryWindowEnd();
         player.ExitParryWindow();
-        player.SetInvincible(false);
     }
 }

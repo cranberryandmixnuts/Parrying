@@ -18,9 +18,9 @@ public sealed class CounterParryState : PlayerState
         player.currentSpeedAbs = 0f;
         player.EnterCounterParry();
         player.counterParryFirstResolved = false;
-        player.SetInvincible(false);
         if (player.isGround) player.Anim.Play("Ground Counter Parry"); else player.Anim.Play("Air Counter Parry");
         timer = player.PowerParryDuration;
+        player.Vitals.SetInvincibleTimer(timer);
     }
 
     public override void Update()
@@ -40,7 +40,6 @@ public sealed class CounterParryState : PlayerState
                 else
                 {
                     player.counterParryFirstResolved = true;
-                    player.SetInvincible(true);
                     c.attacker.OnCounterParry(c.hitPoint);
                     GameEffects.Instance.DoCounterParryImpact();
 
@@ -66,6 +65,5 @@ public sealed class CounterParryState : PlayerState
         player.SetEffectState(PlayerController.PlayerEffectState.None);
         if (player.counterParryFirstResolved) player.AddParryGrace(0.3f);
         player.ExitCounterParry();
-        player.SetInvincible(false);
     }
 }

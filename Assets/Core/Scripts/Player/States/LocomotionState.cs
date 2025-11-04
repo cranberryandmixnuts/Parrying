@@ -25,7 +25,7 @@ public sealed class LocomotionState : PlayerState
 
             if (!prepLocked && !player.inPowerParryPrep && player.parryHoldTimer >= player.PowerParryHoldTime)
             {
-                if (player.TryConsumeEnergy(player.PowerParryPrepEnterCost))
+                if (player.Vitals.TryConsumeEnergy(player.PowerParryPrepEnterCost))
                 {
                     player.inPowerParryPrep = true;
                     player.powerParryPrepTickTimer = 0f;
@@ -50,7 +50,7 @@ public sealed class LocomotionState : PlayerState
                         int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.PowerParryPrepTick);
                         player.powerParryPrepTickTimer -= ticks * player.PowerParryPrepTick;
                         int cost = ticks * player.PowerParryPrepCost;
-                        if (!player.TryConsumeEnergy(cost))
+                        if (!player.Vitals.TryConsumeEnergy(cost))
                         {
                             player.inPowerParryPrep = false;
                             player.powerParryPrepLocked = true;
@@ -88,8 +88,8 @@ public sealed class LocomotionState : PlayerState
         bool canStartHeal =
             player.HealHeld &&
             player.isGround &&
-            player.Health < player.MaxHealth &&
-            player.Energy >= player.HealEnergyPerTick &&
+            player.Vitals.Health < player.Vitals.MaxHealth &&
+            player.Vitals.Energy >= player.HealEnergyPerTick &&
             player.CanStartHeal();
 
         if (canStartHeal)

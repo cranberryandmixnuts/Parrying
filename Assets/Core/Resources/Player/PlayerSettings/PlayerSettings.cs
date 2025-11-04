@@ -6,8 +6,6 @@ public sealed class PlayerSettings : ScriptableObject
     [Header("Stats")]
     public int maxHealth = 1000;
     public int maxEnergy = 500;
-    public int startHealth = 1000;
-    public int startEnergy = 500;
 
     [Header("Movement")]
     public float moveSpeed = 10f;
@@ -28,7 +26,6 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Parry")]
     public float parryWindow = 0.2f;
-    public float parryHitstop = 0.15f;
     public int perfectParryEnergyGain = 100;
     public int imperfectParryEnergyGain = 50;
 
@@ -48,6 +45,7 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Hit")]
     public float hitStunDuration = 0.25f;
+    public float hitInvincibleTime = 1f;
     public float knockbackDuration = 0.1f;
     public float knockbackForce = 10f;
 

@@ -11,7 +11,7 @@ public sealed class HitState : PlayerState
     public override void Enter()
     {
         timer = player.HitStunDuration;
-        player.SetInvincible(true);
+        player.Vitals.SetInvincibleTimer(player.HitInvincibleTime);
         player.currentSpeedAbs = 0f;
         player.Rigidbody.linearVelocity = Vector2.zero;
         Vector2 dir = player.lastHitKnockDir.sqrMagnitude > 0f ? player.lastHitKnockDir : Vector2.up;
@@ -25,8 +25,7 @@ public sealed class HitState : PlayerState
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
-            player.SetInvincible(false);
-            if (player.Health <= 0)
+            if (player.Vitals.Health <= 0)
                 stateMachine.ChangeState(new DeathState(player, stateMachine));
             else
                 stateMachine.ChangeState(new LocomotionState(player, stateMachine));

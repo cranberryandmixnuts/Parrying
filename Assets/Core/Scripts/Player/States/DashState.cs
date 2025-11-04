@@ -5,6 +5,7 @@ public sealed class DashState : PlayerState
     private float cachedGravity;
     private float dashMoveSpeed;
     private bool extremeDashSuccess;
+    private float timer;
 
     public override PlayerStateType StateType => PlayerStateType.Dash;
 
@@ -14,7 +15,7 @@ public sealed class DashState : PlayerState
     {
         player.CancelJump(true);
         player.lastDashTime = Time.time;
-        player.dashTimer = player.DashDuration;
+        timer = player.DashDuration;
         cachedGravity = player.Rigidbody.gravityScale;
         player.Rigidbody.gravityScale = 0f;
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
@@ -26,7 +27,7 @@ public sealed class DashState : PlayerState
 
         if (!player.isGround) player.canAirDash = false;
 
-        player.SetInvincible(true);
+        player.Vitals.SetInvincibleTimer(timer);
 
         int f = Time.frameCount;
         int detected = 0;
@@ -48,7 +49,7 @@ public sealed class DashState : PlayerState
             if (detected >= 2) gain += 30;
             if (detected >= 3) gain += 10;
 
-            player.GainEnergy(gain);
+            player.Vitals.GainEnergy(gain);
             dashMoveSpeed = player.DashSpeed * 1.1f;
             GameEffects.Instance.DoExtremeDashImpact();
         }
@@ -61,8 +62,8 @@ public sealed class DashState : PlayerState
 
     public override void Update()
     {
-        player.dashTimer -= Time.deltaTime;
-        if (player.dashTimer <= 0f)
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
         {
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
         }
@@ -76,7 +77,6 @@ public sealed class DashState : PlayerState
     public override void Exit()
     {
         player.Rigidbody.gravityScale = cachedGravity;
-        player.SetInvincible(false);
         player.SetEffectState(PlayerController.PlayerEffectState.None);
         player.postDashCarryDir = player.facingDirection;
         player.postDashCarryTimer = player.PostDashCarryWindow;

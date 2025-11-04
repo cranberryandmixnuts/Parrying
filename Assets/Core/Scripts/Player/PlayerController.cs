@@ -43,11 +43,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
 
-    public int MaxHealth => settings.maxHealth;
-    public int MaxEnergy => settings.maxEnergy;
-    public int Health { get; private set; }
-    public int Energy { get; private set; }
-
     public float MoveSpeed => settings.moveSpeed;
     public Vector2 CurrentVelocity => rb.linearVelocity;
 
@@ -59,7 +54,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     public int DashExtremeGain => settings.dashExtremeGain;
 
     public float ParryWindow => settings.parryWindow;
-    public float ParryHitstop => settings.parryHitstop;
     public int PerfectParryEnergyGain => settings.perfectParryEnergyGain;
     public int ImperfectParryEnergyGain => settings.imperfectParryEnergyGain;
 
@@ -80,6 +74,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private BoxCollider2D groundCheckBox;
 
     public float HitStunDuration => settings.hitStunDuration;
+    public float HitInvincibleTime => settings.hitInvincibleTime;
     public float KnockbackForce => settings.knockbackForce;
     public float KnockbackDuration => settings.knockbackDuration;
     public float PostDashCarryWindow => settings.postDashCarryWindow;
@@ -105,7 +100,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     [HideInInspector] public float coyoteTimer;
     [HideInInspector] public bool canAirDash = true;
     [HideInInspector] public float lastDashTime = -999f;
-    [HideInInspector] public float dashTimer;
 
     [HideInInspector] public float currentSpeedAbs;
     [HideInInspector] public int lastMoveSign;
@@ -131,11 +125,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     [HideInInspector] public Vector2 lastHitKnockDir;
 
     private PlayerStateMachine stateMachine;
-    private bool isInvincible = false;
     private bool isKnockback = false;
     private float knockbackTimer = 0f;
 
     private bool healLocked = false;
+
+    [HideInInspector] public PlayerVitals Vitals;
 
     private void Awake()
     {
@@ -149,9 +144,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
         Instance = this;
-
-        Health = Mathf.Clamp(settings.startHealth, 0, settings.maxHealth);
-        Energy = Mathf.Clamp(settings.startEnergy, 0, settings.maxEnergy);
     }
 
     private void Start()
@@ -159,6 +151,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         stateMachine = new PlayerStateMachine();
         stateMachine.Initialize(new LocomotionState(this, stateMachine));
         SetEffectState(PlayerEffectState.None);
+        Vitals = PlayerVitals.Instance;
     }
 
     private void Update()
@@ -312,23 +305,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (cutVelocity) StopRising();
     }
 
-    public void Heal(int amount)
-    {
-        Health = Mathf.Clamp(Health + amount, 0, settings.maxHealth);
-    }
-
-    public bool TryConsumeEnergy(int amount)
-    {
-        if (Energy < amount) return false;
-        Energy = Mathf.Clamp(Energy - amount, 0, settings.maxEnergy);
-        return true;
-    }
-
-    public void GainEnergy(int amount)
-    {
-        Energy = Mathf.Clamp(Energy + amount, 0, settings.maxEnergy);
-    }
-
     public void EnterParryWindow()
     {
         SetEffectState(PlayerEffectState.Parry);
@@ -447,11 +423,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         stateMachine.ChangeState(new DeathState(this, stateMachine));
     }
 
-    public void SetInvincible(bool v)
-    {
-        isInvincible = v;
-    }
-
     public void ConsumeParryPressed()
     {
         ParryPressed = false;
@@ -494,39 +465,21 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (duration > 0f) parryGraceEndTime = Mathf.Max(parryGraceEndTime, Time.time + duration);
     }
 
-    public void ApplyChipDamageNoHit(int amount)
+    public void Hit(int damage, Vector2 attackPos)
     {
-        Health = Mathf.Clamp(Health - amount, 0, settings.maxHealth);
-        if (Health <= 0) stateMachine.ChangeState(new DeathState(this, stateMachine));
-    }
+        if (IsParryGraceActive) return;
 
-    private void ForceBreakPowerParryPrep()
-    {
         if (inPowerParryPrep) inPowerParryPrep = false;
         powerParryPrepLocked = true;
         parryHoldTimer = 0f;
         powerParryPrepTickTimer = 0f;
         powerParryPrepElapsed = 0f;
-    }
 
-    public void Hit(int damage, Vector2 attackPos)
-    {
-        if (isInvincible) return;
-        if (IsParryGraceActive) return;
-
-        ForceBreakPowerParryPrep();
-
-        Health = Mathf.Clamp(Health - damage, 0, settings.maxHealth);
+        if(!Vitals.ApplyDamage(damage, false)) return;
 
         Vector2 dir = ((Vector2)transform.position - attackPos).normalized;
         if (dir == Vector2.zero) dir = Vector2.up;
         lastHitKnockDir = dir;
-
-        if (Health <= 0)
-        {
-            stateMachine.ChangeState(new DeathState(this, stateMachine));
-            return;
-        }
 
         stateMachine.ChangeState(new HitState(this, stateMachine));
     }

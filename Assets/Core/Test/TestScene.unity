@@ -1487,6 +1487,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3347595226018224800}
   - component: {fileID: 6384776150218970448}
+  - component: {fileID: 8455161177830103595}
   - component: {fileID: 8455161177830103594}
   - component: {fileID: 6522723919292424473}
   - component: {fileID: 4361631999354907746}
@@ -2023,7 +2024,6 @@ MonoBehaviour:
   coyoteTimer: 0
   canAirDash: 1
   lastDashTime: -999
-  dashTimer: 0
   currentSpeedAbs: 0
   lastMoveSign: 0
   postDashCarryTimer: 0
@@ -2040,6 +2040,20 @@ MonoBehaviour:
   parryHadSuccessThisWindow: 0
   counterParryFirstResolved: 0
   lastHitKnockDir: {x: 0, y: 0}
+  Vitals: {fileID: 0}
+--- !u!114 &8455161177830103595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1564451344360679241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f586b224db60df74386ce170200d9f33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVitals
+  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
 --- !u!4 &9149939901752482325
 Transform:
   m_ObjectHideFlags: 0

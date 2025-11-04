@@ -45,8 +45,8 @@ public sealed class HealState : PlayerState
                     allowLoop &&
                     player.HealHeld &&
                     player.isGround &&
-                    player.Energy >= player.HealEnergyPerTick &&
-                    player.Health < player.MaxHealth;
+                    player.Vitals.Energy >= player.HealEnergyPerTick &&
+                    player.Vitals.Health < player.Vitals.MaxHealth;
 
                 if (canLoop)
                 {
@@ -65,8 +65,8 @@ public sealed class HealState : PlayerState
             bool canStay =
                 player.HealHeld &&
                 player.isGround &&
-                player.Energy >= player.HealEnergyPerTick &&
-                player.Health < player.MaxHealth;
+                player.Vitals.Energy >= player.HealEnergyPerTick &&
+                player.Vitals.Health < player.Vitals.MaxHealth;
 
             if (!canStay)
             {
@@ -81,7 +81,7 @@ public sealed class HealState : PlayerState
                 {
                     healTickTimer -= player.HealTickInterval;
 
-                    bool ok = player.TryConsumeEnergy(player.HealEnergyPerTick);
+                    bool ok = player.Vitals.TryConsumeEnergy(player.HealEnergyPerTick);
                     if (!ok)
                     {
                         player.Anim.Play("Exit_Heal");
@@ -89,9 +89,9 @@ public sealed class HealState : PlayerState
                         break;
                     }
 
-                    player.Heal(player.HealHealthPerTick);
+                    player.Vitals.ApplyHeal(player.HealHealthPerTick);
 
-                    if (player.Health >= player.MaxHealth)
+                    if (player.Vitals.Health >= player.Vitals.MaxHealth)
                     {
                         player.Anim.Play("Exit_Heal");
                         phase = HealPhase.Exit;
