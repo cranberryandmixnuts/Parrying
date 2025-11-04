@@ -196,13 +196,13 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
         float angleDeg = swingStartAngleDeg;
+        if (FacingDirection < 0f) angleDeg = -angleDeg;
+
         Vector2 dir = DirFromAngle(angleDeg);
         Vector2 segEnd = originPos + dir * swingLength;
 
         Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
-
-        if (SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius))
-            Player.RegisterDashCandidate(segEnd);
+        if (SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius)) Player.RegisterDashCandidate(segEnd);
     }
 
     private void UpdateHit()
@@ -313,36 +313,43 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         if (norm > 1f) norm = 1f;
 
         float angleDeg = Mathf.Lerp(swingStartAngleDeg, swingEndAngleDeg, norm);
-        Vector2 dir = DirFromAngle(angleDeg);
+        if (FacingDirection < 0f) angleDeg = -angleDeg;
 
+        Vector2 dir = DirFromAngle(angleDeg);
         Vector2 segEnd = originPos + dir * swingLength;
 
         Player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
         bool parryZoneHit = SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius);
-        if (parryZoneHit)
-            Player.RegisterParryCandidate(this, segEnd, attackDamage);
+        if (parryZoneHit) Player.RegisterParryCandidate(this, segEnd, attackDamage);
 
         Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
         bool dashZoneHit = SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius);
-        if (dashZoneHit)
-            Player.RegisterDashCandidate(segEnd);
+        if (dashZoneHit) Player.RegisterDashCandidate(segEnd);
 
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
-
-        if (hit.collider != null)
-            UpdateSwingLine(originPos, dir, hit.distance);
-        else
-            UpdateSwingLine(originPos, dir, swingLength);
-
         if (hit.collider != null)
         {
-            Vector2 hitPos = originPos + dir * hit.distance;
-            Player.Hit(attackDamage, hitPos);
-            attackResolved = true;
-            StartAttackCooldown();
-            Player.ClearParryCandidate(this);
+            bool invincible = Player != null && Player.Vitals != null && Player.Vitals.IsInvincible;
 
-            ClearSwingLine();
+            if (invincible)
+            {
+                UpdateSwingLine(originPos, dir, swingLength);
+            }
+            else
+            {
+                UpdateSwingLine(originPos, dir, hit.distance);
+
+                Vector2 hitPos = originPos + dir * hit.distance;
+                Player.Hit(attackDamage, hitPos);
+                attackResolved = true;
+                StartAttackCooldown();
+                Player.ClearParryCandidate(this);
+                ClearSwingLine();
+            }
+        }
+        else
+        {
+            UpdateSwingLine(originPos, dir, swingLength);
         }
     }
 
@@ -424,11 +431,23 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Vector2 forward = Vector2.right * FacingDirection;
         float ang = Vector2.SignedAngle(forward, toPlayer);
 
-        float minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
-        float maxAng = Mathf.Max(swingStartAngleDeg, swingEndAngleDeg);
+        float minAng;
+        float maxAng;
+
+        if (FacingDirection >= 0f)
+        {
+            minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
+            maxAng = Mathf.Max(swingStartAngleDeg, swingEndAngleDeg);
+        }
+        else
+        {
+            float a = -swingStartAngleDeg;
+            float b = -swingEndAngleDeg;
+            minAng = Mathf.Min(a, b);
+            maxAng = Mathf.Max(a, b);
+        }
 
         if (ang < minAng || ang > maxAng) return false;
-
         return true;
     }
 
@@ -478,28 +497,33 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         Vector3 originPos = attackOrigin != null ? attackOrigin.position : transform.position;
 
-        float minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
-        float maxAng = Mathf.Max(swingStartAngleDeg, swingEndAngleDeg);
         int steps = 24;
-
         float facing = Application.isPlaying ? FacingDirection : (transform.lossyScale.x >= 0f ? 1f : -1f);
         Vector2 forward = Vector2.right * facing;
 
+        float minLocal = facing >= 0f
+            ? Mathf.Min(swingStartAngleDeg, swingEndAngleDeg)
+            : Mathf.Min(-swingStartAngleDeg, -swingEndAngleDeg);
+
+        float maxLocal = facing >= 0f
+            ? Mathf.Max(swingStartAngleDeg, swingEndAngleDeg)
+            : Mathf.Max(-swingStartAngleDeg, -swingEndAngleDeg);
+
         Gizmos.color = Color.red;
 
-        float step = (maxAng - minAng) / steps;
-        Vector3 prev = originPos + (Vector3)((Quaternion.AngleAxis(minAng, Vector3.forward) * (Vector3)forward).normalized * swingLength);
+        float step = (maxLocal - minLocal) / steps;
+        Vector3 prev = originPos + (Vector3)((Quaternion.AngleAxis(minLocal, Vector3.forward) * (Vector3)forward).normalized * swingLength);
 
         for (int i = 1; i <= steps; i++)
         {
-            float a = minAng + step * i;
+            float a = minLocal + step * i;
             Vector3 curr = originPos + (Vector3)((Quaternion.AngleAxis(a, Vector3.forward) * (Vector3)forward).normalized * swingLength);
             Gizmos.DrawLine(prev, curr);
             prev = curr;
         }
 
-        Vector3 minDir = (Quaternion.AngleAxis(minAng, Vector3.forward) * (Vector3)forward).normalized * swingLength;
-        Vector3 maxDir = (Quaternion.AngleAxis(maxAng, Vector3.forward) * (Vector3)forward).normalized * swingLength;
+        Vector3 minDir = (Quaternion.AngleAxis(minLocal, Vector3.forward) * (Vector3)forward).normalized * swingLength;
+        Vector3 maxDir = (Quaternion.AngleAxis(maxLocal, Vector3.forward) * (Vector3)forward).normalized * swingLength;
 
         Gizmos.DrawLine(originPos, originPos + minDir);
         Gizmos.DrawLine(originPos, originPos + maxDir);

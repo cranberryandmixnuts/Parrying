@@ -15,6 +15,8 @@ public sealed class SeekerEnemy : EnemyBase
 
     [SerializeField] private SeekerProjectile projectilePrefab;
     [SerializeField] private Transform firePoint;
+    [SerializeField] private BoxCollider2D hitbox;
+    public BoxCollider2D Hitbox => hitbox;
 
     [Header("Drift")]
     [SerializeField] private float desiredHeight = 4.5f;
@@ -35,7 +37,6 @@ public sealed class SeekerEnemy : EnemyBase
     private readonly float fireStateLength;
     private bool fired;
     private float deathTimer;
-    private int facingDirection = 1;
     private int keepSide = 1;
 
     protected override string DeathAnimName
@@ -102,9 +103,7 @@ public sealed class SeekerEnemy : EnemyBase
         Vector2 v = to.normalized * spd;
         Body.linearVelocity = v;
 
-        if (v.x > 0.01f) facingDirection = 1;
-        else if (v.x < -0.01f) facingDirection = -1;
-        transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
+        FacePlayer();
     }
 
     private void EnterFire()

@@ -10,6 +10,7 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
     [SerializeField] private float maxLifetime = 6f;
     [SerializeField] private int damage = 10;
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask playerHitMask;
     [SerializeField] private Collider2D hitCollider;
 
     private SeekerEnemy owner;
@@ -22,6 +23,7 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
     private float lifeTimer;
     private bool consumed;
     private Vector2 moveDir;
+    private readonly Collider2D[] overlapResults = new Collider2D[8];
 
     public void Initialize(SeekerEnemy shooter, PlayerController p, Vector2 initialDir)
     {
@@ -85,8 +87,7 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
                 player.RegisterDashCandidate(hitCollider.bounds.center);
         }
 
-        RaycastHit2D g = Physics2D.Raycast(pos, vel.normalized, spd * dt, groundMask);
-        if (g.collider != null)
+        if (OverlapsGround())
         {
             Destroy(gameObject);
             return;
@@ -94,11 +95,17 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
 
         if (hitboxActive)
         {
-            if (OverlapsPlayer())
+            if (OverlapsPlayerBody())
             {
-                player.Hit(damage, hitCollider.bounds.center);
-                Destroy(gameObject);
-                return;
+                if (player.Vitals.IsInvincible)
+                {
+                }
+                else
+                {
+                    player.Hit(damage, hitCollider.bounds.center);
+                    Destroy(gameObject);
+                    return;
+                }
             }
         }
 
@@ -123,15 +130,35 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
         return d2 <= r2;
     }
 
-    private bool OverlapsPlayer()
+    private int Overlap(LayerMask mask)
     {
-        return hitCollider.OverlapPoint(player.transform.position);
+        ContactFilter2D f = new();
+        f.SetLayerMask(mask);
+        f.useTriggers = true;
+        return hitCollider.Overlap(f, overlapResults);
     }
 
-    private bool OverlapsOwner()
+    private bool OverlapsPlayerBody()
     {
-        return hitCollider.OverlapPoint(owner.transform.position);
+        int count = Overlap(playerHitMask);
+        for (int i = 0; i < count; i++)
+        {
+            if (overlapResults[i] == null) continue;
+            PlayerController pc = overlapResults[i].GetComponentInParent<PlayerController>();
+            if (pc == player) return true;
+        }
+        return false;
     }
+
+    private bool OverlapsGround()
+    {
+        int count = Overlap(groundMask);
+        for (int i = 0; i < count; i++)
+            if (overlapResults[i] != null) return true;
+        return false;
+    }
+
+    private bool OverlapsOwner() => hitCollider.Distance(owner.Hitbox).isOverlapped;
 
     public void OnPerfectParry(Vector2 hitPoint)
     {

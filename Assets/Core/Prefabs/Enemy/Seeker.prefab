@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7558984504270906672}
   - component: {fileID: 8209335996802984870}
   - component: {fileID: 4953815166541727591}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: Seeker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,6 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SeekerEnemy
   projectilePrefab: {fileID: 1573327447633197556, guid: 18eb877b4daa7784393d952be77695d7, type: 3}
   firePoint: {fileID: 3132546762002045849}
+  hitbox: {fileID: 8209335996802984870}
   desiredHeight: 4.5
   desiredHorizontal: 5.5
   moveSpeedNear: 6
@@ -223,7 +224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6756049019792287913}
   - component: {fileID: 2251469267753150585}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: '[temp]Collidervisualization'
   m_TagString: Untagged
   m_Icon: {fileID: 0}

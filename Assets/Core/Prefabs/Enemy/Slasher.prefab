@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 360559297294667740}
   - component: {fileID: 2690355988911259978}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: '[temp]Collidervisualization'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9062456975646457124}
   - component: {fileID: 4459469633811326657}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: walkRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 6574393092186418449}
   - component: {fileID: 4130991587244275997}
   - component: {fileID: 1418540283329407134}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: Slasher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +310,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -499,7 +499,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2648803744196303759}
   - component: {fileID: 382006843200575904}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: backOffRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}

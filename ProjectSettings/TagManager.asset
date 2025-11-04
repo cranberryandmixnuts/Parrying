@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - Projectile
-  - EnemyAttack
   layers:
   - Default
   - TransparentFX
@@ -14,9 +13,9 @@ TagManager:
   - Water
   - UI
   - Ground
-  - EnemyAttack
-  - Projectile
   - Enemy
+  - Projectile
+  - 
   - 
   - 
   - 

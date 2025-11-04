@@ -3,8 +3,6 @@ using Sirenix.OdinInspector;
 
 public class PlayerVitals : MonoBehaviour
 {
-    public static PlayerVitals Instance { get; private set; }
-
     [SerializeField] private PlayerSettings settings;
 
     [ReadOnly] [SerializeField] private int playerHealth;
@@ -39,13 +37,6 @@ public class PlayerVitals : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-        Instance = this;
-
         Health = settings.maxHealth;
         Energy = settings.maxEnergy;
     }

@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private bool healLocked = false;
 
-    [HideInInspector] public PlayerVitals Vitals;
+    public PlayerVitals Vitals;
 
     private void Awake()
     {
@@ -151,7 +151,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         stateMachine = new PlayerStateMachine();
         stateMachine.Initialize(new LocomotionState(this, stateMachine));
         SetEffectState(PlayerEffectState.None);
-        Vitals = PlayerVitals.Instance;
     }
 
     private void Update()
