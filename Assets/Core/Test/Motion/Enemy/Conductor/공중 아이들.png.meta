@@ -1,25 +1,31 @@
 fileFormatVersion: 2
-guid: 570ebb65fd8d28544b4f229f1dcc7484
+guid: 09b787b7ce6a132439cc831289dad89e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2028937261325745018
-    second: Player_Jump_Spear_0
+      213: -7916647065272259978
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_0"
   - first:
-      213: -6276977906784970147
-    second: Player_Jump_Spear_1
+      213: 3891340538373848984
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_1"
   - first:
-      213: -4094592994361066967
-    second: Player_Jump_Spear_2
+      213: 3567429267849225823
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_2"
   - first:
-      213: -4185142951984684554
-    second: Player_Jump_Spear_3
+      213: -5531259185671512123
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_3"
   - first:
-      213: 2163551859688809607
-    second: Player_Jump_Spear_4
+      213: 2834675010786580605
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_4"
   - first:
-      213: -8905401573296025958
-    second: Player_Jump_Spear_5
+      213: 3480616949420282339
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_5"
+  - first:
+      213: 3208452278903218906
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_6"
+  - first:
+      213: -4507263554337904304
+    second: "\uACF5\uC911 \uC544\uC774\uB4E4_7"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -61,12 +67,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 200
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -115,133 +121,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Player_Jump_Spear_0
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_0"
       rect:
         serializedVersion: 2
-        x: 3
-        y: 3
-        width: 31
-        height: 36
-      alignment: 9
-      pivot: {x: 0.532, y: 0}
+        x: 63
+        y: 364
+        width: 55
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 68400238f44c7d3e0800000000000000
-      internalID: -2028937261325745018
+      spriteID: 67aee46307b622290800000000000000
+      internalID: -7916647065272259978
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Jump_Spear_1
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_1"
       rect:
         serializedVersion: 2
-        x: 44
-        y: 5
-        width: 31
-        height: 34
-      alignment: 9
-      pivot: {x: 0.548, y: 0}
+        x: 57
+        y: 278
+        width: 42
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d5a5b13c9d1b3e8a0800000000000000
-      internalID: -6276977906784970147
+      spriteID: 89fb9d93a91d00630800000000000000
+      internalID: 3891340538373848984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Jump_Spear_2
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_2"
       rect:
         serializedVersion: 2
-        x: 86
-        y: 6
-        width: 29
-        height: 33
-      alignment: 9
-      pivot: {x: 0.621, y: 0}
+        x: 108
+        y: 258
+        width: 22
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 92a3e4f9d551d27c0800000000000000
-      internalID: -4094592994361066967
+      spriteID: f562c7f940e028130800000000000000
+      internalID: 3567429267849225823
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Jump_Spear_3
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_3"
       rect:
         serializedVersion: 2
-        x: 127
-        y: 12
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.621, y: 0}
+        x: 58
+        y: 179
+        width: 42
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6f129b4b8a26be5c0800000000000000
-      internalID: -4185142951984684554
+      spriteID: 5cfde6593150d33b0800000000000000
+      internalID: -5531259185671512123
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Jump_Spear_4
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_4"
       rect:
         serializedVersion: 2
-        x: 163
-        y: 11
-        width: 29
-        height: 28
-      alignment: 9
-      pivot: {x: 0.604, y: 0}
+        x: 112
+        y: 159
+        width: 9
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 78423e114fa760e10800000000000000
-      internalID: 2163551859688809607
+      spriteID: d785c9f47e9c65720800000000000000
+      internalID: 2834675010786580605
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Player_Jump_Spear_5
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_5"
       rect:
         serializedVersion: 2
-        x: 202
-        y: 4
-        width: 31
-        height: 36
-      alignment: 9
-      pivot: {x: 0.565, y: 0}
+        x: 65
+        y: 113
+        width: 52
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a9e4c71b378a96480800000000000000
-      internalID: -8905401573296025958
+      spriteID: 3e15665aca2ad4030800000000000000
+      internalID: 3480616949420282339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_6"
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 100
+        width: 75
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad2a1da3956b68c20800000000000000
+      internalID: 3208452278903218906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uACF5\uC911 \uC544\uC774\uB4E4_7"
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 62
+        width: 53
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 059ef968dabf271c0800000000000000
+      internalID: -4507263554337904304
       vertices: []
       indices: 
       edges: []
@@ -250,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 17e2fc99f086c44449a4dc4f3837aa49
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -260,12 +310,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Player_Jump_Spear_0: -2028937261325745018
-      Player_Jump_Spear_1: -6276977906784970147
-      Player_Jump_Spear_2: -4094592994361066967
-      Player_Jump_Spear_3: -4185142951984684554
-      Player_Jump_Spear_4: 2163551859688809607
-      Player_Jump_Spear_5: -8905401573296025958
+      "\uACF5\uC911 \uC544\uC774\uB4E4_0": -7916647065272259978
+      "\uACF5\uC911 \uC544\uC774\uB4E4_1": 3891340538373848984
+      "\uACF5\uC911 \uC544\uC774\uB4E4_2": 3567429267849225823
+      "\uACF5\uC911 \uC544\uC774\uB4E4_3": -5531259185671512123
+      "\uACF5\uC911 \uC544\uC774\uB4E4_4": 2834675010786580605
+      "\uACF5\uC911 \uC544\uC774\uB4E4_5": 3480616949420282339
+      "\uACF5\uC911 \uC544\uC774\uB4E4_6": 3208452278903218906
+      "\uACF5\uC911 \uC544\uC774\uB4E4_7": -4507263554337904304
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
