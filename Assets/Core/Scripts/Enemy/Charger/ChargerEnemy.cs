@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParryStack
+public sealed class ChargerEnemy : EnemyBase, IParryReactive
 {
     private enum State
     {
@@ -332,12 +332,6 @@ public sealed class ChargerEnemy : EnemyBase, IDamageable, IParryReactive, IParr
     }
 
     public void OnCounterParry(Vector2 hitPoint)
-    {
-        if (state == State.Death) return;
-        EnterDeath();
-    }
-
-    public void Hit(int damage, Vector2 attackPos)
     {
         if (state == State.Death) return;
         EnterDeath();
