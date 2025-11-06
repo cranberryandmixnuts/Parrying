@@ -14,26 +14,20 @@ public sealed class PlayerStateMachine
 
     public void ChangeState(PlayerState newState)
     {
-        if (newState == null)
-            throw new System.ArgumentNullException(nameof(newState));
+        currentState?.Exit();
 
-        if (currentState != null)
-            currentState.Exit();
-
-        currentState = newState;
+        currentState = newState ?? throw new System.ArgumentNullException(nameof(newState));
         CurrentStateType = newState.StateType;
         currentState.Enter();
     }
 
     public void Update()
     {
-        if (currentState != null)
-            currentState.Update();
+        currentState?.Update();
     }
 
     public void FixedUpdate()
     {
-        if (currentState != null)
-            currentState.FixedUpdate();
+        currentState?.FixedUpdate();
     }
 }

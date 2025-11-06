@@ -1811,6 +1811,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8716441742125073611}
   - component: {fileID: 7971529325139425055}
+  - component: {fileID: 8716441742125073612}
   - component: {fileID: 281329462232004781}
   - component: {fileID: 7030029952035548321}
   - component: {fileID: 5437039746433121570}
@@ -2094,6 +2095,54 @@ Transform:
   - {fileID: 6763107901508393568}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8716441742125073612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7016033476336435282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87d8e1bcfd635a41909ab0bf8e4024d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConductorBoss
+  playerHitMask:
+    serializedVersion: 2
+    m_Bits: 8
+  p1Stacks: 3
+  p2Stacks: 1
+  idleDelay: 0.6
+  groggyDuration: 2.2
+  swordCollider: {fileID: 0}
+  leftTop: {fileID: 0}
+  rightTop: {fileID: 0}
+  swordWarningTime: 0.6
+  swordActiveTime: 0.35
+  swordDamage: 16
+  plungeCollider: {fileID: 0}
+  ceilingPoint: {fileID: 0}
+  plungeTeleTime: 0.45
+  plungeActiveTime: 0.28
+  plungeDamage: 18
+  rushCollider: {fileID: 0}
+  rushSpeed: 12
+  rushMaxTime: 2
+  missBehindTime: 0.6
+  rushDamage: 14
+  missilePrefab: {fileID: 0}
+  missileMuzzles: []
+  missileVolleys: 3
+  missileVolleyInterval: 0.5
+  chestLaserCollider: {fileID: 0}
+  laserWindupTime: 0.6
+  laserActiveTime: 1.2
+  laserDamage: 12
+  radialLaserCollider: {fileID: 0}
+  radialSets: 12
+  radialBeat: 0.25
+  radialActiveEach: 0.18
+  radialDamage: 12
 --- !u!212 &9047032963335427318
 SpriteRenderer:
   m_ObjectHideFlags: 0
