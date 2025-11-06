@@ -9,6 +9,7 @@ public class PlayerVitals : MonoBehaviour
     [ReadOnly] [SerializeField] private int playerEnergy;
 
     public bool IsInvincible { get; private set; } = false;
+
     private float invincibleTimer = 0f;
     private PlayerController player;
 
