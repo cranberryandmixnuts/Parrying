@@ -140,7 +140,7 @@ public sealed class LocomotionState : PlayerState
             player.isJumping = false;
     }
 
-    private new bool TryHandleDash()
+    private bool TryHandleDash()
     {
         if (!player.DashPressed) return false;
         if (Time.time < player.lastDashTime + player.DashCooldown) return false;

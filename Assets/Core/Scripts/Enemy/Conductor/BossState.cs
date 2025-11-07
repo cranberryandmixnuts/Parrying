@@ -1,18 +1,31 @@
-using UnityEngine;
+public enum BossStateType
+{
+    Missing,
+    Idle,
+    Groggy,
+    SwordDrop,
+    PlungeRush,
+    VolleyLaser,
+    RadialLaser,
+    Death
+}
+
 
 public abstract class BossState
 {
-    protected readonly ConductorBoss Boss;
-    protected readonly BossStateMachine Fsm;
+    protected readonly ConductorBoss boss;
+    protected readonly BossStateMachine stateMachine;
 
-    protected BossState(ConductorBoss boss, BossStateMachine fsm)
+    public abstract BossStateType StateType { get; }
+
+    public BossState(ConductorBoss boss, BossStateMachine stateMachine)
     {
-        Boss = boss;
-        Fsm = fsm;
+        this.boss = boss;
+        this.stateMachine = stateMachine;
     }
 
-    public abstract void Enter();
-    public abstract void Tick();
-    public abstract void FixedTick();
-    public abstract void Exit();
+    public virtual void Enter() { }
+    public virtual void Exit() { }
+    public virtual void Update() { }
+    public virtual void FixedUpdate() { }
 }

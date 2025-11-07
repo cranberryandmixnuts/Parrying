@@ -306,7 +306,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         if (attackResolved) return;
 
-        Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
+        Vector2 originPos = (Vector2)attackOrigin.position;
 
         float norm = 1f - (attackPhaseTimer / swingDurationRuntime);
         if (norm < 0f) norm = 0f;
@@ -329,7 +329,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
         if (hit.collider != null)
         {
-            bool invincible = Player != null && Player.Vitals != null && Player.Vitals.IsInvincible;
+            bool invincible = Player.Vitals.IsInvincible;
 
             if (invincible)
             {
@@ -495,7 +495,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     //
     private void OnDrawGizmosSelected()
     {
-        Vector3 originPos = attackOrigin != null ? attackOrigin.position : transform.position;
+        Vector3 originPos = attackOrigin.position;
 
         int steps = 24;
         float facing = Application.isPlaying ? FacingDirection : (transform.lossyScale.x >= 0f ? 1f : -1f);
@@ -531,7 +531,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     private void UpdateSwingLine(Vector2 origin, Vector2 dir, float length)
     {
-        if (swingLine == null) return;
         swingLine.positionCount = 2;
         swingLine.SetPosition(0, origin);
         swingLine.SetPosition(1, origin + dir.normalized * length);
@@ -539,7 +538,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     private void ClearSwingLine()
     {
-        if (swingLine == null) return;
         swingLine.positionCount = 0;
     }
     //

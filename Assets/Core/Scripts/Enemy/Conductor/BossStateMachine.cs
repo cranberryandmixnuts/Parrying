@@ -2,27 +2,32 @@ using UnityEngine;
 
 public sealed class BossStateMachine
 {
-    private BossState current;
+    private BossState currentState;
+    public BossStateType CurrentStateType { get; private set; } = BossStateType.Missing;
 
-    public void ChangeState(BossState next)
+    public void Initialize(BossState startState)
     {
-        if (current != null) current.Exit();
-        current = next;
-        if (current != null) current.Enter();
+        currentState = startState;
+        CurrentStateType = startState.StateType;
+        currentState.Enter();
     }
 
-    public void Tick()
+    public void ChangeState(BossState newState)
     {
-        if (current != null) current.Tick();
+        if (newState == null) throw new System.ArgumentNullException(nameof(newState));
+        if (currentState != null) currentState.Exit();
+        currentState = newState;
+        CurrentStateType = newState.StateType;
+        currentState.Enter();
     }
 
-    public void FixedTick()
+    public void Update()
     {
-        if (current != null) current.FixedTick();
+        if (currentState != null) currentState.Update();
     }
 
-    public BossState Current
+    public void FixedUpdate()
     {
-        get { return current; }
+        if (currentState != null) currentState.FixedUpdate();
     }
 }

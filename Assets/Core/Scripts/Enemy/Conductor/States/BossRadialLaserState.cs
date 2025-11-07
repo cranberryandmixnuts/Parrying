@@ -2,20 +2,18 @@ using UnityEngine;
 
 public sealed class BossRadialLaserState : BossState
 {
-    private Collider2D radialCol;
-    private int sets;
-    private float beat;
-    private float activeEach;
-    private int damage;
+    private readonly Collider2D radialCol;
+    private readonly int sets;
+    private readonly float beat;
+    private readonly float activeEach;
+    private readonly int damage;
 
-    private float timer;
+    private float introTimer;
     private float sub;
 
-    public BossRadialLaserState(ConductorBoss boss, BossStateMachine fsm) : base(boss, fsm)
-    {
-    }
+    public override BossStateType StateType => BossStateType.RadialLaser;
 
-    public void Configure(Collider2D col, int s, float b, float a, int dmg)
+    public BossRadialLaserState(ConductorBoss boss, BossStateMachine stateMachine, Collider2D col, int s, float b, float a, int dmg) : base(boss, stateMachine)
     {
         radialCol = col;
         sets = s;
@@ -26,34 +24,34 @@ public sealed class BossRadialLaserState : BossState
 
     public override void Enter()
     {
-        Boss.Play(Boss.P2IntroAnim);
-        timer = Boss.AnimLen(Boss.P2IntroAnim);
+        boss.Play(ConductorBoss.AnimCrackLaser);
+        introTimer = boss.AnimLen(ConductorBoss.AnimCrackLaser);
         sub = 0f;
+        boss.SetLethal(ConductorBoss.AttackContext.LaserP2, false);
     }
 
-    public override void Tick()
+    public override void Update()
     {
-        if (timer > 0f)
+        if (introTimer > 0f)
         {
-            timer -= Time.deltaTime;
-            if (timer > 0f) return;
-            Boss.Play(Boss.P2RadialAnim);
-            Boss.SetLethalLaserP2(true);
+            introTimer -= Time.deltaTime;
+            if (introTimer > 0f) return;
+            boss.SetLethal(ConductorBoss.AttackContext.LaserP2, true);
             sub = 0f;
         }
 
-        Boss.HandleHitbox(radialCol, damage);
+        boss.HandleHitbox(radialCol, damage);
         sub += Time.deltaTime;
         if (sub >= beat) sub = 0f;
     }
 
-    public override void FixedTick()
+    public override void FixedUpdate()
     {
-        Boss.StopHorizontal();
+        boss.StopHorizontal();
     }
 
     public override void Exit()
     {
-        Boss.SetLethalLaserP2(false);
+        boss.SetLethal(ConductorBoss.AttackContext.LaserP2, false);
     }
 }

@@ -71,7 +71,7 @@ public sealed class ConductorMissile : MonoBehaviour, IParryReactive
         }
 
         float spd = reflected ? reflectSpeed : speed;
-        transform.position = pos + dt * spd * moveDir;
+        transform.position = pos + moveDir * spd * dt;
 
         if (hitboxActive)
         {
@@ -118,7 +118,7 @@ public sealed class ConductorMissile : MonoBehaviour, IParryReactive
 
     private int Overlap(LayerMask mask)
     {
-        ContactFilter2D f = new();
+        ContactFilter2D f = new ContactFilter2D();
         f.SetLayerMask(mask);
         f.useTriggers = true;
         return hitCollider.Overlap(f, overlapResults);
@@ -127,8 +127,7 @@ public sealed class ConductorMissile : MonoBehaviour, IParryReactive
     private bool OverlapsMask(LayerMask mask)
     {
         int count = Overlap(mask);
-        for (int i = 0; i < count; i++)
-            if (overlapResults[i] != null) return true;
+        for (int i = 0; i < count; i++) if (overlapResults[i] != null) return true;
         return false;
     }
 

@@ -1,25 +1,16 @@
-using UnityEngine;
-
 public sealed class BossDeathState : BossState
 {
-    public BossDeathState(ConductorBoss boss, BossStateMachine fsm) : base(boss, fsm)
+    public override BossStateType StateType
+    {
+        get { return BossStateType.Death; }
+    }
+
+    public BossDeathState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
     }
 
     public override void Enter()
     {
-        Boss.Die();
-    }
-
-    public override void Tick()
-    {
-    }
-
-    public override void FixedTick()
-    {
-    }
-
-    public override void Exit()
-    {
+        boss.Die();
     }
 }

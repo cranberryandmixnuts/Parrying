@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public enum PlayerStateType
 {
     Missing,
@@ -29,19 +27,4 @@ public abstract class PlayerState
     public virtual void Exit() { }
     public virtual void Update() { }
     public virtual void FixedUpdate() { }
-    public virtual bool CanTransitionTo(PlayerState newState) => true;
-
-    protected bool TryHandleDash()
-    {
-        if (player.DashPressed && Time.time >= player.lastDashTime + player.DashCooldown)
-        {
-            if (player.isGround || player.canAirDash)
-            {
-                player.ConsumeDashPressed();
-                stateMachine.ChangeState(new DashState(player, stateMachine));
-                return true;
-            }
-        }
-        return false;
-    }
 }

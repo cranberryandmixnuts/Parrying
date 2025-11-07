@@ -20,10 +20,7 @@ public sealed class DashState : PlayerState
         player.Rigidbody.gravityScale = 0f;
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
 
-        if (player.isGround)
-            player.Anim.Play("Ground Dash");
-        else
-            player.Anim.Play("Air Dash");
+        player.Anim.Play("Dash");
 
         if (!player.isGround) player.canAirDash = false;
 
@@ -85,6 +82,7 @@ public sealed class DashState : PlayerState
         {
             player.canAirDash = true;
             player.lastDashTime = Time.time - player.DashCooldown;
+            player.Vitals.SetInvincibleTimer(player.DashExtremeExtraInvincibility);
         }
     }
 }

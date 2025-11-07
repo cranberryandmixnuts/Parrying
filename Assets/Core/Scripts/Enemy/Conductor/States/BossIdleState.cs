@@ -4,34 +4,28 @@ public sealed class BossIdleState : BossState
 {
     private float timer;
 
-    public BossIdleState(ConductorBoss boss, BossStateMachine fsm) : base(boss, fsm)
-    {
-    }
+    public override BossStateType StateType => BossStateType.Idle;
 
-    public void SetDelay(float t)
+    public BossIdleState(ConductorBoss boss, BossStateMachine stateMachine, float delay) : base(boss, stateMachine)
     {
-        timer = t;
+        timer = delay;
     }
 
     public override void Enter()
     {
-        Boss.Play(Boss.IdleAnim);
+        boss.Play(ConductorBoss.AnimGroundIdle);
         if (timer <= 0f) timer = 0.4f;
     }
 
-    public override void Tick()
+    public override void Update()
     {
-        Boss.FaceToPlayer();
+        boss.FaceToPlayer();
         timer -= Time.deltaTime;
-        if (timer <= 0f) Boss.ChooseP1();
+        if (timer <= 0f) boss.DecideP1();
     }
 
-    public override void FixedTick()
+    public override void FixedUpdate()
     {
-        Boss.StopHorizontal();
-    }
-
-    public override void Exit()
-    {
+        boss.StopHorizontal();
     }
 }

@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     public float DashSpeed => settings.dashSpeed;
     public float DashDuration => settings.dashDuration;
     public float DashCooldown => settings.dashCooldown;
-    public int DashExtremeGain => settings.dashExtremeGain;
+    public float DashExtremeExtraInvincibility => settings.dashExtremeExtraInvincibility;
 
     public float ParryWindow => settings.parryWindow;
     public int PerfectParryEnergyGain => settings.perfectParryEnergyGain;

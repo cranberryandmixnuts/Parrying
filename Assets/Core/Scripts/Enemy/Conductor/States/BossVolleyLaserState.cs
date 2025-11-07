@@ -2,54 +2,45 @@ using UnityEngine;
 
 public sealed class BossVolleyLaserState : BossState
 {
-    private ConductorMissile prefab;
-    private Transform[] muzzles;
-    private int volleys;
-    private float interval;
-    private Collider2D laserCol;
-    private float windup;
-    private float active;
-    private int laserDamage;
+    private readonly ConductorMissile prefab;
+    private readonly Transform[] muzzles;
+    private readonly int volleys;
+    private readonly float interval;
+    private readonly ConductorBoss.LaserConfig laser;
 
     private float timer;
     private float sub;
     private int index;
     private int phase;
 
-    public BossVolleyLaserState(ConductorBoss boss, BossStateMachine fsm) : base(boss, fsm)
-    {
-    }
+    public override BossStateType StateType => BossStateType.VolleyLaser;
 
-    public void Configure(ConductorMissile pf, Transform[] mz, int v, float inter, Collider2D lCol, float wind, float act, int dmg)
+    public BossVolleyLaserState(ConductorBoss boss, BossStateMachine stateMachine, ConductorMissile pf, Transform[] mz, int v, float inter, ConductorBoss.LaserConfig lz) : base(boss, stateMachine)
     {
         prefab = pf;
         muzzles = mz;
         volleys = v;
         interval = inter;
-        laserCol = lCol;
-        windup = wind;
-        active = act;
-        laserDamage = dmg;
+        laser = lz;
     }
 
     public override void Enter()
     {
-        Boss.Play(Boss.MissilePreAnim);
-        timer = Boss.AnimLen(Boss.MissilePreAnim);
+        boss.Play(ConductorBoss.AnimFire);
+        timer = boss.AnimLen(ConductorBoss.AnimFire);
         sub = 0f;
         index = 0;
         phase = 0;
-        Boss.SetLethalLaserP1(false);
+        boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
     }
 
-    public override void Tick()
+    public override void Update()
     {
         if (phase == 0)
         {
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                Boss.Play(Boss.MissileAnim);
                 timer = volleys * interval + 0.01f;
                 sub = 0f;
                 index = 0;
@@ -61,54 +52,43 @@ public sealed class BossVolleyLaserState : BossState
             sub += Time.deltaTime;
             if (index < volleys && sub >= index * interval)
             {
-                Boss.FireMissilesOnce();
+                int n = muzzles != null ? muzzles.Length : 0;
+                for (int i = 0; i < n; i++)
+                {
+                    Transform m = muzzles[i];
+                    if (m == null) continue;
+                    ConductorMissile proj = Object.Instantiate(prefab, m.position, m.rotation);
+                    proj.Initialize(boss, boss.PlayerTarget, m.right);
+                }
                 index += 1;
             }
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                Boss.Play(Boss.LaserWindupAnim);
-                timer = windup;
+                timer = laser.Windup + laser.Active + boss.AnimLen(ConductorBoss.AnimFire) * 0.25f;
                 phase = 2;
+                boss.SetLethal(ConductorBoss.AttackContext.LaserP1, true);
             }
         }
         else if (phase == 2)
         {
+            boss.HandleHitbox(laser.LaserCollider, laser.Damage);
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                Boss.Play(Boss.LaserAnim);
-                Boss.SetLethalLaserP1(true);
-                timer = active;
-                phase = 3;
+                boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
+                boss.ChangeToIdle(0.6f);
             }
-        }
-        else if (phase == 3)
-        {
-            Boss.HandleHitbox(laserCol, laserDamage);
-            timer -= Time.deltaTime;
-            if (timer <= 0f)
-            {
-                Boss.SetLethalLaserP1(false);
-                Boss.Play(Boss.LaserRecoverAnim);
-                timer = Boss.AnimLen(Boss.LaserRecoverAnim);
-                phase = 4;
-            }
-        }
-        else
-        {
-            timer -= Time.deltaTime;
-            if (timer <= 0f) Boss.GoIdle();
         }
     }
 
-    public override void FixedTick()
+    public override void FixedUpdate()
     {
-        Boss.StopHorizontal();
+        boss.StopHorizontal();
     }
 
     public override void Exit()
     {
-        Boss.SetLethalLaserP1(false);
+        boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
     }
 }

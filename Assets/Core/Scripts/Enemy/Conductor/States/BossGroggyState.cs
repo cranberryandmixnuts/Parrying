@@ -4,35 +4,29 @@ public sealed class BossGroggyState : BossState
 {
     private float timer;
 
-    public BossGroggyState(ConductorBoss boss, BossStateMachine fsm) : base(boss, fsm)
-    {
-    }
+    public override BossStateType StateType => BossStateType.Groggy;
 
-    public void SetDuration(float t)
+    public BossGroggyState(ConductorBoss boss, BossStateMachine stateMachine, float duration) : base(boss, stateMachine)
     {
-        timer = t;
+        timer = duration;
     }
 
     public override void Enter()
     {
-        Boss.Play(Boss.GroggyAnim);
+        boss.Play(ConductorBoss.AnimGroggy);
     }
 
-    public override void Tick()
+    public override void Update()
     {
         timer -= Time.deltaTime;
         if (timer > 0f) return;
-        if (Boss.HasP1Stacks) Boss.GoIdle();
-        else if (Boss.HasP2Stacks) Boss.GoRadialLaser();
-        else Boss.GoDeath();
+        if (boss.HasP1Stacks) boss.ChangeToIdle(0.5f);
+        else if (boss.HasP2Stacks) boss.ChangeToRadialLaser();
+        else boss.ChangeToDeath();
     }
 
-    public override void FixedTick()
+    public override void FixedUpdate()
     {
-        Boss.StopHorizontal();
-    }
-
-    public override void Exit()
-    {
+        boss.StopHorizontal();
     }
 }
