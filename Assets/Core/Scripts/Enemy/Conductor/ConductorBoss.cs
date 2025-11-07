@@ -191,7 +191,6 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
         attackCx = cx;
         lethalActive = on;
         if (on) Player.ClearParryCandidate(this);
-        if (cx == AttackContext.Sword && !on) DebugClearSwingLine();
     }
 
     public bool LethalActive => lethalActive;
