@@ -2,12 +2,6 @@ using UnityEngine;
 
 public sealed class BossVolleyLaserState : BossState
 {
-    private readonly ConductorMissile prefab;
-    private readonly Transform[] muzzles;
-    private readonly int volleys;
-    private readonly float interval;
-    private readonly ConductorBoss.LaserConfig laser;
-
     private float timer;
     private float sub;
     private int index;
@@ -15,13 +9,8 @@ public sealed class BossVolleyLaserState : BossState
 
     public override BossStateType StateType => BossStateType.VolleyLaser;
 
-    public BossVolleyLaserState(ConductorBoss boss, BossStateMachine stateMachine, ConductorMissile pf, Transform[] mz, int v, float inter, ConductorBoss.LaserConfig lz) : base(boss, stateMachine)
+    public BossVolleyLaserState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
-        prefab = pf;
-        muzzles = mz;
-        volleys = v;
-        interval = inter;
-        laser = lz;
     }
 
     public override void Enter()
@@ -41,23 +30,25 @@ public sealed class BossVolleyLaserState : BossState
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                timer = volleys * interval + 0.01f;
+                timer = boss.Settings.missileVolleys * boss.Settings.missileVolleyInterval + 0.01f;
                 sub = 0f;
                 index = 0;
                 phase = 1;
             }
+            return;
         }
-        else if (phase == 1)
+
+        if (phase == 1)
         {
             sub += Time.deltaTime;
-            if (index < volleys && sub >= index * interval)
+            if (index < boss.Settings.missileVolleys && sub >= index * boss.Settings.missileVolleyInterval)
             {
-                int n = muzzles != null ? muzzles.Length : 0;
+                int n = boss.MissileMuzzles != null ? boss.MissileMuzzles.Length : 0;
                 for (int i = 0; i < n; i++)
                 {
-                    Transform m = muzzles[i];
+                    Transform m = boss.MissileMuzzles[i];
                     if (m == null) continue;
-                    ConductorMissile proj = Object.Instantiate(prefab, m.position, m.rotation);
+                    ConductorMissile proj = Object.Instantiate(boss.MissilePrefab, m.position, m.rotation);
                     proj.Initialize(boss, boss.PlayerTarget, m.right);
                 }
                 index += 1;
@@ -65,19 +56,21 @@ public sealed class BossVolleyLaserState : BossState
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                timer = laser.Windup + laser.Active + boss.AnimLen(ConductorBoss.AnimFire) * 0.25f;
+                timer = boss.Settings.laserWindupTime + boss.Settings.laserActiveTime + boss.AnimLen(ConductorBoss.AnimFire) * 0.25f;
                 phase = 2;
                 boss.SetLethal(ConductorBoss.AttackContext.LaserP1, true);
             }
+            return;
         }
-        else if (phase == 2)
+
+        if (phase == 2)
         {
-            boss.HandleHitbox(laser.LaserCollider, laser.Damage);
+            boss.HandleHitbox(boss.ChestLaserCollider, boss.Settings.laserDamage);
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
                 boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
-                boss.ChangeToIdle(0.6f);
+                boss.ChangeToIdle(boss.Settings.idleDelay);
             }
         }
     }

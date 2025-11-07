@@ -14,29 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossSettings
   playerHitMask:
     serializedVersion: 2
-    m_Bits: 0
-  p1Stacks: 3
+    m_Bits: 8
+  p1Stacks: 9
   p2Stacks: 1
-  idleDelay: 0.6
-  groggyDuration: 2.2
-  swordDamage: 16
-  swordStartAngle: 60
-  swordEndAngle: -80
-  swordBladeLength: 3.2
-  swordBladeThickness: 0.8
+  idleDelay: 1
+  groggyDuration: 2
+  swordDamage: 10
+  swordStartAngle: 90
+  swordEndAngle: 0
+  swordBladeLength: 5
+  swordBladeThickness: 0.3
   plungeTeleTime: 0.45
   plungeActiveTime: 0.28
-  plungeDamage: 18
+  plungeDamage: 10
   rushSpeed: 12
   rushMaxTime: 2
   missBehindTime: 0.6
-  rushDamage: 14
+  rushDamage: 10
   missileVolleys: 3
   missileVolleyInterval: 0.5
   laserWindupTime: 0.6
   laserActiveTime: 1.2
-  laserDamage: 12
+  laserDamage: 10
   radialSets: 12
   radialBeat: 0.25
   radialActiveEach: 0.18
-  radialDamage: 12
+  radialDamage: 10

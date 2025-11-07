@@ -2,24 +2,13 @@ using UnityEngine;
 
 public sealed class BossRadialLaserState : BossState
 {
-    private readonly Collider2D radialCol;
-    private readonly int sets;
-    private readonly float beat;
-    private readonly float activeEach;
-    private readonly int damage;
-
     private float introTimer;
     private float sub;
 
     public override BossStateType StateType => BossStateType.RadialLaser;
 
-    public BossRadialLaserState(ConductorBoss boss, BossStateMachine stateMachine, Collider2D col, int s, float b, float a, int dmg) : base(boss, stateMachine)
+    public BossRadialLaserState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
-        radialCol = col;
-        sets = s;
-        beat = b;
-        activeEach = a;
-        damage = dmg;
     }
 
     public override void Enter()
@@ -40,9 +29,9 @@ public sealed class BossRadialLaserState : BossState
             sub = 0f;
         }
 
-        boss.HandleHitbox(radialCol, damage);
+        boss.HandleHitbox(boss.RadialLaserCollider, boss.Settings.radialDamage);
         sub += Time.deltaTime;
-        if (sub >= beat) sub = 0f;
+        if (sub >= boss.Settings.radialBeat) sub = 0f;
     }
 
     public override void FixedUpdate()

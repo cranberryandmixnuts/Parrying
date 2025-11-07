@@ -322,8 +322,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8716441742125073611}
-  - {fileID: 741016164}
-  - {fileID: 1826166143}
+  - {fileID: 1140486908}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &347203146
@@ -1104,18 +1103,51 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 741016163}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -8, y: -2.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 203805738}
+  m_Father: {fileID: 1140486908}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &1106441949 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 6685647694984425248, guid: e91c845cec630644f8b1fc74dbdb1c66, type: 3}
   m_PrefabInstance: {fileID: 4331778781873782056}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1140486907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1140486908}
+  m_Layer: 0
+  m_Name: Transforms
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1140486908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140486907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 741016164}
+  - {fileID: 1826166143}
+  m_Father: {fileID: 203805738}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1267766337
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,12 +1386,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1826166142}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 8, y: -2.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 203805738}
+  m_Father: {fileID: 1140486908}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1989258590
 PrefabInstance:
@@ -2265,45 +2297,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d87d8e1bcfd635a41909ab0bf8e4024d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConductorBoss
-  playerHitMask:
-    serializedVersion: 2
-    m_Bits: 8
-  p1Stacks: 9
-  p2Stacks: 1
-  idleDelay: 1
-  groggyDuration: 2
+  settings: {fileID: 11400000, guid: 2870cb9b992bb8546b04be23cfb6b0cf, type: 2}
   leftTop: {fileID: 741016164}
   rightTop: {fileID: 1826166143}
-  swordDamage: 10
-  swordStartAngle: 90
-  swordEndAngle: 0
-  swordBladeLength: 3.2
-  swordBladeThickness: 0.3
-  swordSpeedMin: 0
-  swordSpeedMax: 1000
-  plungeCollider: {fileID: 0}
   ceilingPoint: {fileID: 0}
-  plungeTeleTime: 0.45
-  plungeActiveTime: 0.28
-  plungeDamage: 18
+  plungeCollider: {fileID: 0}
   rushCollider: {fileID: 0}
-  rushSpeed: 12
-  rushMaxTime: 2
-  missBehindTime: 0.6
-  rushDamage: 14
+  chestLaserCollider: {fileID: 0}
+  radialLaserCollider: {fileID: 0}
   missilePrefab: {fileID: 0}
   missileMuzzles: []
-  missileVolleys: 3
-  missileVolleyInterval: 0.5
-  chestLaserCollider: {fileID: 0}
-  laserWindupTime: 0.6
-  laserActiveTime: 1.2
-  laserDamage: 12
-  radialLaserCollider: {fileID: 0}
-  radialSets: 12
-  radialBeat: 0.25
-  radialActiveEach: 0.18
-  radialDamage: 12
   debugDrawSwordGizmo: 1
   debugSwordColor: {r: 1, g: 0.3, b: 0.2, a: 0.8}
   debugArcStepDeg: 5

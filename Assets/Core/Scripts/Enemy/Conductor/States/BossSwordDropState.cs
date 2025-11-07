@@ -2,14 +2,6 @@ using UnityEngine;
 
 public sealed class BossSwordDropState : BossState
 {
-    private readonly Transform leftTop;
-    private readonly Transform rightTop;
-    private readonly int damage;
-    private readonly float startAngle;
-    private readonly float endAngle;
-    private readonly float bladeLen;
-    private readonly float bladeThick;
-
     private int phase;
     private int faceDir;
     private float baseAngle;
@@ -24,39 +16,26 @@ public sealed class BossSwordDropState : BossState
 
     public override BossStateType StateType => BossStateType.SwordDrop;
 
-    public BossSwordDropState
-    (
-        ConductorBoss boss,
-        BossStateMachine stateMachine,
-        Transform l,
-        Transform r,
-        int dmg,
-        float startDeg,
-        float endDeg,
-        float bladeLength,
-        float bladeThickness
-    ) : base(boss, stateMachine)
+    public BossSwordDropState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
-        leftTop = l;
-        rightTop = r;
-        damage = dmg;
-        startAngle = startDeg;
-        endAngle = endDeg;
-        bladeLen = bladeLength;
-        bladeThick = bladeThickness;
     }
 
     public override void Enter()
     {
-        Transform t = boss.ChooseSideTop();
+        Transform t = ChooseSideTop();
         boss.Teleport(t.position);
-        bool choseLeft = t == leftTop;
+        bool choseLeft = t == boss.LeftTop;
         faceDir = choseLeft ? 1 : -1;
         boss.FaceTo(faceDir);
         boss.Play(ConductorBoss.AnimSideSword);
 
         phase = 1;
         boss.SetLethal(ConductorBoss.AttackContext.Sword, true);
+
+        float startAngle = boss.Settings.swordStartAngle;
+        float endAngle = boss.Settings.swordEndAngle;
+        float bladeLen = boss.Settings.swordBladeLength;
+        float bladeThick = boss.Settings.swordBladeThickness;
 
         baseAngle = faceDir > 0 ? 0f : 180f;
         startLocal = faceDir > 0 ? startAngle : -startAngle;
@@ -106,7 +85,7 @@ public sealed class BossSwordDropState : BossState
                     if (!boss.PlayerTarget.Vitals.IsInvincible)
                     {
                         Vector2 hitPos = hits[i].point;
-                        boss.PlayerTarget.Hit(damage, hitPos);
+                        boss.PlayerTarget.Hit(boss.Settings.swordDamage, hitPos);
                         boss.PlayerTarget.ClearParryCandidate(boss);
                         boss.SetLethal(ConductorBoss.AttackContext.Sword, false);
                         resolved = true;
@@ -120,13 +99,13 @@ public sealed class BossSwordDropState : BossState
 
         Vector2 origin = (Vector2)boss.transform.position;
         Vector2 tipDir = TipDir(curAngle);
-        boss.DebugUpdateSwingLine(origin, tipDir, bladeLen);
+        boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.swordBladeLength);
 
         if (elapsed >= duration)
         {
             boss.SetLethal(ConductorBoss.AttackContext.Sword, false);
             boss.DebugClearSwingLine();
-            boss.ChangeToIdle(0.6f);
+            boss.ChangeToIdle(boss.Settings.idleDelay);
             phase = 2;
         }
     }
@@ -141,12 +120,20 @@ public sealed class BossSwordDropState : BossState
         boss.DebugClearSwingLine();
     }
 
+    private Transform ChooseSideTop()
+    {
+        float px = boss.PlayerTarget.transform.position.x;
+        float dl = Mathf.Abs(px - boss.LeftTop.position.x);
+        float dr = Mathf.Abs(px - boss.RightTop.position.x);
+        if (dl < dr) return boss.LeftTop; else return boss.RightTop;
+    }
+
     private Vector2 BladeCenter(float angleDeg)
     {
         float rad = angleDeg * Mathf.Deg2Rad;
         Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
         Vector2 origin = (Vector2)boss.transform.position;
-        return origin + dir * (bladeLen * 0.5f);
+        return origin + dir * (boss.Settings.swordBladeLength * 0.5f);
     }
 
     private Vector2 TipDir(float angleDeg)
@@ -157,18 +144,19 @@ public sealed class BossSwordDropState : BossState
 
     private void PlayerParryDashRegistration(float angleDeg)
     {
+        if (resolved) return;
+        if (!boss.LethalActive) return;
+
         Vector2 rectCenter = BladeCenter(angleDeg);
-        Vector2 half = new Vector2(bladeLen * 0.5f, bladeThick * 0.5f);
+        Vector2 half = new Vector2(boss.Settings.swordBladeLength * 0.5f, boss.Settings.swordBladeThickness * 0.5f);
         Vector2 origin = (Vector2)boss.transform.position;
-        Vector2 tip = origin + TipDir(angleDeg) * bladeLen;
+        Vector2 tip = origin + TipDir(angleDeg) * boss.Settings.swordBladeLength;
 
         boss.PlayerTarget.GetParryDetectCircle(out Vector2 pc, out float pr);
         boss.PlayerTarget.GetDashDetectCircle(out Vector2 dc, out float dr);
 
-        bool allow = !resolved && boss.LethalActive;
-
-        if (allow && RectCircleIntersects(rectCenter, half, angleDeg, pc, pr)) boss.PlayerTarget.RegisterParryCandidate(boss, tip, damage);
-        if (allow && RectCircleIntersects(rectCenter, half, angleDeg, dc, dr)) boss.PlayerTarget.RegisterDashCandidate(tip);
+        if (RectCircleIntersects(rectCenter, half, angleDeg, pc, pr)) boss.PlayerTarget.RegisterParryCandidate(boss, tip, boss.Settings.swordDamage);
+        if (RectCircleIntersects(rectCenter, half, angleDeg, dc, dr)) boss.PlayerTarget.RegisterDashCandidate(tip);
     }
 
     private bool RectCircleIntersects(Vector2 rectCenter, Vector2 rectHalf, float angleDeg, Vector2 circleCenter, float radius)
