@@ -82,10 +82,8 @@ public sealed class BossSwordDropState : BossState
                 PlayerController pc = hits[i].collider.GetComponentInParent<PlayerController>();
                 if (pc == boss.PlayerTarget)
                 {
-                    if (!boss.PlayerTarget.Vitals.IsInvincible)
+                    if (boss.PlayerTarget.TryHit(boss.Settings.swordDamage, hits[i].point))
                     {
-                        Vector2 hitPos = hits[i].point;
-                        boss.PlayerTarget.Hit(boss.Settings.swordDamage, hitPos);
                         boss.PlayerTarget.ClearParryCandidate(boss);
                         boss.SetLethal(ConductorBoss.AttackContext.Sword, false);
                         resolved = true;
@@ -97,15 +95,21 @@ public sealed class BossSwordDropState : BossState
             PlayerParryDashRegistration(curAngle);
         }
 
-        Vector2 origin = (Vector2)boss.transform.position;
-        Vector2 tipDir = TipDir(curAngle);
-        boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.swordBladeLength);
+        if (boss.LethalActive && !resolved)
+        {
+            Vector2 origin = (Vector2)boss.transform.position;
+            Vector2 tipDir = TipDir(curAngle);
+            boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.swordBladeLength);
+        }
+        else if (!boss.LethalActive)
+        {
+            boss.DebugClearSwingLine();
+        }
 
         if (elapsed >= duration)
         {
             boss.SetLethal(ConductorBoss.AttackContext.Sword, false);
-            boss.DebugClearSwingLine();
-            boss.ChangeToIdle(boss.Settings.idleDelay);
+            boss.ChangeToIdle(true);
             phase = 2;
         }
     }

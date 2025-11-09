@@ -329,28 +329,18 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
         if (hit.collider != null)
         {
-            bool invincible = Player.Vitals.IsInvincible;
-
-            if (invincible)
-            {
-                UpdateSwingLine(originPos, dir, swingLength);
-            }
-            else
+            if (Player.TryHit(attackDamage, originPos + dir * hit.distance))
             {
                 UpdateSwingLine(originPos, dir, hit.distance);
 
-                Vector2 hitPos = originPos + dir * hit.distance;
-                Player.Hit(attackDamage, hitPos);
                 attackResolved = true;
                 StartAttackCooldown();
                 Player.ClearParryCandidate(this);
                 ClearSwingLine();
             }
+            else UpdateSwingLine(originPos, dir, swingLength);
         }
-        else
-        {
-            UpdateSwingLine(originPos, dir, swingLength);
-        }
+        else UpdateSwingLine(originPos, dir, swingLength);
     }
 
     private bool SegmentIntersectsCircle(Vector2 a, Vector2 b, Vector2 c, float r)

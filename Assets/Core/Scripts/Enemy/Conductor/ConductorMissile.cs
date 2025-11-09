@@ -90,9 +90,8 @@ public sealed class ConductorMissile : MonoBehaviour, IParryReactive
 
         if (hitboxActive && OverlapsPlayer())
         {
-            if (!player.Vitals.IsInvincible)
+            if (player.TryHit(damage, hitCollider.bounds.center))
             {
-                player.Hit(damage, hitCollider.bounds.center);
                 Destroy(gameObject);
                 return;
             }

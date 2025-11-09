@@ -97,12 +97,8 @@ public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
         {
             if (OverlapsPlayerBody())
             {
-                if (player.Vitals.IsInvincible)
+                if (player.TryHit(damage, hitCollider.bounds.center))
                 {
-                }
-                else
-                {
-                    player.Hit(damage, hitCollider.bounds.center);
                     Destroy(gameObject);
                     return;
                 }

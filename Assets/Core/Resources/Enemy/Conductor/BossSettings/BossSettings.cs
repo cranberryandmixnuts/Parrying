@@ -5,6 +5,7 @@ public sealed class BossSettings : ScriptableObject
 {
     [Header("Common")]
     public LayerMask playerHitMask;
+    public LayerMask groundLayer;
     public int p1Stacks = 9;
     public int p2Stacks = 1;
     public float idleDelay = 1f;
@@ -18,9 +19,11 @@ public sealed class BossSettings : ScriptableObject
     public float swordBladeThickness = 0.3f;
 
     [Header("Plunge Tuning")]
-    public float plungeTeleTime = 0.45f;
-    public float plungeActiveTime = 0.28f;
+    public float plungeFallDelay = 0.15f;
+    public float plungeFallSpeed = 16f;
     public int plungeDamage = 10;
+    public float plungeBounceUpSpeed = 12f;
+    public float groundCheckDist = 0.2f;
 
     [Header("Rush Tuning")]
     public float rushSpeed = 12f;

@@ -276,7 +276,7 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
 
         if (OverlapsPlayerBody())
         {
-            Player.Hit(contactDamage, hitPoint);
+            if (Player.TryHit(contactDamage, hitPoint)) return;
             lethalActive = false;
             overshootTimer = overshootAfterParryDuration;
             Player.ClearParryCandidate(this);

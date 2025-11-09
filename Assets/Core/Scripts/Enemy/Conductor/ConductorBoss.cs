@@ -17,7 +17,7 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
     public const string AnimAirIdle = "Air Idle";
     public const string AnimGroggy = "Groggy";
     public const string AnimSideSword = "Side Sword";
-    public const string AnimSwoop = "Swoop";
+    public const string AnimPlunge = "Plunge";
     public const string AnimGroundRush = "Ground Rush";
     public const string AnimFire = "Fire";
     public const string AnimCrackLaser = "Crack Laser";
@@ -30,6 +30,8 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
     [SerializeField] private Transform leftTop;
     [SerializeField] private Transform rightTop;
     [SerializeField] private Transform ceilingPoint;
+    [SerializeField] private Transform rushStopLeft;
+    [SerializeField] private Transform rushStopRight;
     [SerializeField] private Collider2D plungeCollider;
     [SerializeField] private Collider2D rushCollider;
     [SerializeField] private Collider2D chestLaserCollider;
@@ -43,6 +45,7 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
     [SerializeField] private float debugArcStepDeg = 5f;
     [SerializeField] private LineRenderer swingLine;
 
+    private float gravityOriginal;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
     private BossStateMachine stateMachine;
     private bool lethalActive;
@@ -54,12 +57,12 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
 
     protected override void Start()
     {
-        if (settings == null) throw new InvalidOperationException("ConductorBoss.settings is null");
         base.Start();
+        gravityOriginal = Body.gravityScale;
         p1Stacks = settings.p1Stacks;
         p2Stacks = settings.p2Stacks;
         stateMachine = new BossStateMachine();
-        stateMachine.Initialize(new BossIdleState(this, stateMachine, settings.idleDelay));
+        stateMachine.Initialize(new BossIdleState(this, stateMachine, true));
     }
 
     protected override void OnUpdate()
@@ -77,16 +80,22 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
     public Transform LeftTop => leftTop;
     public Transform RightTop => rightTop;
     public Transform CeilingPoint => ceilingPoint;
+    public Transform RushStopLeft => rushStopLeft;
+    public Transform RushStopRight => rushStopRight;
     public Collider2D PlungeCollider => plungeCollider;
     public Collider2D RushCollider => rushCollider;
     public Collider2D ChestLaserCollider => chestLaserCollider;
     public Collider2D RadialLaserCollider => radialLaserCollider;
     public ConductorMissile MissilePrefab => missilePrefab;
     public Transform[] MissileMuzzles => missileMuzzles;
+    public bool LethalActive => lethalActive;
+    public float FacingDir => FacingDirection;
+    public float OriginalGravityScale => gravityOriginal;
+    public PlayerController PlayerTarget => Player;
 
-    public void ChangeToIdle(float delay)
+    public void ChangeToIdle(bool grounded)
     {
-        stateMachine.ChangeState(new BossIdleState(this, stateMachine, delay));
+        stateMachine.ChangeState(new BossIdleState(this, stateMachine, grounded));
     }
 
     public void ChangeToGroggy(float duration)
@@ -169,7 +178,7 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
         //if (r == 0) ChangeToSwordDrop();
         //else if (r == 1) ChangeToPlungeRush();
         //else ChangeToVolleyLaser();
-        ChangeToSwordDrop();
+        ChangeToPlungeRush();
     }
 
     public void ConsumeP1Stack()
@@ -188,14 +197,12 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
 
     public void SetLethal(AttackContext cx, bool on)
     {
+        AttackContext prev = attackCx;
         attackCx = cx;
         lethalActive = on;
         if (on) Player.ClearParryCandidate(this);
+        if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
     }
-
-    public bool LethalActive => lethalActive;
-    public float FacingDir => FacingDirection;
-    public PlayerController PlayerTarget => Player;
 
     public void Play(string anim)
     {
@@ -222,9 +229,29 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
         transform.position = p;
     }
 
+    public void SetGravityScale(float v)
+    {
+        Body.gravityScale = v;
+    }
+
+    public float GetGravityScale()
+    {
+        return Body.gravityScale;
+    }
+
     public void SetVelocityX(float v)
     {
         Body.linearVelocity = new Vector2(v, Body.linearVelocity.y);
+    }
+
+    public void SetVelocityY(float y)
+    {
+        Body.linearVelocity = new Vector2(Body.linearVelocity.x, y);
+    }
+
+    public float GetVelocityY()
+    {
+        return Body.linearVelocity.y;
     }
 
     public void StopHorizontal()
@@ -248,9 +275,9 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
             PlayerController pc = overlapResults[i].GetComponentInParent<PlayerController>();
             if (pc == Player)
             {
-                Player.Hit(damage, hitCol.bounds.center);
+                if(Player.TryHit(damage, hitCol.bounds.center)) return 0;
                 Player.ClearParryCandidate(this);
-                SetLethal(AttackContext.None, false);
+                if (attackCx != AttackContext.Rush) SetLethal(AttackContext.None, false);
                 return 1;
             }
         }

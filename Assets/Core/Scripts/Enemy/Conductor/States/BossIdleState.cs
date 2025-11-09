@@ -2,30 +2,43 @@ using UnityEngine;
 
 public sealed class BossIdleState : BossState
 {
+    private readonly bool grounded;
     private float timer;
+    private bool zeroed;
 
     public override BossStateType StateType => BossStateType.Idle;
 
-    public BossIdleState(ConductorBoss boss, BossStateMachine stateMachine, float delay) : base(boss, stateMachine)
+    public BossIdleState(ConductorBoss boss, BossStateMachine stateMachine, bool grounded) : base(boss, stateMachine)
     {
-        timer = delay;
+        this.grounded = grounded;
     }
 
     public override void Enter()
     {
-        boss.Play(ConductorBoss.AnimGroundIdle);
-        if (timer <= 0f) timer = 0.4f;
+        timer = boss.Settings.idleDelay;
+        zeroed = false;
+        if (grounded)
+        {
+            boss.SetGravityScale(boss.OriginalGravityScale);
+            boss.Play(ConductorBoss.AnimGroundIdle);
+        }
+        else
+        {
+            boss.SetGravityScale(0f);
+            boss.Play(ConductorBoss.AnimAirIdle);
+            zeroed = true;
+        }
+        boss.StopHorizontal();
     }
 
     public override void Update()
     {
-        boss.FaceToPlayer();
         timer -= Time.deltaTime;
         if (timer <= 0f) boss.DecideP1();
     }
 
-    public override void FixedUpdate()
+    public override void Exit()
     {
-        boss.StopHorizontal();
+        if (zeroed) boss.SetGravityScale(boss.OriginalGravityScale);
     }
 }

@@ -70,7 +70,7 @@ public sealed class BossVolleyLaserState : BossState
             if (timer <= 0f)
             {
                 boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
-                boss.ChangeToIdle(boss.Settings.idleDelay);
+                boss.ChangeToIdle(false);
             }
         }
     }

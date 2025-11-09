@@ -15,6 +15,9 @@ MonoBehaviour:
   playerHitMask:
     serializedVersion: 2
     m_Bits: 8
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
   p1Stacks: 9
   p2Stacks: 1
   idleDelay: 1
@@ -25,11 +28,11 @@ MonoBehaviour:
   swordBladeLength: 5
   swordBladeThickness: 0.3
   plungeTeleTime: 0.45
-  plungeActiveTime: 0.28
   plungeDamage: 10
+  plungeBounceUpSpeed: 12
+  groundCheckDist: 0.2
   rushSpeed: 12
   rushMaxTime: 2
-  missBehindTime: 0.6
   rushDamage: 10
   missileVolleys: 3
   missileVolleyInterval: 0.5

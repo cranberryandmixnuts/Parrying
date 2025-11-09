@@ -464,23 +464,64 @@ public class PlayerController : MonoBehaviour
         if (duration > 0f) parryGraceEndTime = Mathf.Max(parryGraceEndTime, Time.time + duration);
     }
 
-    public void Hit(int damage, Vector2 attackPos)
+    public bool TryHit(int damage, Vector2 attackPos)
     {
-        if (IsParryGraceActive) return;
+        if (IsParryGraceActive) return false;
+        if (!Vitals.ApplyDamage(damage, false)) return false;
 
-        if (inPowerParryPrep) inPowerParryPrep = false;
+        inPowerParryPrep = false;
         powerParryPrepLocked = true;
         parryHoldTimer = 0f;
         powerParryPrepTickTimer = 0f;
         powerParryPrepElapsed = 0f;
 
-        if(!Vitals.ApplyDamage(damage, false)) return;
 
         Vector2 dir = ((Vector2)transform.position - attackPos).normalized;
         if (dir == Vector2.zero) dir = Vector2.up;
         lastHitKnockDir = dir;
 
         stateMachine.ChangeState(new HitState(this, stateMachine));
+        return true;
+    }
+
+    public float GetAnimLength(string stateName)
+    {
+        AnimatorStateInfo current = Anim.GetCurrentAnimatorStateInfo(0);
+        if (current.IsName(stateName))
+        {
+            float speed = Anim.speed * current.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return current.length / speed;
+        }
+
+        AnimatorStateInfo next = Anim.GetNextAnimatorStateInfo(0);
+        if (next.IsName(stateName))
+        {
+            float speed = Anim.speed * next.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return next.length / speed;
+        }
+
+        Anim.Update(0f);
+
+        current = Anim.GetCurrentAnimatorStateInfo(0);
+        if (current.IsName(stateName))
+        {
+            float speed = Anim.speed * current.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return current.length / speed;
+        }
+
+        next = Anim.GetNextAnimatorStateInfo(0);
+        if (next.IsName(stateName))
+        {
+            float speed = Anim.speed * next.speed;
+            if (speed <= 0f) return Mathf.Infinity;
+            return next.length / speed;
+        }
+
+        Debug.LogError($"PlayerController: Animator state '{stateName}' not found or not playing.");
+        return 0f;
     }
 
     public Rigidbody2D Rigidbody => rb;
