@@ -5,7 +5,7 @@ public sealed class BossDeathState : BossState
         get { return BossStateType.Death; }
     }
 
-    public BossDeathState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
+    public BossDeathState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
     }
 

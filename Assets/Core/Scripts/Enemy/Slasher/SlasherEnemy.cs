@@ -332,7 +332,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             if (Player.TryHit(attackDamage, originPos + dir * hit.distance))
             {
                 UpdateSwingLine(originPos, dir, hit.distance);
-
                 attackResolved = true;
                 StartAttackCooldown();
                 Player.ClearParryCandidate(this);

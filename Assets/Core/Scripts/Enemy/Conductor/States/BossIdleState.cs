@@ -8,7 +8,7 @@ public sealed class BossIdleState : BossState
 
     public override BossStateType StateType => BossStateType.Idle;
 
-    public BossIdleState(ConductorBoss boss, BossStateMachine stateMachine, bool grounded) : base(boss, stateMachine)
+    public BossIdleState(BossController boss, BossStateMachine stateMachine, bool grounded) : base(boss, stateMachine)
     {
         this.grounded = grounded;
     }
@@ -20,12 +20,14 @@ public sealed class BossIdleState : BossState
         if (grounded)
         {
             boss.SetGravityScale(boss.OriginalGravityScale);
-            boss.Play(ConductorBoss.AnimGroundIdle);
+            boss.Play(BossController.AnimGroundIdle);
         }
         else
         {
             boss.SetGravityScale(0f);
-            boss.Play(ConductorBoss.AnimAirIdle);
+            boss.SetVelocityY(0f);
+            boss.SetVelocityX(0f);
+            boss.Play(BossController.AnimAirIdle);
             zeroed = true;
         }
         boss.StopHorizontal();

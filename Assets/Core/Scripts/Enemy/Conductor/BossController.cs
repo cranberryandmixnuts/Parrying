@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public sealed class ConductorBoss : EnemyBase, IParryReactive
+public sealed class BossController : EnemyBase, IParryReactive
 {
     public enum AttackContext
     {
@@ -200,7 +200,7 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
         AttackContext prev = attackCx;
         attackCx = cx;
         lethalActive = on;
-        if (on) Player.ClearParryCandidate(this);
+        Player.ClearParryCandidate(this);
         if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
     }
 
@@ -254,6 +254,11 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
         return Body.linearVelocity.y;
     }
 
+    public bool IsTouchingGround()
+    {
+        return Body.IsTouchingLayers(settings.groundLayer);
+    }
+
     public void StopHorizontal()
     {
         Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
@@ -261,21 +266,25 @@ public sealed class ConductorBoss : EnemyBase, IParryReactive
 
     public int HandleHitbox(Collider2D hitCol, int damage)
     {
+        if (!lethalActive) return 0;
+
         Player.GetParryDetectCircle(out Vector2 pCenter, out float pRadius);
         if (IsColliderWithinCircle(hitCol, pCenter, pRadius)) Player.RegisterParryCandidate(this, hitCol.bounds.center, damage);
+
         Player.GetDashDetectCircle(out Vector2 dCenter, out float dRadius);
         if (IsColliderWithinCircle(hitCol, dCenter, dRadius)) Player.RegisterDashCandidate(hitCol.bounds.center);
 
         ContactFilter2D f = new ContactFilter2D();
         f.SetLayerMask(settings.playerHitMask);
         f.useTriggers = true;
+
         int hitCount = hitCol.Overlap(f, overlapResults);
         for (int i = 0; i < hitCount; i++)
         {
             PlayerController pc = overlapResults[i].GetComponentInParent<PlayerController>();
             if (pc == Player)
             {
-                if(Player.TryHit(damage, hitCol.bounds.center)) return 0;
+                if (!Player.TryHit(damage, hitCol.bounds.center)) return 0;
                 Player.ClearParryCandidate(this);
                 if (attackCx != AttackContext.Rush) SetLethal(AttackContext.None, false);
                 return 1;

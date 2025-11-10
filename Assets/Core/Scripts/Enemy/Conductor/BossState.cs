@@ -13,12 +13,12 @@ public enum BossStateType
 
 public abstract class BossState
 {
-    protected readonly ConductorBoss boss;
+    protected readonly BossController boss;
     protected readonly BossStateMachine stateMachine;
 
     public abstract BossStateType StateType { get; }
 
-    public BossState(ConductorBoss boss, BossStateMachine stateMachine)
+    public BossState(BossController boss, BossStateMachine stateMachine)
     {
         this.boss = boss;
         this.stateMachine = stateMachine;

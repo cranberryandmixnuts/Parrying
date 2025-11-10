@@ -16,7 +16,7 @@ public sealed class BossSwordDropState : BossState
 
     public override BossStateType StateType => BossStateType.SwordDrop;
 
-    public BossSwordDropState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
+    public BossSwordDropState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
     }
 
@@ -27,10 +27,10 @@ public sealed class BossSwordDropState : BossState
         bool choseLeft = t == boss.LeftTop;
         faceDir = choseLeft ? 1 : -1;
         boss.FaceTo(faceDir);
-        boss.Play(ConductorBoss.AnimSideSword);
+        boss.Play(BossController.AnimSideSword);
 
         phase = 1;
-        boss.SetLethal(ConductorBoss.AttackContext.Sword, true);
+        boss.SetLethal(BossController.AttackContext.Sword, true);
 
         float startAngle = boss.Settings.swordStartAngle;
         float endAngle = boss.Settings.swordEndAngle;
@@ -42,7 +42,7 @@ public sealed class BossSwordDropState : BossState
         endLocal = faceDir > 0 ? endAngle : -endAngle;
 
         elapsed = 0f;
-        duration = Mathf.Max(0.01f, boss.AnimLen(ConductorBoss.AnimSideSword));
+        duration = Mathf.Max(0.01f, boss.AnimLen(BossController.AnimSideSword));
 
         curAngle = baseAngle + startLocal;
         prevAngle = curAngle;
@@ -85,7 +85,7 @@ public sealed class BossSwordDropState : BossState
                     if (boss.PlayerTarget.TryHit(boss.Settings.swordDamage, hits[i].point))
                     {
                         boss.PlayerTarget.ClearParryCandidate(boss);
-                        boss.SetLethal(ConductorBoss.AttackContext.Sword, false);
+                        boss.SetLethal(BossController.AttackContext.Sword, false);
                         resolved = true;
                     }
                     break;
@@ -108,7 +108,7 @@ public sealed class BossSwordDropState : BossState
 
         if (elapsed >= duration)
         {
-            boss.SetLethal(ConductorBoss.AttackContext.Sword, false);
+            boss.SetLethal(BossController.AttackContext.Sword, false);
             boss.ChangeToIdle(true);
             phase = 2;
         }

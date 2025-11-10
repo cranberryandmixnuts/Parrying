@@ -9,18 +9,18 @@ public sealed class BossVolleyLaserState : BossState
 
     public override BossStateType StateType => BossStateType.VolleyLaser;
 
-    public BossVolleyLaserState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
+    public BossVolleyLaserState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
     }
 
     public override void Enter()
     {
-        boss.Play(ConductorBoss.AnimFire);
-        timer = boss.AnimLen(ConductorBoss.AnimFire);
+        boss.Play(BossController.AnimFire);
+        timer = boss.AnimLen(BossController.AnimFire);
         sub = 0f;
         index = 0;
         phase = 0;
-        boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
+        boss.SetLethal(BossController.AttackContext.LaserP1, false);
     }
 
     public override void Update()
@@ -56,9 +56,9 @@ public sealed class BossVolleyLaserState : BossState
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                timer = boss.Settings.laserWindupTime + boss.Settings.laserActiveTime + boss.AnimLen(ConductorBoss.AnimFire) * 0.25f;
+                timer = boss.Settings.laserWindupTime + boss.Settings.laserActiveTime + boss.AnimLen(BossController.AnimFire) * 0.25f;
                 phase = 2;
-                boss.SetLethal(ConductorBoss.AttackContext.LaserP1, true);
+                boss.SetLethal(BossController.AttackContext.LaserP1, true);
             }
             return;
         }
@@ -69,7 +69,7 @@ public sealed class BossVolleyLaserState : BossState
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
+                boss.SetLethal(BossController.AttackContext.LaserP1, false);
                 boss.ChangeToIdle(false);
             }
         }
@@ -82,6 +82,6 @@ public sealed class BossVolleyLaserState : BossState
 
     public override void Exit()
     {
-        boss.SetLethal(ConductorBoss.AttackContext.LaserP1, false);
+        boss.SetLethal(BossController.AttackContext.LaserP1, false);
     }
 }

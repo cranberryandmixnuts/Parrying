@@ -27,12 +27,14 @@ MonoBehaviour:
   swordEndAngle: 0
   swordBladeLength: 5
   swordBladeThickness: 0.3
-  plungeTeleTime: 0.45
+  plungeFallDelay: 0.5
+  plungeFallSpeed: 16
   plungeDamage: 10
   plungeBounceUpSpeed: 12
-  groundCheckDist: 0.2
+  rushStartDelay: 0.5
   rushSpeed: 12
   rushMaxTime: 2
+  missBehindTime: 0.6
   rushDamage: 10
   missileVolleys: 3
   missileVolleyInterval: 0.5

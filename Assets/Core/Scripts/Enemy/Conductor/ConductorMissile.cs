@@ -13,7 +13,7 @@ public sealed class ConductorMissile : MonoBehaviour, IParryReactive
     [SerializeField] private LayerMask playerHitMask;
     [SerializeField] private Collider2D hitCollider;
 
-    private ConductorBoss owner;
+    private BossController owner;
     private PlayerController player;
     private Transform target;
     private bool hitboxActive;
@@ -25,7 +25,7 @@ public sealed class ConductorMissile : MonoBehaviour, IParryReactive
     private Vector2 moveDir;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
 
-    public void Initialize(ConductorBoss shooter, PlayerController p, Vector2 initialDir)
+    public void Initialize(BossController shooter, PlayerController p, Vector2 initialDir)
     {
         owner = shooter;
         player = p;

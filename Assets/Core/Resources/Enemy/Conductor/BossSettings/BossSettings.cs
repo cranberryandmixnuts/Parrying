@@ -19,13 +19,13 @@ public sealed class BossSettings : ScriptableObject
     public float swordBladeThickness = 0.3f;
 
     [Header("Plunge Tuning")]
-    public float plungeFallDelay = 0.15f;
+    public float plungeFallDelay = 0.1f;
     public float plungeFallSpeed = 16f;
     public int plungeDamage = 10;
     public float plungeBounceUpSpeed = 12f;
-    public float groundCheckDist = 0.2f;
 
     [Header("Rush Tuning")]
+    public float rushStartDelay = 0.1f;
     public float rushSpeed = 12f;
     public float rushMaxTime = 2.0f;
     public float missBehindTime = 0.6f;

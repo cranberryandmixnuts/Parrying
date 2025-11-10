@@ -2405,7 +2405,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7016033476336435282}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d87d8e1bcfd635a41909ab0bf8e4024d, type: 3}
+  m_Script: {fileID: 11500000, guid: 26986fc0b45fb59478ad2cb6ef8112b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConductorBoss
   settings: {fileID: 11400000, guid: 2870cb9b992bb8546b04be23cfb6b0cf, type: 2}

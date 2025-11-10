@@ -7,16 +7,16 @@ public sealed class BossRadialLaserState : BossState
 
     public override BossStateType StateType => BossStateType.RadialLaser;
 
-    public BossRadialLaserState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
+    public BossRadialLaserState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
     }
 
     public override void Enter()
     {
-        boss.Play(ConductorBoss.AnimCrackLaser);
-        introTimer = boss.AnimLen(ConductorBoss.AnimCrackLaser);
+        boss.Play(BossController.AnimCrackLaser);
+        introTimer = boss.AnimLen(BossController.AnimCrackLaser);
         sub = 0f;
-        boss.SetLethal(ConductorBoss.AttackContext.LaserP2, false);
+        boss.SetLethal(BossController.AttackContext.LaserP2, false);
     }
 
     public override void Update()
@@ -25,7 +25,7 @@ public sealed class BossRadialLaserState : BossState
         {
             introTimer -= Time.deltaTime;
             if (introTimer > 0f) return;
-            boss.SetLethal(ConductorBoss.AttackContext.LaserP2, true);
+            boss.SetLethal(BossController.AttackContext.LaserP2, true);
             sub = 0f;
         }
 
@@ -41,6 +41,6 @@ public sealed class BossRadialLaserState : BossState
 
     public override void Exit()
     {
-        boss.SetLethal(ConductorBoss.AttackContext.LaserP2, false);
+        boss.SetLethal(BossController.AttackContext.LaserP2, false);
     }
 }

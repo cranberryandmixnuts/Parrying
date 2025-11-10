@@ -6,14 +6,14 @@ public sealed class BossGroggyState : BossState
 
     public override BossStateType StateType => BossStateType.Groggy;
 
-    public BossGroggyState(ConductorBoss boss, BossStateMachine stateMachine, float duration) : base(boss, stateMachine)
+    public BossGroggyState(BossController boss, BossStateMachine stateMachine, float duration) : base(boss, stateMachine)
     {
         timer = duration;
     }
 
     public override void Enter()
     {
-        boss.Play(ConductorBoss.AnimGroggy);
+        boss.Play(BossController.AnimGroggy);
     }
 
     public override void Update()

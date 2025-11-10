@@ -6,6 +6,7 @@ public sealed class BossPlungeRushState : BossState
     {
         Tele,
         Fall,
+        RushDelay,
         Rush,
         Bounce,
         End
@@ -20,7 +21,7 @@ public sealed class BossPlungeRushState : BossState
 
     public override BossStateType StateType => BossStateType.PlungeRush;
 
-    public BossPlungeRushState(ConductorBoss boss, BossStateMachine stateMachine) : base(boss, stateMachine)
+    public BossPlungeRushState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
     {
     }
 
@@ -30,13 +31,16 @@ public sealed class BossPlungeRushState : BossState
         Vector3 c = boss.CeilingPoint.position;
         boss.Teleport(new Vector3(p.x, c.y, boss.transform.position.z));
         boss.FaceTo(p.x >= boss.transform.position.x ? 1 : -1);
+
         phase = Phase.Tele;
         timer = Mathf.Max(0.01f, boss.Settings.plungeFallDelay);
-        boss.SetLethal(ConductorBoss.AttackContext.Plunge, true);
+        boss.SetLethal(BossController.AttackContext.Plunge, true);
         rushTime = 0f;
         rushDisable = 0f;
-        boss.StopHorizontal();
-        boss.SetGravityScale(boss.OriginalGravityScale);
+
+        boss.SetGravityScale(0f);
+        boss.SetVelocityX(0f);
+        boss.SetVelocityY(0f);
     }
 
     public override void Update()
@@ -47,7 +51,8 @@ public sealed class BossPlungeRushState : BossState
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {
-                boss.Play(ConductorBoss.AnimPlunge);
+                boss.SetGravityScale(boss.OriginalGravityScale);
+                boss.Play(BossController.AnimPlunge);
                 phase = Phase.Fall;
             }
             return;
@@ -58,8 +63,8 @@ public sealed class BossPlungeRushState : BossState
             int hit = boss.HandleHitbox(boss.PlungeCollider, boss.Settings.plungeDamage);
             if (hit > 0)
             {
-                boss.SetLethal(ConductorBoss.AttackContext.Plunge, false);
-                boss.Play(ConductorBoss.AnimAirIdle);
+                boss.SetLethal(BossController.AttackContext.Plunge, false);
+                boss.Play(BossController.AnimAirIdle);
                 boss.SetVelocityX(0f);
                 boss.SetVelocityY(boss.Settings.plungeBounceUpSpeed);
                 phase = Phase.Bounce;
@@ -68,7 +73,7 @@ public sealed class BossPlungeRushState : BossState
 
             if (!boss.LethalActive)
             {
-                boss.Play(ConductorBoss.AnimAirIdle);
+                boss.Play(BossController.AnimAirIdle);
                 boss.SetVelocityX(0f);
                 boss.SetVelocityY(boss.Settings.plungeBounceUpSpeed);
                 phase = Phase.Bounce;
@@ -81,12 +86,27 @@ public sealed class BossPlungeRushState : BossState
                 rushDir = px >= boss.transform.position.x ? 1 : -1;
                 boss.FaceTo(rushDir);
                 rushStopX = rushDir > 0 ? boss.RushStopRight.position.x : boss.RushStopLeft.position.x;
-                boss.Play(ConductorBoss.AnimGroundRush);
-                boss.SetLethal(ConductorBoss.AttackContext.Rush, true);
+
+                boss.Play(BossController.AnimGroundRush);
+                boss.SetVelocityX(0f);
+                boss.SetLethal(BossController.AttackContext.Rush, false);
+
+                timer = Mathf.Max(0.01f, boss.Settings.rushStartDelay);
+                phase = Phase.RushDelay;
+                return;
+            }
+            return;
+        }
+
+        if (phase == Phase.RushDelay)
+        {
+            timer -= Time.deltaTime;
+            if (timer <= 0f)
+            {
+                boss.SetLethal(BossController.AttackContext.Rush, true);
                 phase = Phase.Rush;
                 rushTime = 0f;
                 rushDisable = 0f;
-                return;
             }
             return;
         }
@@ -96,14 +116,14 @@ public sealed class BossPlungeRushState : BossState
             if (rushDisable > 0f)
             {
                 rushDisable -= Time.deltaTime;
-                if (rushDisable <= 0f) boss.SetLethal(ConductorBoss.AttackContext.Rush, true);
+                if (rushDisable <= 0f) boss.SetLethal(BossController.AttackContext.Rush, true);
             }
             else
             {
                 int hit = boss.HandleHitbox(boss.RushCollider, boss.Settings.rushDamage);
                 if (hit > 0)
                 {
-                    boss.SetLethal(ConductorBoss.AttackContext.Rush, false);
+                    boss.SetLethal(BossController.AttackContext.Rush, false);
                     rushDisable = 1.0f;
                 }
                 else if (!boss.LethalActive)
@@ -115,9 +135,9 @@ public sealed class BossPlungeRushState : BossState
             rushTime += Time.deltaTime;
             if (ReachedRushStop() || rushTime >= boss.Settings.rushMaxTime)
             {
-                boss.SetLethal(ConductorBoss.AttackContext.Rush, false);
+                boss.SetLethal(BossController.AttackContext.Rush, false);
                 phase = Phase.End;
-                timer = boss.AnimLen(ConductorBoss.AnimGroundRush);
+                timer = boss.AnimLen(BossController.AnimGroundRush);
             }
             return;
         }
@@ -143,19 +163,31 @@ public sealed class BossPlungeRushState : BossState
 
     public override void FixedUpdate()
     {
-        if (phase == Phase.Fall)
+        if (phase == Phase.Tele)
+        {
+            boss.SetVelocityX(0f);
+            boss.SetVelocityY(0f);
+        }
+        else if (phase == Phase.Fall)
+        {
             boss.SetVelocityY(-boss.Settings.plungeFallSpeed);
+        }
         else if (phase == Phase.Rush)
+        {
             boss.SetVelocityX(rushDir * boss.Settings.rushSpeed);
+        }
         else
+        {
             boss.StopHorizontal();
+        }
     }
 
     public override void Exit()
     {
-        boss.SetLethal(ConductorBoss.AttackContext.Plunge, false);
-        boss.SetLethal(ConductorBoss.AttackContext.Rush, false);
+        boss.SetLethal(BossController.AttackContext.Plunge, false);
+        boss.SetLethal(BossController.AttackContext.Rush, false);
         boss.StopHorizontal();
+        boss.SetGravityScale(boss.OriginalGravityScale);
     }
 
     private void TryRegisterCounterParry()
@@ -168,9 +200,7 @@ public sealed class BossPlungeRushState : BossState
 
     private bool GroundHit()
     {
-        Vector2 o = boss.transform.position;
-        RaycastHit2D h = Physics2D.Raycast(o, Vector2.down, boss.Settings.groundCheckDist, boss.Settings.groundLayer);
-        return h.collider != null;
+        return boss.IsTouchingGround();
     }
 
     private bool ReachedRushStop()
