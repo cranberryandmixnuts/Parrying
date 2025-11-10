@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSettings
   maxHealth: 1000
   maxEnergy: 500
-  startHealth: 1000
-  startEnergy: 500
   moveSpeed: 10
   jumpForceCurve:
     serializedVersion: 2
@@ -49,12 +47,11 @@ MonoBehaviour:
   dashSpeed: 30
   dashDuration: 0.16
   dashCooldown: 0.8
-  dashExtremeGain: 50
+  dashExtremeExtraInvincibility: 0.3
   parryWindow: 0.2
-  parryHitstop: 0.15
   perfectParryEnergyGain: 100
   imperfectParryEnergyGain: 50
-  powerParryHoldTime: 0.2
+  powerParryHoldTime: 0.1
   powerParryPrepTick: 0.1
   powerParryPrepEnterCost: 300
   powerParryPrepCost: 5
@@ -65,6 +62,7 @@ MonoBehaviour:
   healHealthPerTick: 10
   healEndLag: 0.3
   hitStunDuration: 0.25
+  hitInvincibleTime: 1
   knockbackDuration: 0.1
   knockbackForce: 10
   accelTime: 0.25
