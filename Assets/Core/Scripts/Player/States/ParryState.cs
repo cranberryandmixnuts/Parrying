@@ -61,7 +61,7 @@ public sealed class ParryState : PlayerState
                     if (frac <= 0.5f)
                     {
                         GameEffects.Instance.DoPerfectParryImpact();
-                        player.Vitals.GainEnergy(player.PerfectParryEnergyGain);
+                        player.Vitals.GainEnergy(player.Settings.perfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnPerfectParry(c.hitPoint);
                     }
@@ -69,7 +69,7 @@ public sealed class ParryState : PlayerState
                     {
                         int chip = c.ImperfectParryDamage > 0 ? Mathf.CeilToInt(c.ImperfectParryDamage) : 0;
                         if (chip > 0) player.Vitals.ApplyDamage(chip, true);
-                        player.Vitals.GainEnergy(player.ImperfectParryEnergyGain);
+                        player.Vitals.GainEnergy(player.Settings.imperfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnImperfectParry(c.hitPoint);
                     }
@@ -89,6 +89,7 @@ public sealed class ParryState : PlayerState
 
     public override void Exit()
     {
+        player.SetEffectState(PlayerEffectState.None);
         player.NotifyParryWindowEnd();
     }
 }

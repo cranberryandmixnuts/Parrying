@@ -23,9 +23,9 @@ public sealed class LocomotionState : PlayerState
         {
             player.parryHoldTimer += Time.deltaTime;
 
-            if (!prepLocked && !player.inPowerParryPrep && player.parryHoldTimer >= player.PowerParryHoldTime)
+            if (!prepLocked && !player.inPowerParryPrep && player.parryHoldTimer >= player.Settings.powerParryHoldTime)
             {
-                if (player.Vitals.TryConsumeEnergy(player.PowerParryPrepEnterCost))
+                if (player.Vitals.TryConsumeEnergy(player.Settings.powerParryPrepEnterCost))
                 {
                     player.inPowerParryPrep = true;
                     player.powerParryPrepTickTimer = 0f;
@@ -42,14 +42,14 @@ public sealed class LocomotionState : PlayerState
             {
                 player.powerParryPrepElapsed += Time.deltaTime;
 
-                if (player.powerParryPrepElapsed >= player.PowerParryNoDrainTime)
+                if (player.powerParryPrepElapsed >= player.Settings.powerParryNoDrainTime)
                 {
                     player.powerParryPrepTickTimer += Time.deltaTime;
-                    if (player.powerParryPrepTickTimer >= player.PowerParryPrepTick)
+                    if (player.powerParryPrepTickTimer >= player.Settings.powerParryPrepTick)
                     {
-                        int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.PowerParryPrepTick);
-                        player.powerParryPrepTickTimer -= ticks * player.PowerParryPrepTick;
-                        int cost = ticks * player.PowerParryPrepCost;
+                        int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.Settings.powerParryPrepTick);
+                        player.powerParryPrepTickTimer -= ticks * player.Settings.powerParryPrepTick;
+                        int cost = ticks * player.Settings.powerParryPrepCost;
                         if (!player.Vitals.TryConsumeEnergy(cost))
                         {
                             player.inPowerParryPrep = false;
@@ -77,7 +77,7 @@ public sealed class LocomotionState : PlayerState
             player.parryHoldTimer = 0f;
         }
 
-        if (canNormalParry && !player.inPowerParryPrep && (!holding || player.parryHoldTimer < player.PowerParryHoldTime))
+        if (canNormalParry && !player.inPowerParryPrep && (!holding || player.parryHoldTimer < player.Settings.powerParryHoldTime))
         {
             player.ConsumeParryPressed();
             player.ConsumeParryBuffer();
@@ -89,7 +89,7 @@ public sealed class LocomotionState : PlayerState
             player.HealHeld &&
             player.isGround &&
             player.Vitals.Health < player.Vitals.MaxHealth &&
-            player.Vitals.Energy >= player.HealEnergyPerTick;
+            player.Vitals.Energy >= player.Settings.healEnergyPerTick;
 
         if (canStartHeal)
         {
@@ -132,17 +132,17 @@ public sealed class LocomotionState : PlayerState
 
     public override void FixedUpdate()
     {
-        player.HandleMove(player.MoveSpeed);
+        player.HandleMove(player.Settings.moveSpeed);
         player.HandleJump();
 
-        if (player.isJumping && player.jumpTimeCounter >= player.MaxJumpTime)
+        if (player.isJumping && player.jumpTimeCounter >= player.Settings.maxJumpTime)
             player.isJumping = false;
     }
 
     private bool TryHandleDash()
     {
         if (!player.DashPressed) return false;
-        if (Time.time < player.lastDashTime + player.DashCooldown) return false;
+        if (Time.time < player.lastDashTime + player.Settings.dashCooldown) return false;
         if (!(player.isGround || player.canAirDash)) return false;
 
         player.ConsumeDashPressed();

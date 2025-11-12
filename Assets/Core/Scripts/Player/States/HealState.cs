@@ -51,7 +51,7 @@ public sealed class HealState : PlayerState
                             allowLoop &&
                             player.HealHeld &&
                             player.isGround &&
-                            player.Vitals.Energy >= player.HealEnergyPerTick &&
+                            player.Vitals.Energy >= player.Settings.healEnergyPerTick &&
                             player.Vitals.Health < player.Vitals.MaxHealth;
 
                         if (canLoop)
@@ -75,7 +75,7 @@ public sealed class HealState : PlayerState
                     bool canStay =
                         player.HealHeld &&
                         player.isGround &&
-                        player.Vitals.Energy >= player.HealEnergyPerTick &&
+                        player.Vitals.Energy >= player.Settings.healEnergyPerTick &&
                         player.Vitals.Health < player.Vitals.MaxHealth;
 
                     if (!canStay)
@@ -88,11 +88,11 @@ public sealed class HealState : PlayerState
                     {
                         healTickTimer += Time.deltaTime;
 
-                        while (healTickTimer >= player.HealTickInterval)
+                        while (healTickTimer >= player.Settings.healTickInterval)
                         {
-                            healTickTimer -= player.HealTickInterval;
+                            healTickTimer -= player.Settings.healTickInterval;
 
-                            bool ok = player.Vitals.TryConsumeEnergy(player.HealEnergyPerTick);
+                            bool ok = player.Vitals.TryConsumeEnergy(player.Settings.healEnergyPerTick);
                             if (!ok)
                             {
                                 player.Anim.Play("Exit_Heal");
@@ -101,7 +101,7 @@ public sealed class HealState : PlayerState
                                 break;
                             }
 
-                            player.Vitals.ApplyHeal(player.HealHealthPerTick);
+                            player.Vitals.ApplyHeal(player.Settings.healHealthPerTick);
 
                             if (player.Vitals.Health >= player.Vitals.MaxHealth)
                             {
@@ -121,7 +121,10 @@ public sealed class HealState : PlayerState
                     exitTimeLeft -= Time.deltaTime;
 
                     if (exitTimeLeft <= 0f)
+                    {
+                        player.SetEffectState(PlayerEffectState.None);
                         stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+                    }
 
                     break;
                 }

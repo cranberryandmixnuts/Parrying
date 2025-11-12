@@ -2,10 +2,15 @@ using UnityEngine;
 
 public sealed class DashState : PlayerState
 {
-    private float cachedGravity;
-    private float dashMoveSpeed;
     private bool extremeDashSuccess;
     private float timer;
+    private float dashDuration;
+    private float dashDistance;
+    private float dashStartTime;
+    private float lastProgress;
+    private int dashFacing;
+
+    private RigidbodyConstraints2D cachedConstraints;
 
     public override PlayerStateType StateType => PlayerStateType.Dash;
 
@@ -15,12 +20,18 @@ public sealed class DashState : PlayerState
     {
         player.CancelJump(true);
         player.lastDashTime = Time.time;
-        cachedGravity = player.Rigidbody.gravityScale;
-        player.Rigidbody.gravityScale = 0f;
+
+        cachedConstraints = player.Rigidbody.constraints;
+        player.Rigidbody.constraints = cachedConstraints | RigidbodyConstraints2D.FreezePositionY;
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
 
         player.Anim.Play("Dash");
-        timer = player.GetAnimLength("Dash");
+        dashDuration = player.GetAnimLength("Dash");
+        timer = dashDuration;
+        dashDistance = player.Settings.dashDistance;
+        dashStartTime = Time.time;
+        lastProgress = 0f;
+        dashFacing = player.facingDirection;
 
         if (!player.isGround) player.canAirDash = false;
 
@@ -48,42 +59,49 @@ public sealed class DashState : PlayerState
             if (detected >= 3) gain += 10;
 
             player.Vitals.GainEnergy(gain);
-            dashMoveSpeed = player.DashSpeed * 1.1f;
             GameEffects.Instance.DoExtremeDashImpact();
+            dashDistance += player.Settings.extremeDashExtraDistance;
         }
         else
-        {
             extremeDashSuccess = false;
-            dashMoveSpeed = player.DashSpeed;
-        }
     }
 
     public override void Update()
     {
         timer -= Time.deltaTime;
         if (timer <= 0f)
-        {
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
-        }
     }
 
     public override void FixedUpdate()
     {
-        player.Rigidbody.linearVelocity = new Vector2(player.facingDirection * dashMoveSpeed, 0f);
+        float raw = Mathf.Clamp01((Time.time - dashStartTime) / dashDuration);
+        float curve = 1f - Mathf.Pow(1f - raw, player.Settings.fadePower);
+        float eased = Mathf.Lerp(curve, raw, player.Settings.minLinearBlend);
+        if (eased < lastProgress) eased = lastProgress;
+
+        float deltaProgress = eased - lastProgress;
+        float deltaX = dashDistance * deltaProgress * dashFacing;
+        float vx = deltaX / Time.fixedDeltaTime;
+
+        player.Rigidbody.linearVelocity = new Vector2(vx, 0f);
+
+        lastProgress = eased;
     }
 
     public override void Exit()
     {
-        player.Rigidbody.gravityScale = cachedGravity;
-        player.SetEffectState(PlayerController.PlayerEffectState.None);
-        player.postDashCarryDir = player.facingDirection;
-        player.postDashCarryTimer = player.PostDashCarryWindow;
-
         if (extremeDashSuccess)
         {
             player.canAirDash = true;
-            player.lastDashTime = Time.time - player.DashCooldown;
-            player.Vitals.SetInvincibleTimer(player.DashExtremeExtraInvincibility);
+            player.lastDashTime = Time.time - player.Settings.dashCooldown;
+            player.Vitals.SetInvincibleTimer(player.Settings.extremeDashExtraInvincibility);
         }
+
+        player.Rigidbody.constraints = cachedConstraints;
+        player.postDashCarryDir = player.facingDirection;
+        player.postDashCarryTimer = player.Settings.postDashCarryWindow;
+        player.Rigidbody.linearVelocity = Vector2.zero;
+        player.SetEffectState(PlayerController.PlayerEffectState.None);
     }
 }

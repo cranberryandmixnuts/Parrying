@@ -72,7 +72,7 @@ public sealed class CounterParryState : PlayerState
     public override void Exit()
     {
         player.Rigidbody.gravityScale = cachedGravity;
-        player.SetEffectState(PlayerController.PlayerEffectState.None);
+        player.SetEffectState(PlayerEffectState.None);
         if (player.counterParryFirstResolved) player.AddParryGrace(0.3f);
     }
 }

@@ -23,8 +23,13 @@ public class PlayerController : MonoBehaviour
 
     public event Action<PlayerEffectState> OnEffectStateChanged;
 
+    [SerializeField] private PlayerVitals vitals;
     [SerializeField] private PlayerSettings settings;
     [SerializeField] private KeyData keyData;
+
+    public PlayerVitals Vitals => vitals;
+    public PlayerSettings Settings => settings;
+    public KeyData KeyData => keyData;
 
     public float MoveInput { get; private set; }
     public bool DashPressed { get; private set; }
@@ -41,31 +46,11 @@ public class PlayerController : MonoBehaviour
     }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
-    public float MoveSpeed => settings.moveSpeed;
     public Vector2 CurrentVelocity => rb.linearVelocity;
-    public float MaxJumpTime => settings.maxJumpTime;
-    public float DashSpeed => settings.dashSpeed;
-    public float DashCooldown => settings.dashCooldown;
-    public float DashExtremeExtraInvincibility => settings.extremeDashExtraInvincibility;
-    public int PerfectParryEnergyGain => settings.perfectParryEnergyGain;
-    public int ImperfectParryEnergyGain => settings.imperfectParryEnergyGain;
-    public float PowerParryHoldTime => settings.powerParryHoldTime;
-    public float PowerParryPrepTick => settings.powerParryPrepTick;
-    public int PowerParryPrepEnterCost => settings.powerParryPrepEnterCost;
-    public int PowerParryPrepCost => settings.powerParryPrepCost;
-    public float PowerParryNoDrainTime => settings.powerParryNoDrainTime;
-    public float HealTickInterval => settings.healTickInterval;
-    public int HealEnergyPerTick => settings.healEnergyPerTick;
-    public int HealHealthPerTick => settings.healHealthPerTick;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private BoxCollider2D groundCheckBox;
-
-    public float HitInvincibleTime => settings.hitInvincibleTime;
-    public float KnockbackForce => settings.knockbackForce;
-    public float KnockbackDuration => settings.knockbackDuration;
-    public float PostDashCarryWindow => settings.postDashCarryWindow;
 
     [Header("Detect")]
     [SerializeField] private CircleCollider2D parryDetectCollider;
@@ -114,8 +99,6 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector] public Vector2 lastHitKnockDir;
     private PlayerStateMachine stateMachine;
-
-    public PlayerVitals Vitals;
 
     private void Awake()
     {
@@ -328,6 +311,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
+        SetEffectState(PlayerEffectState.None);
         Destroy(gameObject);
     }
 

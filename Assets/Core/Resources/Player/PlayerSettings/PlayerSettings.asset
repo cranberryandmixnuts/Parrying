@@ -44,11 +44,13 @@ MonoBehaviour:
   jumpHeightMultiplier: 1
   jumpBufferTime: 0.1
   coyoteTime: 0.1
-  dashSpeed: 30
-  dashDuration: 0.16
+  dashDistance: 9
   dashCooldown: 0.8
-  dashExtremeExtraInvincibility: 0.3
-  parryWindow: 0.2
+  extremeDashCooldown: 3
+  extremeDashExtraInvincibility: 0.3
+  extremeDashExtraDistance: 3
+  fadePower: 6
+  minLinearBlend: 0.2
   perfectParryEnergyGain: 100
   imperfectParryEnergyGain: 50
   powerParryHoldTime: 0.1
@@ -56,14 +58,10 @@ MonoBehaviour:
   powerParryPrepEnterCost: 300
   powerParryPrepCost: 5
   powerParryNoDrainTime: 0.6
-  powerParryDuration: 0.5
   healTickInterval: 0.1
   healEnergyPerTick: 10
   healHealthPerTick: 10
-  healEndLag: 0.3
-  hitStunDuration: 0.25
   hitInvincibleTime: 1
-  knockbackDuration: 0.1
   knockbackForce: 10
   accelTime: 0.25
   airReleaseDecelTime: 0.3
