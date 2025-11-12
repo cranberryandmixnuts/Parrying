@@ -37,9 +37,10 @@ public sealed class DashState : PlayerState
 
         player.dashCandidates.Clear();
 
-        if (detected > 0)
+        if (detected > 0 && player.CanExtremeDash)
         {
             extremeDashSuccess = true;
+            player.lastExtremeDash = Time.time;
 
             int gain = 0;
             if (detected >= 1) gain += 50;

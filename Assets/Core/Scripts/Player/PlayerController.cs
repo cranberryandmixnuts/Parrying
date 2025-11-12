@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
     public float MaxJumpTime => settings.maxJumpTime;
     public float DashSpeed => settings.dashSpeed;
     public float DashCooldown => settings.dashCooldown;
-    public float DashExtremeExtraInvincibility => settings.dashExtremeExtraInvincibility;
+    public float DashExtremeExtraInvincibility => settings.extremeDashExtraInvincibility;
     public int PerfectParryEnergyGain => settings.perfectParryEnergyGain;
     public int ImperfectParryEnergyGain => settings.imperfectParryEnergyGain;
     public float PowerParryHoldTime => settings.powerParryHoldTime;
@@ -88,6 +88,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float coyoteTimer;
     [HideInInspector] public bool canAirDash = true;
     [HideInInspector] public float lastDashTime = -999f;
+    [HideInInspector] public float lastExtremeDash = -999f;
 
     [HideInInspector] public float currentSpeedAbs;
     [HideInInspector] public int lastMoveSign;
@@ -109,6 +110,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool counterParryFirstResolved;
     private float parryGraceEndTime;
     public bool IsParryGraceActive => Time.time < parryGraceEndTime;
+    public bool CanExtremeDash => (Time.time - lastExtremeDash) >= settings.extremeDashCooldown;
 
     [HideInInspector] public Vector2 lastHitKnockDir;
     private PlayerStateMachine stateMachine;

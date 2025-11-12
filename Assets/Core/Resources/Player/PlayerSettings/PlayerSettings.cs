@@ -21,7 +21,8 @@ public sealed class PlayerSettings : ScriptableObject
     [Header("Dash")]
     public float dashSpeed = 30f;
     public float dashCooldown = 0.8f;
-    public float dashExtremeExtraInvincibility = 0.3f;
+    public float extremeDashCooldown = 3f;
+    public float extremeDashExtraInvincibility = 0.3f;
 
     [Header("Parry")]
     public int perfectParryEnergyGain = 100;
