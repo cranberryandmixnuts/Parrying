@@ -15,12 +15,12 @@ public sealed class DashState : PlayerState
     {
         player.CancelJump(true);
         player.lastDashTime = Time.time;
-        timer = player.DashDuration;
         cachedGravity = player.Rigidbody.gravityScale;
         player.Rigidbody.gravityScale = 0f;
         player.SetEffectState(PlayerController.PlayerEffectState.Dash);
 
         player.Anim.Play("Dash");
+        timer = player.GetAnimLength("Dash");
 
         if (!player.isGround) player.canAirDash = false;
 

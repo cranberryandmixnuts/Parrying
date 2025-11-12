@@ -81,10 +81,6 @@ public class PlayerVitals : MonoBehaviour
         }
 
         Health -= damage;
-        if (Health <= 0)
-        {
-            player.Die();
-        }
 
         return true;
     }

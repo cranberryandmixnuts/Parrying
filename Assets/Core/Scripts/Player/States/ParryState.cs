@@ -1,4 +1,5 @@
 using UnityEngine;
+using static PlayerController;
 
 public sealed class ParryState : PlayerState
 {
@@ -21,16 +22,21 @@ public sealed class ParryState : PlayerState
             player.Rigidbody.linearVelocity = new Vector2(0f, player.Rigidbody.linearVelocity.y);
         }
 
-        timer = player.ParryWindow;
+        if (player.isGround)
+        {
+            player.Anim.Play("Ground Normal Parry");
+            timer = player.GetAnimLength("Ground Normal Parry");
+        }
+        else
+        {
+            player.Anim.Play("Air Normal Parry");
+            timer = player.GetAnimLength("Air Normal Parry");
+        }
+
         player.NotifyParryWindowBegin(timer);
         player.Vitals.SetInvincibleTimer(timer);
         player.parryHadSuccessThisWindow = false;
-        player.EnterParryWindow();
-
-        if (player.isGround)
-            player.Anim.Play("Ground Normal Parry");
-        else
-            player.Anim.Play("Air Normal Parry");
+        player.SetEffectState(PlayerEffectState.Parry);
     }
 
     public override void Update()
@@ -84,6 +90,5 @@ public sealed class ParryState : PlayerState
     public override void Exit()
     {
         player.NotifyParryWindowEnd();
-        player.ExitParryWindow();
     }
 }

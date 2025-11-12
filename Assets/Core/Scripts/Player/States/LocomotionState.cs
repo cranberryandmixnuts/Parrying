@@ -89,8 +89,7 @@ public sealed class LocomotionState : PlayerState
             player.HealHeld &&
             player.isGround &&
             player.Vitals.Health < player.Vitals.MaxHealth &&
-            player.Vitals.Energy >= player.HealEnergyPerTick &&
-            player.CanStartHeal();
+            player.Vitals.Energy >= player.HealEnergyPerTick;
 
         if (canStartHeal)
         {

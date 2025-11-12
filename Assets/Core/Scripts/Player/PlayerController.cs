@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,38 +41,27 @@ public class PlayerController : MonoBehaviour
     }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
-
     public float MoveSpeed => settings.moveSpeed;
     public Vector2 CurrentVelocity => rb.linearVelocity;
-
     public float MaxJumpTime => settings.maxJumpTime;
-
     public float DashSpeed => settings.dashSpeed;
-    public float DashDuration => settings.dashDuration;
     public float DashCooldown => settings.dashCooldown;
     public float DashExtremeExtraInvincibility => settings.dashExtremeExtraInvincibility;
-
-    public float ParryWindow => settings.parryWindow;
     public int PerfectParryEnergyGain => settings.perfectParryEnergyGain;
     public int ImperfectParryEnergyGain => settings.imperfectParryEnergyGain;
-
     public float PowerParryHoldTime => settings.powerParryHoldTime;
     public float PowerParryPrepTick => settings.powerParryPrepTick;
     public int PowerParryPrepEnterCost => settings.powerParryPrepEnterCost;
     public int PowerParryPrepCost => settings.powerParryPrepCost;
     public float PowerParryNoDrainTime => settings.powerParryNoDrainTime;
-    public float PowerParryDuration => settings.powerParryDuration;
-
     public float HealTickInterval => settings.healTickInterval;
     public int HealEnergyPerTick => settings.healEnergyPerTick;
     public int HealHealthPerTick => settings.healHealthPerTick;
-    public float HealEndLag => settings.healEndLag;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private BoxCollider2D groundCheckBox;
 
-    public float HitStunDuration => settings.hitStunDuration;
     public float HitInvincibleTime => settings.hitInvincibleTime;
     public float KnockbackForce => settings.knockbackForce;
     public float KnockbackDuration => settings.knockbackDuration;
@@ -123,12 +111,7 @@ public class PlayerController : MonoBehaviour
     public bool IsParryGraceActive => Time.time < parryGraceEndTime;
 
     [HideInInspector] public Vector2 lastHitKnockDir;
-
     private PlayerStateMachine stateMachine;
-    private bool isKnockback = false;
-    private float knockbackTimer = 0f;
-
-    private bool healLocked = false;
 
     public PlayerVitals Vitals;
 
@@ -161,12 +144,6 @@ public class PlayerController : MonoBehaviour
         if (postDashCarryTimer > 0f) postDashCarryTimer -= Time.deltaTime;
         if (jumpBufferTimer > 0f) jumpBufferTimer -= Time.deltaTime;
         if (parryBufferTimer > 0f) parryBufferTimer -= Time.deltaTime;
-
-        if (isKnockback)
-        {
-            knockbackTimer -= Time.deltaTime;
-            if (knockbackTimer <= 0f) isKnockback = false;
-        }
 
         stateMachine.Update();
     }
@@ -225,8 +202,6 @@ public class PlayerController : MonoBehaviour
 
     public void HandleMove(float speed)
     {
-        if (isKnockback) return;
-
         int inputSign = 0;
         if (MoveInput > 0.01f) inputSign = 1;
         else if (MoveInput < -0.01f) inputSign = -1;
@@ -275,10 +250,7 @@ public class PlayerController : MonoBehaviour
         float vx = (inputSign != 0 ? inputSign : (currentSpeedAbs > 0.001f ? lastMoveSign : 0)) * currentSpeedAbs;
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
 
-        /*
         transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
-        플레이어 반전 코드는디버그용 임시주석처리(지우지 말것)
-        */
     }
 
     public void HandleJump()
@@ -302,54 +274,6 @@ public class PlayerController : MonoBehaviour
     {
         isJumping = false;
         if (cutVelocity) StopRising();
-    }
-
-    public void EnterParryWindow()
-    {
-        SetEffectState(PlayerEffectState.Parry);
-    }
-
-    public void ExitParryWindow()
-    {
-        if (CurrentEffectState == PlayerEffectState.Parry) SetEffectState(PlayerEffectState.None);
-    }
-
-    public void EnterCounterParry()
-    {
-        SetEffectState(PlayerEffectState.CounterParry);
-    }
-
-    public void ExitCounterParry()
-    {
-        if (CurrentEffectState == PlayerEffectState.CounterParry) SetEffectState(PlayerEffectState.None);
-    }
-
-    public void EnterHeal()
-    {
-        if (healLocked) return;
-        SetEffectState(PlayerEffectState.Heal);
-    }
-
-    public void ExitHeal()
-    {
-        if (CurrentEffectState == PlayerEffectState.Heal) SetEffectState(PlayerEffectState.None);
-    }
-
-    public void StartHealEndLag()
-    {
-        StartCoroutine(CoHealEndLag());
-    }
-
-    private IEnumerator CoHealEndLag()
-    {
-        healLocked = true;
-        float t = settings.healEndLag;
-        while (t > 0f)
-        {
-            t -= Time.deltaTime;
-            yield return null;
-        }
-        healLocked = false;
     }
 
     public void RegisterParryCandidate(IParryReactive attacker, Vector2 hitPoint, int damage)
@@ -380,18 +304,6 @@ public class PlayerController : MonoBehaviour
         dashCandidates.Add(c);
     }
 
-    public int GetDashCandidateCountCurrentFrame()
-    {
-        int f = Time.frameCount;
-        int cnt = 0;
-        int n = dashCandidates.Count;
-        for (int i = 0; i < n; i++)
-        {
-            if (dashCandidates[i].frame == f) cnt++;
-        }
-        return cnt;
-    }
-
     public void GetParryDetectCircle(out Vector2 center, out float radius)
     {
         float scaleX = Mathf.Abs(parryDetectCollider.transform.lossyScale.x);
@@ -412,14 +324,9 @@ public class PlayerController : MonoBehaviour
         center = dashDetectCollider.bounds.center;
     }
 
-    public bool CanStartHeal()
-    {
-        return !healLocked;
-    }
-
     public void Die()
     {
-        stateMachine.ChangeState(new DeathState(this, stateMachine));
+        Destroy(gameObject);
     }
 
     public void ConsumeParryPressed()
@@ -480,7 +387,9 @@ public class PlayerController : MonoBehaviour
         if (dir == Vector2.zero) dir = Vector2.up;
         lastHitKnockDir = dir;
 
-        stateMachine.ChangeState(new HitState(this, stateMachine));
+        if(Vitals.Health > 0f) stateMachine.ChangeState(new HitState(this, stateMachine));
+        else stateMachine.ChangeState(new DeathState(this, stateMachine));
+
         return true;
     }
 
@@ -489,17 +398,17 @@ public class PlayerController : MonoBehaviour
         AnimatorStateInfo current = Anim.GetCurrentAnimatorStateInfo(0);
         if (current.IsName(stateName))
         {
-            float speed = Anim.speed * current.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return current.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return current.length / global;
         }
 
         AnimatorStateInfo next = Anim.GetNextAnimatorStateInfo(0);
         if (next.IsName(stateName))
         {
-            float speed = Anim.speed * next.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return next.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return next.length / global;
         }
 
         Anim.Update(0f);
@@ -507,17 +416,17 @@ public class PlayerController : MonoBehaviour
         current = Anim.GetCurrentAnimatorStateInfo(0);
         if (current.IsName(stateName))
         {
-            float speed = Anim.speed * current.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return current.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return current.length / global;
         }
 
         next = Anim.GetNextAnimatorStateInfo(0);
         if (next.IsName(stateName))
         {
-            float speed = Anim.speed * next.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return next.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return next.length / global;
         }
 
         Debug.LogError($"PlayerController: Animator state '{stateName}' not found or not playing.");

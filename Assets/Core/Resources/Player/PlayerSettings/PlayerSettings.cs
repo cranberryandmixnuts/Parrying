@@ -20,12 +20,10 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Dash")]
     public float dashSpeed = 30f;
-    public float dashDuration = 0.16f;
     public float dashCooldown = 0.8f;
     public float dashExtremeExtraInvincibility = 0.3f;
 
     [Header("Parry")]
-    public float parryWindow = 0.2f;
     public int perfectParryEnergyGain = 100;
     public int imperfectParryEnergyGain = 50;
 
@@ -35,16 +33,13 @@ public sealed class PlayerSettings : ScriptableObject
     public int powerParryPrepEnterCost = 300;
     public int powerParryPrepCost = 5;
     public float powerParryNoDrainTime = 0.6f;
-    public float powerParryDuration = 0.5f;
 
     [Header("Heal")]
     public float healTickInterval = 0.1f;
     public int healEnergyPerTick = 10;
     public int healHealthPerTick = 10;
-    public float healEndLag = 0.3f;
 
     [Header("Hit")]
-    public float hitStunDuration = 0.25f;
     public float hitInvincibleTime = 1f;
     public float knockbackDuration = 0.1f;
     public float knockbackForce = 10f;

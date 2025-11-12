@@ -64,34 +64,52 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         if (state == State.Walk || state == State.BackWalk)
             FacePlayer();
 
-        if (state == State.Walk)
-            UpdateWalk();
-        else if (state == State.BackWalk)
-            UpdateBackWalk();
-        else if (state == State.Charge)
-            UpdateCharge();
-        else if (state == State.Attack)
-            UpdateAttack();
-        else if (state == State.Stop)
-            UpdateStop();
-        else if (state == State.Death)
-            UpdateDeath();
+        switch (state)
+        {
+            case State.Walk:
+                UpdateWalk();
+                break;
+            case State.BackWalk:
+                UpdateBackWalk();
+                break;
+            case State.Charge:
+                UpdateCharge();
+                break;
+            case State.Attack:
+                UpdateAttack();
+                break;
+            case State.Stop:
+                UpdateStop();
+                break;
+            case State.Death:
+                UpdateDeath();
+                break;
+        }
     }
 
     protected override void OnFixedUpdate()
     {
-        if (state == State.Walk)
-            Body.linearVelocity = new Vector2(FacingDirection * walkSpeed, Body.linearVelocity.y);
-        else if (state == State.BackWalk)
-            Body.linearVelocity = new Vector2(-FacingDirection * walkSpeed, Body.linearVelocity.y);
-        else if (state == State.Charge)
-            Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
-        else if (state == State.Attack)
-            Body.linearVelocity = new Vector2(attackDir * attackSpeed, Body.linearVelocity.y);
-        else if (state == State.Stop)
-            Body.linearVelocity = new Vector2(Mathf.MoveTowards(Body.linearVelocity.x, 0f, stopFriction * Time.fixedDeltaTime), Body.linearVelocity.y);
-        else if (state == State.Death)
-            Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+        switch (state)
+        {
+            case State.Walk:
+                Body.linearVelocity = new Vector2(FacingDirection * walkSpeed, Body.linearVelocity.y);
+                break;
+            case State.BackWalk:
+                Body.linearVelocity = new Vector2(-FacingDirection * walkSpeed, Body.linearVelocity.y);
+                break;
+            case State.Charge:
+                Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+                break;
+            case State.Attack:
+                Body.linearVelocity = new Vector2(attackDir * attackSpeed, Body.linearVelocity.y);
+                break;
+            case State.Stop:
+                Body.linearVelocity = new Vector2(Mathf.MoveTowards(Body.linearVelocity.x, 0f, stopFriction * Time.fixedDeltaTime), Body.linearVelocity.y);
+                break;
+            case State.Death:
+                Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+                break;
+        }
 
         if (state == State.Attack) HandleAttackHitbox();
     }

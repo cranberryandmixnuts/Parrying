@@ -2,6 +2,8 @@ using UnityEngine;
 
 public sealed class DeathState : PlayerState
 {
+    private float timer;
+
     public override PlayerStateType StateType => PlayerStateType.Death;
 
     public DeathState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
@@ -10,8 +12,13 @@ public sealed class DeathState : PlayerState
     {
         player.SetEffectState(PlayerController.PlayerEffectState.Death);
         player.Anim.Play("Death");
+        timer = player.GetAnimLength("Death");
         player.Rigidbody.linearVelocity = Vector2.zero;
-        Collider2D col = player.BoxCollider;
-        if (col != null) col.enabled = false;
+    }
+
+    public override void Update()
+    {
+        timer -= Time.deltaTime;
+        if (timer <= 0f) player.Die();
     }
 }

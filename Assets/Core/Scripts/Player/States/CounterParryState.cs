@@ -1,4 +1,5 @@
 using UnityEngine;
+using static PlayerController;
 
 public sealed class CounterParryState : PlayerState
 {
@@ -16,10 +17,19 @@ public sealed class CounterParryState : PlayerState
         player.Rigidbody.gravityScale = 0f;
         player.Rigidbody.linearVelocity = Vector2.zero;
         player.currentSpeedAbs = 0f;
-        player.EnterCounterParry();
+        player.SetEffectState(PlayerEffectState.CounterParry);
         player.counterParryFirstResolved = false;
-        if (player.isGround) player.Anim.Play("Ground Counter Parry"); else player.Anim.Play("Air Counter Parry");
-        timer = player.PowerParryDuration;
+        if (player.isGround)
+        {
+            player.Anim.Play("Ground Counter Parry");
+            timer = player.GetAnimLength("Ground Counter Parry");
+        }
+        else
+        {
+            player.Anim.Play("Air Counter Parry");
+            timer = player.GetAnimLength("Air Counter Parry");
+        }
+
         player.Vitals.SetInvincibleTimer(timer);
     }
 
@@ -64,6 +74,5 @@ public sealed class CounterParryState : PlayerState
         player.Rigidbody.gravityScale = cachedGravity;
         player.SetEffectState(PlayerController.PlayerEffectState.None);
         if (player.counterParryFirstResolved) player.AddParryGrace(0.3f);
-        player.ExitCounterParry();
     }
 }

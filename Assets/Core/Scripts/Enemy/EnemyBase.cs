@@ -72,17 +72,17 @@ public abstract class EnemyBase : MonoBehaviour
         AnimatorStateInfo current = Anim.GetCurrentAnimatorStateInfo(0);
         if (current.IsName(stateName))
         {
-            float speed = Anim.speed * current.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return current.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return current.length / global;
         }
 
         AnimatorStateInfo next = Anim.GetNextAnimatorStateInfo(0);
         if (next.IsName(stateName))
         {
-            float speed = Anim.speed * next.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return next.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return next.length / global;
         }
 
         Anim.Update(0f);
@@ -90,17 +90,17 @@ public abstract class EnemyBase : MonoBehaviour
         current = Anim.GetCurrentAnimatorStateInfo(0);
         if (current.IsName(stateName))
         {
-            float speed = Anim.speed * current.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return current.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return current.length / global;
         }
 
         next = Anim.GetNextAnimatorStateInfo(0);
         if (next.IsName(stateName))
         {
-            float speed = Anim.speed * next.speed;
-            if (speed <= 0f) return Mathf.Infinity;
-            return next.length / speed;
+            float global = Anim.speed;
+            if (global <= 0f) return Mathf.Infinity;
+            return next.length / global;
         }
 
         Debug.LogError($"EnemyBase: Animator state '{stateName}' not found or not playing.");

@@ -89,32 +89,49 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             currentState != SlasherState.Death)
             FacePlayer();
 
-        if (currentState == SlasherState.Idle)
-            UpdateIdle();
-        else if (currentState == SlasherState.Walk)
-            UpdateWalk();
-        else if (currentState == SlasherState.Chase)
-            UpdateChase();
-        else if (currentState == SlasherState.BackWalk)
-            UpdateBackWalk();
-        else if (currentState == SlasherState.Attack)
-            UpdateAttack();
-        else if (currentState == SlasherState.Hit)
-            UpdateHit();
-        else if (currentState == SlasherState.Death)
-            UpdateDeath();
+        switch (currentState)
+        {
+            case SlasherState.Idle:
+                UpdateIdle();
+                break;
+            case SlasherState.Walk:
+                UpdateWalk();
+                break;
+            case SlasherState.Chase:
+                UpdateChase();
+                break;
+            case SlasherState.BackWalk:
+                UpdateBackWalk();
+                break;
+            case SlasherState.Attack:
+                UpdateAttack();
+                break;
+            case SlasherState.Hit:
+                UpdateHit();
+                break;
+            case SlasherState.Death:
+                UpdateDeath();
+                break;
+        }
     }
 
     protected override void OnFixedUpdate()
     {
-        if (currentState == SlasherState.Walk)
-            MoveTowardsPlayer(walkSpeed);
-        else if (currentState == SlasherState.Chase)
-            MoveTowardsPlayer(chaseSpeed);
-        else if (currentState == SlasherState.BackWalk)
-            MoveAwayFromPlayer(walkSpeed);
-        else
-            StopHorizontal();
+        switch (currentState)
+        {
+            case SlasherState.Walk:
+                MoveTowardsPlayer(walkSpeed);
+                break;
+            case SlasherState.Chase:
+                MoveTowardsPlayer(chaseSpeed);
+                break;
+            case SlasherState.BackWalk:
+                MoveAwayFromPlayer(walkSpeed);
+                break;
+            default:
+                StopHorizontal();
+                break;
+        }
     }
 
     private void UpdateIdle()
@@ -223,47 +240,54 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
         currentState = newState;
 
-        if (currentState == SlasherState.Idle)
-            Anim.Play(AnimIdle);
-        else if (currentState == SlasherState.Walk)
-            Anim.Play(AnimWalk);
-        else if (currentState == SlasherState.Chase)
-            Anim.Play(AnimChase);
-        else if (currentState == SlasherState.BackWalk)
-            Anim.Play(AnimBackWalk);
-        else if (currentState == SlasherState.Attack)
+        switch (currentState)
         {
-            Anim.Play(AnimAttack);
-            float clipLen = GetAnimLength(AnimAttack);
+            case SlasherState.Idle:
+                Anim.Play(AnimIdle);
+                break;
+            case SlasherState.Walk:
+                Anim.Play(AnimWalk);
+                break;
+            case SlasherState.Chase:
+                Anim.Play(AnimChase);
+                break;
+            case SlasherState.BackWalk:
+                Anim.Play(AnimBackWalk);
+                break;
+            case SlasherState.Attack:
+                {
+                    Anim.Play(AnimAttack);
+                    float clipLen = GetAnimLength(AnimAttack);
 
-            if (attackPrepPercent >= attackEndPercent)
-            {
-                Debug.LogError("SlasherEnemy: attackPrepPercent must be < attackEndPercent. Resetting to 0.25 / 0.75.");
-                attackPrepPercent = 0.25f;
-                attackEndPercent = 0.75f;
-            }
+                    if (attackPrepPercent >= attackEndPercent)
+                    {
+                        Debug.LogError("SlasherEnemy: attackPrepPercent must be < attackEndPercent. Resetting to 0.25 / 0.75.");
+                        attackPrepPercent = 0.25f;
+                        attackEndPercent = 0.75f;
+                    }
 
-            attackWindupRuntime = clipLen * attackPrepPercent;
-            swingDurationRuntime = clipLen * (attackEndPercent - attackPrepPercent);
-            attackRecoverRuntime = clipLen - (attackWindupRuntime + swingDurationRuntime);
-            if (attackRecoverRuntime < 0.01f) attackRecoverRuntime = 0.01f;
+                    attackWindupRuntime = clipLen * attackPrepPercent;
+                    swingDurationRuntime = clipLen * (attackEndPercent - attackPrepPercent);
+                    attackRecoverRuntime = clipLen - (attackWindupRuntime + swingDurationRuntime);
+                    if (attackRecoverRuntime < 0.01f) attackRecoverRuntime = 0.01f;
 
-            attackPhase = 0;
-            attackPhaseTimer = attackWindupRuntime;
-            attackResolved = false;
-            ClearSwingLine();
-        }
-        else if (currentState == SlasherState.Hit)
-        {
-            Anim.Play(AnimHit);
-            stateTimer = GetAnimLength(AnimHit);
-            ClearSwingLine();
-        }
-        else if (currentState == SlasherState.Death)
-        {
-            Anim.Play(AnimDeath);
-            stateTimer = GetAnimLength(AnimDeath);
-            ClearSwingLine();
+                    attackPhase = 0;
+                    attackPhaseTimer = attackWindupRuntime;
+                    attackResolved = false;
+                    ClearSwingLine();
+                    break;
+                }
+
+            case SlasherState.Hit:
+                Anim.Play(AnimHit);
+                stateTimer = GetAnimLength(AnimHit);
+                ClearSwingLine();
+                break;
+            case SlasherState.Death:
+                Anim.Play(AnimDeath);
+                stateTimer = GetAnimLength(AnimDeath);
+                ClearSwingLine();
+                break;
         }
     }
 

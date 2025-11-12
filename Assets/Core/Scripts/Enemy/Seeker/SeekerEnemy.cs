@@ -33,7 +33,7 @@ public sealed class SeekerEnemy : EnemyBase
 
     private SeekerState state;
     private float fireCooldown;
-    private float fireTimer;
+    private float fireTimer = -999f;
     private readonly float fireStateLength;
     private bool fired;
     private float deathTimer;
@@ -54,12 +54,18 @@ public sealed class SeekerEnemy : EnemyBase
 
     protected override void OnUpdate()
     {
-        if (state == SeekerState.Drift)
-            UpdateDrift();
-        else if (state == SeekerState.Fire)
-            UpdateFire();
-        else if (state == SeekerState.Death)
-            UpdateDeath();
+        switch (state)
+        {
+            case SeekerState.Drift:
+                UpdateDrift();
+                break;
+            case SeekerState.Fire:
+                UpdateFire();
+                break;
+            case SeekerState.Death:
+                UpdateDeath();
+                break;
+        }
     }
 
     protected override void OnFixedUpdate()
