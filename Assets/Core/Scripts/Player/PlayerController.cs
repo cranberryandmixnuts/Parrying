@@ -240,7 +240,7 @@ public class PlayerController : MonoBehaviour
 
     public void HandleJump()
     {
-        if (isJumping && CurrentStateType == PlayerStateType.Locomotion)
+        if (isJumping)
         {
             jumpTimeCounter += Time.fixedDeltaTime;
             float t = jumpTimeCounter / settings.maxJumpTime;

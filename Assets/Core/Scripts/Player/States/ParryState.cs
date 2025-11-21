@@ -4,6 +4,7 @@ using static PlayerController;
 public sealed class ParryState : PlayerState
 {
     private float timer;
+    private bool wasAirParry;
 
     public override PlayerStateType StateType => PlayerStateType.Parry;
 
@@ -11,7 +12,7 @@ public sealed class ParryState : PlayerState
 
     public override void Enter()
     {
-        player.CancelJump(true);
+        wasAirParry = !player.isGround;
 
         if (!player.isGround)
             player.airParryAvailable = false;
@@ -41,6 +42,16 @@ public sealed class ParryState : PlayerState
 
     public override void Update()
     {
+        if (wasAirParry && player.isGround)
+        {
+            player.Anim.Play("Idle");
+            stateMachine.ChangeState(new LocomotionState(player, stateMachine));
+            return;
+        }
+
+        if (!player.JumpHeld && player.isJumping)
+            player.StopRising();
+
         if (!player.parryHadSuccessThisWindow)
         {
             if (player.parryCandidates != null && player.parryCandidates.Count > 0)
@@ -68,13 +79,16 @@ public sealed class ParryState : PlayerState
                     else
                     {
                         int chip = c.ImperfectParryDamage > 0 ? Mathf.CeilToInt(c.ImperfectParryDamage) : 0;
-                        if (chip > 0) player.Vitals.ApplyDamage(chip, true);
+                        if (chip > 0)
+                            player.Vitals.ApplyDamage(chip, true);
+
                         player.Vitals.GainEnergy(player.Settings.imperfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnImperfectParry(c.hitPoint);
                     }
 
-                    if (!player.isGround) player.airParryAvailable = true;
+                    if (!player.isGround)
+                        player.airParryAvailable = true;
 
                     player.ClearParryCandidate(c.attacker);
                     player.parryCandidates.Clear();
@@ -87,8 +101,23 @@ public sealed class ParryState : PlayerState
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
     }
 
+    public override void FixedUpdate()
+    {
+        if (!player.isGround)
+        {
+            player.HandleMove(player.Settings.moveSpeed);
+            player.HandleJump();
+
+            if (player.isJumping && player.jumpTimeCounter >= player.Settings.maxJumpTime)
+                player.isJumping = false;
+        }
+    }
+
     public override void Exit()
     {
+        if (wasAirParry && !player.isGround)
+            player.Anim.Play("Fall");
+
         player.SetEffectState(PlayerEffectState.None);
         player.NotifyParryWindowEnd();
     }
