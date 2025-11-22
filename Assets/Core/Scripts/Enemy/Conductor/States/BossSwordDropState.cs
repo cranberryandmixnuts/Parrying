@@ -42,7 +42,7 @@ public sealed class BossSwordDropState : BossState
         endLocal = faceDir > 0 ? endAngle : -endAngle;
 
         elapsed = 0f;
-        duration = Mathf.Max(0.01f, boss.AnimLen(BossController.AnimSideSword));
+        duration = boss.AnimLen(BossController.AnimSideSword);
 
         curAngle = baseAngle + startLocal;
         prevAngle = curAngle;

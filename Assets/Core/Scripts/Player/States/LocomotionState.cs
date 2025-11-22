@@ -25,7 +25,7 @@ public sealed class LocomotionState : PlayerState
 
             if (!prepLocked && !player.inPowerParryPrep && player.parryHoldTimer >= player.Settings.powerParryHoldTime)
             {
-                if (player.Vitals.TryConsumeEnergy(player.Settings.powerParryPrepEnterCost))
+                if (player.Vitals.TryConsumeEnergy(player.Settings.powerParryEnterCost))
                 {
                     player.inPowerParryPrep = true;
                     player.powerParryPrepTickTimer = 0f;
@@ -45,11 +45,11 @@ public sealed class LocomotionState : PlayerState
                 if (player.powerParryPrepElapsed >= player.Settings.powerParryNoDrainTime)
                 {
                     player.powerParryPrepTickTimer += Time.deltaTime;
-                    if (player.powerParryPrepTickTimer >= player.Settings.powerParryPrepTick)
+                    if (player.powerParryPrepTickTimer >= player.Settings.powerParryDrainTick)
                     {
-                        int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.Settings.powerParryPrepTick);
-                        player.powerParryPrepTickTimer -= ticks * player.Settings.powerParryPrepTick;
-                        int cost = ticks * player.Settings.powerParryPrepCost;
+                        int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.Settings.powerParryDrainTick);
+                        player.powerParryPrepTickTimer -= ticks * player.Settings.powerParryDrainTick;
+                        int cost = ticks * player.Settings.powerParryDrainCost;
                         if (!player.Vitals.TryConsumeEnergy(cost))
                         {
                             player.inPowerParryPrep = false;

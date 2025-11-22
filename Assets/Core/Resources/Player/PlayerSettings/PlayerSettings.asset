@@ -44,19 +44,19 @@ MonoBehaviour:
   jumpHeightMultiplier: 1
   jumpBufferTime: 0.1
   coyoteTime: 0.1
-  dashDistance: 9
+  dashDistance: 6
   dashCooldown: 0.8
   extremeDashCooldown: 3
   extremeDashExtraInvincibility: 0.3
-  extremeDashExtraDistance: 3
-  fadePower: 6
-  minLinearBlend: 0.2
+  extremeDashExtraDistance: 1
+  fadePower: 5
+  minLinearBlend: 0.1
   perfectParryEnergyGain: 100
   imperfectParryEnergyGain: 50
   powerParryHoldTime: 0.1
-  powerParryPrepTick: 0.1
-  powerParryPrepEnterCost: 300
-  powerParryPrepCost: 5
+  powerParryEnterCost: 300
+  powerParryDrainTick: 0.1
+  powerParryDrainCost: 5
   powerParryNoDrainTime: 0.6
   healTickInterval: 0.1
   healEnergyPerTick: 10

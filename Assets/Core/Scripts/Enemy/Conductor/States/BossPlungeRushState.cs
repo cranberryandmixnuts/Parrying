@@ -33,7 +33,7 @@ public sealed class BossPlungeRushState : BossState
         boss.FaceTo(p.x >= boss.transform.position.x ? 1 : -1);
 
         phase = Phase.Tele;
-        timer = Mathf.Max(0.01f, boss.Settings.plungeFallDelay);
+        timer = boss.Settings.plungeFallDelay;
         boss.SetLethal(BossController.AttackContext.Plunge, true);
         rushTime = 0f;
         rushDisable = 0f;
@@ -91,7 +91,7 @@ public sealed class BossPlungeRushState : BossState
                 boss.SetVelocityX(0f);
                 boss.SetLethal(BossController.AttackContext.Rush, false);
 
-                timer = Mathf.Max(0.01f, boss.Settings.rushStartDelay);
+                timer = boss.Settings.rushStartDelay;
                 phase = Phase.RushDelay;
                 return;
             }

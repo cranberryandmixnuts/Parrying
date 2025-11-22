@@ -19,13 +19,13 @@ public sealed class PlayerSettings : ScriptableObject
     public float coyoteTime = 0.1f;
 
     [Header("Dash")]
-    public float dashDistance = 9f;
+    public float dashDistance = 6f;
     public float dashCooldown = 0.8f;
     public float extremeDashCooldown = 3f;
     public float extremeDashExtraInvincibility = 0.3f;
-    public float extremeDashExtraDistance = 3f;
-    public float fadePower = 6f;
-    public float minLinearBlend = 0.2f;
+    public float extremeDashExtraDistance = 1f;
+    public float fadePower = 5f;
+    public float minLinearBlend = 0.1f;
 
     [Header("Parry")]
     public int perfectParryEnergyGain = 100;
@@ -33,9 +33,9 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Power Parry")]
     public float powerParryHoldTime = 0.1f;
-    public float powerParryPrepTick = 0.1f;
-    public int powerParryPrepEnterCost = 300;
-    public int powerParryPrepCost = 5;
+    public int powerParryEnterCost = 300;
+    public float powerParryDrainTick = 0.1f;
+    public int powerParryDrainCost = 5;
     public float powerParryNoDrainTime = 0.6f;
 
     [Header("Heal")]

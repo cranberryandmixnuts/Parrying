@@ -44,7 +44,6 @@ public sealed class ParryState : PlayerState
     {
         if (wasAirParry && player.isGround)
         {
-            player.Anim.Play("Idle");
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
             return;
         }
