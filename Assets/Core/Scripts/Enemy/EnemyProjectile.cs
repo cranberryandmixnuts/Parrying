@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class SeekerProjectile : MonoBehaviour, IParryReactive
+public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 {
     [SerializeField] private float speed = 5f;
     [SerializeField] private float turnSpeed = 160f;

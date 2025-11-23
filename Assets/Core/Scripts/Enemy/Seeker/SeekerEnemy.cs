@@ -13,7 +13,7 @@ public sealed class SeekerEnemy : EnemyBase
     private const string AnimFire = "Fire";
     private const string AnimDeath = "Death";
 
-    [SerializeField] private SeekerProjectile projectilePrefab;
+    [SerializeField] private EnemyProjectile projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private BoxCollider2D hitbox;
     public BoxCollider2D Hitbox => hitbox;
@@ -143,7 +143,7 @@ public sealed class SeekerEnemy : EnemyBase
     private void FireOne()
     {
         Vector2 dir = transform.right;
-        SeekerProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
+        EnemyProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
         proj.Initialize(this, Player, dir);
         Body.AddForce(-dir * fireRecoilForce, ForceMode2D.Impulse);
     }
