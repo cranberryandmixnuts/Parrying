@@ -1,5 +1,7 @@
 using UnityEngine;
 
+#region Player
+
 public struct ParryCandidate
 {
     public IParryReactive attacker;
@@ -20,3 +22,22 @@ public interface IParryReactive
     void OnImperfectParry(Vector2 hitPoint);
     void OnCounterParry(Vector2 hitPoint);
 }
+#endregion
+
+#region Enemy
+public interface IEnemyProjectileOwner
+{
+    Transform ProjectileTargetTransform
+    {
+        get;
+    }
+
+    Collider2D ProjectileHitbox
+    {
+        get;
+    }
+
+    void OnHitByReflectedProjectile();
+}
+
+#endregion

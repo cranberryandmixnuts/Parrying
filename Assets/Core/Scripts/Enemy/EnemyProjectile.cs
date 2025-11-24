@@ -105,7 +105,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
             }
         }
 
-        if (reflected && owner != null)
+        if (reflected)
         {
             if (OverlapsOwner())
             {
@@ -178,16 +178,13 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         homing = true;
         hitboxActive = true;
         hitboxTimer = 0f;
-        if (owner != null)
+        target = owner.transform;
+        Vector2 toOwner = (Vector2)owner.transform.position - (Vector2)transform.position;
+        if (toOwner.sqrMagnitude > 0.0001f)
         {
-            target = owner.transform;
-            Vector2 toOwner = (Vector2)owner.transform.position - (Vector2)transform.position;
-            if (toOwner.sqrMagnitude > 0.0001f)
-            {
-                toOwner.Normalize();
-                moveDir = toOwner;
-                transform.right = moveDir;
-            }
+            toOwner.Normalize();
+            moveDir = toOwner;
+            transform.right = moveDir;
         }
     }
 }
