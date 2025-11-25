@@ -53,9 +53,9 @@ public sealed class ParryState : PlayerState
 
         if (!player.parryHadSuccessThisWindow)
         {
-            if (player.parryCandidates != null && player.parryCandidates.Count > 0)
+            if (player.parryCandidates.Count > 0)
             {
-                var c = player.parryCandidates[0];
+                ParryCandidate c = player.parryCandidates[0];
                 UnityEngine.Object uo = c.attacker as UnityEngine.Object;
 
                 if (uo == null)

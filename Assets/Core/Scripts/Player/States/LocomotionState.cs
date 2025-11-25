@@ -17,43 +17,43 @@ public sealed class LocomotionState : PlayerState
 
         bool canNormalParry = (player.isGround || player.airParryAvailable) && player.HasParryBuffer();
         bool holding = player.ParryHeld;
-        bool prepLocked = player.powerParryPrepLocked;
+        bool prepLocked = player.counterParryPrepLocked;
 
         if (holding)
         {
             player.parryHoldTimer += Time.deltaTime;
 
-            if (!prepLocked && !player.inPowerParryPrep && player.parryHoldTimer >= player.Settings.powerParryHoldTime)
+            if (!prepLocked && !player.inCounterParryPrep && player.parryHoldTimer >= player.Settings.counterParryHoldTime)
             {
-                if (player.Vitals.TryConsumeEnergy(player.Settings.powerParryEnterCost))
+                if (player.Vitals.TryConsumeEnergy(player.Settings.counterParryEnterCost))
                 {
-                    player.inPowerParryPrep = true;
-                    player.powerParryPrepTickTimer = 0f;
-                    player.powerParryPrepElapsed = 0f;
+                    player.inCounterParryPrep = true;
+                    player.counterParryPrepTickTimer = 0f;
+                    player.counterParryPrepElapsed = 0f;
                 }
                 else
                 {
-                    player.inPowerParryPrep = false;
-                    player.powerParryPrepLocked = true;
+                    player.inCounterParryPrep = false;
+                    player.counterParryPrepLocked = true;
                 }
             }
 
-            if (player.inPowerParryPrep)
+            if (player.inCounterParryPrep)
             {
-                player.powerParryPrepElapsed += Time.deltaTime;
+                player.counterParryPrepElapsed += Time.deltaTime;
 
-                if (player.powerParryPrepElapsed >= player.Settings.powerParryNoDrainTime)
+                if (player.counterParryPrepElapsed >= player.Settings.counterParryNoDrainTime)
                 {
-                    player.powerParryPrepTickTimer += Time.deltaTime;
-                    if (player.powerParryPrepTickTimer >= player.Settings.powerParryDrainTick)
+                    player.counterParryPrepTickTimer += Time.deltaTime;
+                    if (player.counterParryPrepTickTimer >= player.Settings.counterParryDrainTick)
                     {
-                        int ticks = Mathf.FloorToInt(player.powerParryPrepTickTimer / player.Settings.powerParryDrainTick);
-                        player.powerParryPrepTickTimer -= ticks * player.Settings.powerParryDrainTick;
-                        int cost = ticks * player.Settings.powerParryDrainCost;
+                        int ticks = Mathf.FloorToInt(player.counterParryPrepTickTimer / player.Settings.counterParryDrainTick);
+                        player.counterParryPrepTickTimer -= ticks * player.Settings.counterParryDrainTick;
+                        int cost = ticks * player.Settings.counterParryDrainCost;
                         if (!player.Vitals.TryConsumeEnergy(cost))
                         {
-                            player.inPowerParryPrep = false;
-                            player.powerParryPrepLocked = true;
+                            player.inCounterParryPrep = false;
+                            player.counterParryPrepLocked = true;
                         }
                     }
                 }
@@ -61,9 +61,9 @@ public sealed class LocomotionState : PlayerState
         }
         else
         {
-            if (player.inPowerParryPrep)
+            if (player.inCounterParryPrep)
             {
-                player.inPowerParryPrep = false;
+                player.inCounterParryPrep = false;
                 player.parryHoldTimer = 0f;
                 player.ConsumeParryPressed();
                 player.ConsumeParryBuffer();
@@ -71,13 +71,13 @@ public sealed class LocomotionState : PlayerState
                 return;
             }
 
-            if (player.powerParryPrepLocked)
-                player.powerParryPrepLocked = false;
+            if (player.counterParryPrepLocked)
+                player.counterParryPrepLocked = false;
 
             player.parryHoldTimer = 0f;
         }
 
-        if (canNormalParry && !player.inPowerParryPrep && (!holding || player.parryHoldTimer < player.Settings.powerParryHoldTime))
+        if (canNormalParry && !player.inCounterParryPrep && (!holding || player.parryHoldTimer < player.Settings.counterParryHoldTime))
         {
             player.ConsumeParryPressed();
             player.ConsumeParryBuffer();

@@ -31,12 +31,13 @@ public sealed class PlayerSettings : ScriptableObject
     public int perfectParryEnergyGain = 100;
     public int imperfectParryEnergyGain = 50;
 
-    [Header("Power Parry")]
-    public float powerParryHoldTime = 0.1f;
-    public int powerParryEnterCost = 300;
-    public float powerParryDrainTick = 0.1f;
-    public int powerParryDrainCost = 5;
-    public float powerParryNoDrainTime = 0.6f;
+    [Header("Counter Parry")]
+    public float counterParryHoldTime = 0.1f;
+    public int counterParryEnterCost = 300;
+    public float counterParryDrainTick = 0.1f;
+    public int counterParryDrainCost = 5;
+    public float counterParryNoDrainTime = 0.6f;
+    public float counterParryExtraInvincibility = 0.3f;
 
     [Header("Heal")]
     public float healTickInterval = 0.1f;

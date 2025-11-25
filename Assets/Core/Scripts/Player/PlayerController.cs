@@ -84,17 +84,15 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool airParryAvailable = true;
 
     [HideInInspector] public float parryHoldTimer;
-    [HideInInspector] public bool inPowerParryPrep;
-    [HideInInspector] public float powerParryPrepTickTimer;
-    [HideInInspector] public bool powerParryPrepLocked;
-    [HideInInspector] public float powerParryPrepElapsed;
+    [HideInInspector] public bool inCounterParryPrep;
+    [HideInInspector] public float counterParryPrepTickTimer;
+    [HideInInspector] public bool counterParryPrepLocked;
+    [HideInInspector] public float counterParryPrepElapsed;
 
     [HideInInspector] public float parryWindowStartTime;
     [HideInInspector] public float parryWindowDuration;
     [HideInInspector] public bool parryHadSuccessThisWindow;
     [HideInInspector] public bool counterParryFirstResolved;
-    private float parryGraceEndTime;
-    public bool IsParryGraceActive => Time.time < parryGraceEndTime;
     public bool CanExtremeDash => (Time.time - lastExtremeDash) >= settings.extremeDashCooldown;
 
     [HideInInspector] public Vector2 lastHitKnockDir;
@@ -352,21 +350,15 @@ public class PlayerController : MonoBehaviour
         parryWindowDuration = 0f;
     }
 
-    public void AddParryGrace(float duration)
-    {
-        if (duration > 0f) parryGraceEndTime = Mathf.Max(parryGraceEndTime, Time.time + duration);
-    }
-
     public bool TryHit(int damage, Vector2 attackPos)
     {
-        if (IsParryGraceActive) return false;
         if (!Vitals.ApplyDamage(damage, false)) return false;
 
-        inPowerParryPrep = false;
-        powerParryPrepLocked = true;
+        inCounterParryPrep = false;
+        counterParryPrepLocked = true;
         parryHoldTimer = 0f;
-        powerParryPrepTickTimer = 0f;
-        powerParryPrepElapsed = 0f;
+        counterParryPrepTickTimer = 0f;
+        counterParryPrepElapsed = 0f;
 
 
         Vector2 dir = ((Vector2)transform.position - attackPos).normalized;

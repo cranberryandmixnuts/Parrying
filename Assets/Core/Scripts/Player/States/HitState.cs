@@ -18,7 +18,7 @@ public sealed class HitState : PlayerState
         player.Rigidbody.AddForce(dir.normalized * player.Settings.knockbackForce, ForceMode2D.Impulse);
         player.Anim.Play("Hit");
         timer = player.GetAnimLength("Hit");
-        player.SetEffectState(PlayerController.PlayerEffectState.Hit);
+        player.SetEffectState(PlayerEffectState.Hit);
     }
 
     public override void Update()

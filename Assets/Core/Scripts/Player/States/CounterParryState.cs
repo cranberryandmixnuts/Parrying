@@ -37,7 +37,7 @@ public sealed class CounterParryState : PlayerState
     {
         if (!player.counterParryFirstResolved)
         {
-            if (player.parryCandidates != null && player.parryCandidates.Count > 0)
+            if (player.parryCandidates.Count > 0)
             {
                 var c = player.parryCandidates[0];
                 UnityEngine.Object uo = c.attacker as UnityEngine.Object;
@@ -73,6 +73,7 @@ public sealed class CounterParryState : PlayerState
     {
         player.Rigidbody.gravityScale = cachedGravity;
         player.SetEffectState(PlayerEffectState.None);
-        if (player.counterParryFirstResolved) player.AddParryGrace(0.3f);
+        if (player.counterParryFirstResolved)
+            player.Vitals.SetInvincibleTimer(player.Settings.counterParryExtraInvincibility);
     }
 }
