@@ -135,7 +135,7 @@ public sealed class BossSwordDropState : BossState
     private Vector2 BladeCenter(float angleDeg)
     {
         float rad = angleDeg * Mathf.Deg2Rad;
-        Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+        Vector2 dir = new(Mathf.Cos(rad), Mathf.Sin(rad));
         Vector2 origin = (Vector2)boss.transform.position;
         return origin + dir * (boss.Settings.swordBladeLength * 0.5f);
     }
@@ -152,7 +152,7 @@ public sealed class BossSwordDropState : BossState
         if (!boss.LethalActive) return;
 
         Vector2 rectCenter = BladeCenter(angleDeg);
-        Vector2 half = new Vector2(boss.Settings.swordBladeLength * 0.5f, boss.Settings.swordBladeThickness * 0.5f);
+        Vector2 half = new(boss.Settings.swordBladeLength * 0.5f, boss.Settings.swordBladeThickness * 0.5f);
         Vector2 origin = (Vector2)boss.transform.position;
         Vector2 tip = origin + TipDir(angleDeg) * boss.Settings.swordBladeLength;
 
@@ -169,7 +169,7 @@ public sealed class BossSwordDropState : BossState
         Vector2 d = circleCenter - rectCenter;
         float cos = Mathf.Cos(rad);
         float sin = Mathf.Sin(rad);
-        Vector2 local = new Vector2(d.x * cos - d.y * sin, d.x * sin + d.y * cos);
+        Vector2 local = new(d.x * cos - d.y * sin, d.x * sin + d.y * cos);
         float cx = Mathf.Clamp(local.x, -rectHalf.x, rectHalf.x);
         float cy = Mathf.Clamp(local.y, -rectHalf.y, rectHalf.y);
         float dx = local.x - cx;

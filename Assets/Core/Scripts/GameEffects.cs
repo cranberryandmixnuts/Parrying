@@ -93,7 +93,7 @@ public sealed class GameEffects : MonoBehaviour
     private void Shake(float duration, float amplitude)
     {
         Transform camTr = targetCamera.transform;
-        Vector3 strength = new Vector3(amplitude, amplitude, 0f);
+        Vector3 strength = new(amplitude, amplitude, 0f);
 
         camTr.DOShakePosition(duration, strength, 20, 90f, false, true)
              .SetUpdate(true);

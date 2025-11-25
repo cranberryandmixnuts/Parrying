@@ -112,7 +112,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         {
             if (OverlapsOwner())
             {
-                if (owner != null) owner.OnHitByReflectedProjectile();
+                owner.OnHitByReflectedProjectile();
                 Destroy(gameObject);
             }
         }
@@ -130,7 +130,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
     private int Overlap(LayerMask mask)
     {
-        ContactFilter2D f = new ContactFilter2D();
+        ContactFilter2D f = new();
         f.SetLayerMask(mask);
         f.useTriggers = true;
         return hitCollider.Overlap(f, overlapResults);

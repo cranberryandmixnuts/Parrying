@@ -41,7 +41,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     [Header("Debug Sword Gizmo")]
     [SerializeField] private bool debugDrawSwordGizmo = true;
-    [SerializeField] private Color debugSwordColor = new Color(1f, 0.3f, 0.2f, 0.8f);
+    [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
     [SerializeField] private float debugArcStepDeg = 5f;
     [SerializeField] private LineRenderer swingLine;
 
@@ -288,7 +288,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         Player.GetDashDetectCircle(out Vector2 dCenter, out float dRadius);
         if (IsColliderWithinCircle(hitCol, dCenter, dRadius)) Player.RegisterDashCandidate(hitCol.bounds.center);
 
-        ContactFilter2D f = new ContactFilter2D();
+        ContactFilter2D f = new();
         f.SetLayerMask(settings.playerHitMask);
         f.useTriggers = true;
 
@@ -371,20 +371,20 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     private Vector3 BladeTipAtAngle(float angleDeg)
     {
         float rad = angleDeg * Mathf.Deg2Rad;
-        Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+        Vector2 dir = new(Mathf.Cos(rad), Mathf.Sin(rad));
         return transform.position + (Vector3)(dir * settings.swordBladeLength);
     }
 
     private void DrawBladeBoxAtAngle(float angleDeg)
     {
         float rad = angleDeg * Mathf.Deg2Rad;
-        Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+        Vector2 dir = new(Mathf.Cos(rad), Mathf.Sin(rad));
         Vector3 c = transform.position + (Vector3)(dir * (settings.swordBladeLength * 0.5f));
         float hl = settings.swordBladeLength * 0.5f;
         float ht = settings.swordBladeThickness * 0.5f;
 
-        Vector2 x = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-        Vector2 y = new Vector2(-Mathf.Sin(rad), Mathf.Cos(rad));
+        Vector2 x = new(Mathf.Cos(rad), Mathf.Sin(rad));
+        Vector2 y = new(-Mathf.Sin(rad), Mathf.Cos(rad));
 
         Vector3 p1 = c + (Vector3)(x * hl) + (Vector3)(y * ht);
         Vector3 p2 = c + (Vector3)(x * hl) - (Vector3)(y * ht);

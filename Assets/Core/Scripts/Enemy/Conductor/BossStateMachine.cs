@@ -14,8 +14,7 @@ public sealed class BossStateMachine
 
     public void ChangeState(BossState newState)
     {
-        if (newState == null) throw new System.ArgumentNullException(nameof(newState));
-        if (currentState != null) currentState.Exit();
+        currentState.Exit();
         currentState = newState;
         CurrentStateType = newState.StateType;
         currentState.Enter();
@@ -23,11 +22,11 @@ public sealed class BossStateMachine
 
     public void Update()
     {
-        if (currentState != null) currentState.Update();
+        currentState.Update();
     }
 
     public void FixedUpdate()
     {
-        if (currentState != null) currentState.FixedUpdate();
+        currentState.FixedUpdate();
     }
 }
