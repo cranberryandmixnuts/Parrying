@@ -25,12 +25,12 @@ public sealed class ParryState : PlayerState
 
         if (player.isGround)
         {
-            player.Anim.Play("Ground Normal Parry");
+            player.Anim.Play("Ground Normal Parry", -1, 0f);
             timer = player.GetAnimLength("Ground Normal Parry");
         }
         else
         {
-            player.Anim.Play("Air Normal Parry");
+            player.Anim.Play("Air Normal Parry", -1, 0f);
             timer = player.GetAnimLength("Air Normal Parry");
         }
 
@@ -93,6 +93,14 @@ public sealed class ParryState : PlayerState
                     player.parryCandidates.Clear();
                 }
             }
+        }
+
+        if (player.parryHadSuccessThisWindow && player.ParryPressed)
+        {
+            player.ConsumeParryPressed();
+            player.ConsumeParryBuffer();
+            stateMachine.ChangeState(new ParryState(player, stateMachine));
+            return;
         }
 
         timer -= Time.deltaTime;
