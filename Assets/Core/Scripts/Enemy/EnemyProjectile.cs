@@ -13,7 +13,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     [SerializeField] private LayerMask playerHitMask;
     [SerializeField] private Collider2D hitCollider;
 
-    private SeekerEnemy owner;
+    private IEnemyProjectileOwner owner;
     private PlayerController player;
     private Transform target;
     private bool hitboxActive;
@@ -25,7 +25,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     private Vector2 moveDir;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
 
-    public void Initialize(SeekerEnemy shooter, PlayerController p, Vector2 initialDir)
+    public void Initialize(IEnemyProjectileOwner shooter, PlayerController p, Vector2 initialDir)
     {
         owner = shooter;
         player = p;
@@ -36,6 +36,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         homing = true;
         lifeTimer = maxLifetime;
         consumed = false;
+
         moveDir = initialDir.normalized;
         if (moveDir.sqrMagnitude < 0.0001f) moveDir = Vector2.right;
         transform.right = moveDir;
@@ -64,10 +65,12 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         {
             Vector2 tgt = target.position;
             Vector2 to = tgt - pos;
+
             float curAng = Mathf.Atan2(transform.right.y, transform.right.x) * Mathf.Rad2Deg;
             float desAng = Mathf.Atan2(to.y, to.x) * Mathf.Rad2Deg;
             float maxStep = (reflected ? reflectTurnSpeed : turnSpeed) * dt;
             float newAng = Mathf.MoveTowardsAngle(curAng, desAng, maxStep);
+
             transform.rotation = Quaternion.Euler(0f, 0f, newAng);
             moveDir = transform.right;
         }
@@ -109,9 +112,8 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         {
             if (OverlapsOwner())
             {
-                owner.OnHitByReflectedProjectile();
+                if (owner != null) owner.OnHitByReflectedProjectile();
                 Destroy(gameObject);
-                return;
             }
         }
     }
@@ -128,7 +130,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
     private int Overlap(LayerMask mask)
     {
-        ContactFilter2D f = new();
+        ContactFilter2D f = new ContactFilter2D();
         f.SetLayerMask(mask);
         f.useTriggers = true;
         return hitCollider.Overlap(f, overlapResults);
@@ -154,7 +156,15 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         return false;
     }
 
-    private bool OverlapsOwner() => hitCollider.Distance(owner.Hitbox).isOverlapped;
+    private bool OverlapsOwner()
+    {
+        if (owner == null) return false;
+
+        Collider2D ownerHitbox = owner.ProjectileHitbox;
+        if (ownerHitbox == null) return false;
+
+        return hitCollider.Distance(ownerHitbox).isOverlapped;
+    }
 
     public void OnPerfectParry(Vector2 hitPoint)
     {
@@ -166,6 +176,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     public void OnImperfectParry(Vector2 hitPoint)
     {
         if (consumed) return;
+
         hitboxActive = false;
         hitboxTimer = hitboxDisableDuration;
         homing = false;
@@ -174,17 +185,27 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     public void OnCounterParry(Vector2 hitPoint)
     {
         if (consumed) return;
+
         reflected = true;
         homing = true;
         hitboxActive = true;
         hitboxTimer = 0f;
-        target = owner.transform;
-        Vector2 toOwner = (Vector2)owner.transform.position - (Vector2)transform.position;
-        if (toOwner.sqrMagnitude > 0.0001f)
+
+        if (owner != null)
         {
-            toOwner.Normalize();
-            moveDir = toOwner;
-            transform.right = moveDir;
+            target = owner.ProjectileTargetTransform;
+
+            Vector2 toOwner = (Vector2)owner.ProjectileTargetTransform.position - (Vector2)transform.position;
+            if (toOwner.sqrMagnitude > 0.0001f)
+            {
+                toOwner.Normalize();
+                moveDir = toOwner;
+                transform.right = moveDir;
+            }
+        }
+        else
+        {
+            target = null;
         }
     }
 }

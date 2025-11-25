@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public sealed class BossController : EnemyBase, IParryReactive
+public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectileOwner
 {
     public enum AttackContext
     {
@@ -36,8 +36,8 @@ public sealed class BossController : EnemyBase, IParryReactive
     [SerializeField] private Collider2D rushCollider;
     [SerializeField] private Collider2D chestLaserCollider;
     [SerializeField] private Collider2D radialLaserCollider;
-    [SerializeField] private ConductorMissile missilePrefab;
-    [SerializeField] private Transform[] missileMuzzles;
+    [SerializeField] private Collider2D projectileHitbox;
+    [SerializeField] private EnemyProjectile projectilePrefab;
 
     [Header("Debug Sword Gizmo")]
     [SerializeField] private bool debugDrawSwordGizmo = true;
@@ -86,12 +86,26 @@ public sealed class BossController : EnemyBase, IParryReactive
     public Collider2D RushCollider => rushCollider;
     public Collider2D ChestLaserCollider => chestLaserCollider;
     public Collider2D RadialLaserCollider => radialLaserCollider;
-    public ConductorMissile MissilePrefab => missilePrefab;
-    public Transform[] MissileMuzzles => missileMuzzles;
+    public EnemyProjectile MissilePrefab => projectilePrefab;
     public bool LethalActive => lethalActive;
     public float FacingDir => FacingDirection;
     public float OriginalGravityScale => gravityOriginal;
     public PlayerController PlayerTarget => Player;
+
+    public Transform ProjectileTargetTransform
+    {
+        get { return transform; }
+    }
+
+    public Collider2D ProjectileHitbox
+    {
+        get { return projectileHitbox; }
+    }
+
+    public void OnHitByReflectedProjectile()
+    {
+        OnMissileReflectedHit();
+    }
 
     public void ChangeToIdle(bool grounded)
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class SeekerEnemy : EnemyBase
+public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
 {
     private enum SeekerState
     {
@@ -16,7 +16,16 @@ public sealed class SeekerEnemy : EnemyBase
     [SerializeField] private EnemyProjectile projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private BoxCollider2D hitbox;
-    public BoxCollider2D Hitbox => hitbox;
+
+    public Transform ProjectileTargetTransform
+    {
+        get { return transform; }
+    }
+
+    public Collider2D ProjectileHitbox
+    {
+        get { return hitbox; }
+    }
 
     [Header("Drift")]
     [SerializeField] private float desiredHeight = 4.5f;

@@ -43,16 +43,15 @@ public sealed class BossVolleyLaserState : BossState
             sub += Time.deltaTime;
             if (index < boss.Settings.missileVolleys && sub >= index * boss.Settings.missileVolleyInterval)
             {
-                int n = boss.MissileMuzzles != null ? boss.MissileMuzzles.Length : 0;
-                for (int i = 0; i < n; i++)
+                for (int i = 0; i < boss.Settings.missileVolleys; i++)
                 {
-                    Transform m = boss.MissileMuzzles[i];
-                    if (m == null) continue;
-                    ConductorMissile proj = Object.Instantiate(boss.MissilePrefab, m.position, m.rotation);
+                    Transform m = boss.transform;
+                    EnemyProjectile proj = Object.Instantiate(boss.MissilePrefab, m.position, m.rotation);
                     proj.Initialize(boss, boss.PlayerTarget, m.right);
                 }
                 index += 1;
             }
+
             timer -= Time.deltaTime;
             if (timer <= 0f)
             {

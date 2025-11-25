@@ -2465,8 +2465,8 @@ MonoBehaviour:
   rushCollider: {fileID: 1402559326}
   chestLaserCollider: {fileID: 0}
   radialLaserCollider: {fileID: 0}
-  missilePrefab: {fileID: 0}
-  missileMuzzles: []
+  projectileHitbox: {fileID: 0}
+  projectilePrefab: {fileID: 1573327447633197556, guid: 18eb877b4daa7784393d952be77695d7, type: 3}
   debugDrawSwordGizmo: 1
   debugSwordColor: {r: 1, g: 0.3, b: 0.2, a: 0.8}
   debugArcStepDeg: 5
