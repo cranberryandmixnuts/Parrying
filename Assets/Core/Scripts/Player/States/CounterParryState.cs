@@ -39,7 +39,7 @@ public sealed class CounterParryState : PlayerState
         {
             if (player.parryCandidates.Count > 0)
             {
-                var c = player.parryCandidates[0];
+                ParryCandidate c = player.parryCandidates[0];
                 UnityEngine.Object uo = c.attacker as UnityEngine.Object;
 
                 if (uo == null)
