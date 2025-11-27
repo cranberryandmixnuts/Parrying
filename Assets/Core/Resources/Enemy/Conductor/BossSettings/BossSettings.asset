@@ -25,8 +25,8 @@ MonoBehaviour:
   swordDamage: 10
   swordStartAngle: 90
   swordEndAngle: 0
-  swordBladeLength: 5
-  swordBladeThickness: 0.3
+  swordBladeLength: 9
+  swordBladeThickness: 0.5
   plungeFallDelay: 0.5
   plungeFallSpeed: 16
   plungeDamage: 10
@@ -38,9 +38,15 @@ MonoBehaviour:
   rushDamage: 10
   missileVolleys: 3
   missileVolleyInterval: 0.5
-  laserWindupTime: 0.6
-  laserActiveTime: 1.2
+  laserWindupTime: 1
+  extraWarningTail: 0.3
+  laserActiveTime: 0.3
+  missileToLaserExtraDelay: 0.5
+  laserTurnSpeedDegPerSec: 300
   laserDamage: 10
+  volleySideOffset: 6
+  laserLength: 30
+  laserThickness: 0.3
   radialSets: 12
   radialBeat: 0.25
   radialActiveEach: 0.18

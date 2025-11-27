@@ -15,8 +15,8 @@ public sealed class BossSettings : ScriptableObject
     public int swordDamage = 10;
     public float swordStartAngle = 90f;
     public float swordEndAngle = 0f;
-    public float swordBladeLength = 5f;
-    public float swordBladeThickness = 0.3f;
+    public float swordBladeLength = 9f;
+    public float swordBladeThickness = 0.5f;
 
     [Header("Plunge Tuning")]
     public float plungeFallDelay = 0.1f;
@@ -34,9 +34,15 @@ public sealed class BossSettings : ScriptableObject
     [Header("Volley+Laser Tuning")]
     public int missileVolleys = 3;
     public float missileVolleyInterval = 0.5f;
-    public float laserWindupTime = 0.6f;
-    public float laserActiveTime = 1.2f;
+    public float laserWindupTime = 1f;
+    public float extraWarningTail = 0.3f;
+    public float laserActiveTime = 0.3f;
+    public float missileToLaserExtraDelay = 0.5f;
+    public float laserTurnSpeedDegPerSec = 300f;
     public int laserDamage = 10;
+    public float volleySideOffset = 6f;
+    public float laserLength = 30f;
+    public float laserThickness = 0.3f;
 
     [Header("Radial Tuning")]
     public int radialSets = 12;

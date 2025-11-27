@@ -2,11 +2,10 @@ using UnityEngine;
 
 public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 {
-    [SerializeField] private float speed = 5f;
+    [SerializeField] private float speed = 10f;
     [SerializeField] private float turnSpeed = 160f;
-    [SerializeField] private float reflectSpeed = 30f;
-    [SerializeField] private float reflectTurnSpeed = 300f;
-    [SerializeField] private float hitboxDisableDuration = 1f;
+    [SerializeField] private float reflectSpeed = 50f;
+    [SerializeField] private float reflectTurnSpeed = 600f;
     [SerializeField] private float maxLifetime = 6f;
     [SerializeField] private int damage = 10;
     [SerializeField] private LayerMask groundMask;
@@ -16,10 +15,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     private IEnemyProjectileOwner owner;
     private PlayerController player;
     private Transform target;
-    private bool hitboxActive;
-    private float hitboxTimer;
     private bool reflected;
-    private bool homing;
     private float lifeTimer;
     private bool consumed;
     private Vector2 moveDir;
@@ -30,10 +26,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         owner = shooter;
         player = p;
         target = p.transform;
-        hitboxActive = true;
-        hitboxTimer = 0f;
         reflected = false;
-        homing = true;
         lifeTimer = maxLifetime;
         consumed = false;
 
@@ -53,42 +46,30 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
             return;
         }
 
-        if (hitboxTimer > 0f)
-        {
-            hitboxTimer -= dt;
-            if (hitboxTimer <= 0f) hitboxActive = true;
-        }
-
         Vector2 pos = transform.position;
 
-        if (homing && target != null)
-        {
-            Vector2 tgt = target.position;
-            Vector2 to = tgt - pos;
+        Vector2 tgt = target.position;
+        Vector2 to = tgt - pos;
 
-            float curAng = Mathf.Atan2(transform.right.y, transform.right.x) * Mathf.Rad2Deg;
-            float desAng = Mathf.Atan2(to.y, to.x) * Mathf.Rad2Deg;
-            float maxStep = (reflected ? reflectTurnSpeed : turnSpeed) * dt;
-            float newAng = Mathf.MoveTowardsAngle(curAng, desAng, maxStep);
+        float curAng = Mathf.Atan2(transform.right.y, transform.right.x) * Mathf.Rad2Deg;
+        float desAng = Mathf.Atan2(to.y, to.x) * Mathf.Rad2Deg;
+        float maxStep = (reflected ? reflectTurnSpeed : turnSpeed) * dt;
+        float newAng = Mathf.MoveTowardsAngle(curAng, desAng, maxStep);
 
-            transform.rotation = Quaternion.Euler(0f, 0f, newAng);
-            moveDir = transform.right;
-        }
+        transform.rotation = Quaternion.Euler(0f, 0f, newAng);
+        moveDir = transform.right;
 
         float spd = reflected ? reflectSpeed : speed;
         Vector2 vel = moveDir * spd;
         transform.position = pos + vel * dt;
 
-        if (hitboxActive)
-        {
-            player.GetParryDetectCircle(out Vector2 center, out float radius);
-            if (IsColliderWithinCircle(hitCollider, center, radius))
-                player.RegisterParryCandidate(this, hitCollider.bounds.center, damage);
+        player.GetParryDetectCircle(out Vector2 center, out float radius);
+        if (IsColliderWithinCircle(hitCollider, center, radius))
+            player.RegisterParryCandidate(this, hitCollider.bounds.center, damage);
 
-            player.GetDashDetectCircle(out Vector2 dcenter, out float dradius);
-            if (IsColliderWithinCircle(hitCollider, dcenter, dradius))
-                player.RegisterDashCandidate(hitCollider.bounds.center);
-        }
+        player.GetDashDetectCircle(out Vector2 dcenter, out float dradius);
+        if (IsColliderWithinCircle(hitCollider, dcenter, dradius))
+            player.RegisterDashCandidate(hitCollider.bounds.center);
 
         if (OverlapsGround())
         {
@@ -96,15 +77,12 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
             return;
         }
 
-        if (hitboxActive)
+        if (OverlapsPlayerBody())
         {
-            if (OverlapsPlayerBody())
+            if (player.TryHit(damage, hitCollider.bounds.center))
             {
-                if (player.TryHit(damage, hitCollider.bounds.center))
-                {
-                    Destroy(gameObject);
-                    return;
-                }
+                Destroy(gameObject);
+                return;
             }
         }
 
@@ -158,10 +136,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
     private bool OverlapsOwner()
     {
-        if (owner == null) return false;
-
         Collider2D ownerHitbox = owner.ProjectileHitbox;
-        if (ownerHitbox == null) return false;
 
         return hitCollider.Distance(ownerHitbox).isOverlapped;
     }
@@ -173,39 +148,22 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
         Destroy(gameObject);
     }
 
-    public void OnImperfectParry(Vector2 hitPoint)
-    {
-        if (consumed) return;
-
-        hitboxActive = false;
-        hitboxTimer = hitboxDisableDuration;
-        homing = false;
-    }
+    public void OnImperfectParry(Vector2 hitPoint) => OnPerfectParry(hitPoint);
 
     public void OnCounterParry(Vector2 hitPoint)
     {
         if (consumed) return;
 
         reflected = true;
-        homing = true;
-        hitboxActive = true;
-        hitboxTimer = 0f;
 
-        if (owner != null)
-        {
-            target = owner.ProjectileTargetTransform;
+        target = owner.ProjectileTargetTransform;
 
-            Vector2 toOwner = (Vector2)owner.ProjectileTargetTransform.position - (Vector2)transform.position;
-            if (toOwner.sqrMagnitude > 0.0001f)
-            {
-                toOwner.Normalize();
-                moveDir = toOwner;
-                transform.right = moveDir;
-            }
-        }
-        else
+        Vector2 toOwner = (Vector2)owner.ProjectileTargetTransform.position - (Vector2)transform.position;
+        if (toOwner.sqrMagnitude > 0.0001f)
         {
-            target = null;
+            toOwner.Normalize();
+            moveDir = toOwner;
+            transform.right = moveDir;
         }
     }
 }

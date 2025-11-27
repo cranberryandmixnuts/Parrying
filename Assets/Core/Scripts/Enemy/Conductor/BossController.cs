@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectileOwner
 {
@@ -23,6 +24,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public const string AnimCrackLaser = "Crack Laser";
     public const string AnimDeath = "Death";
 
+    [ReadOnly] [SerializeField] private int p1Stacks;
+    [ReadOnly] [SerializeField] private int p2Stacks;
+
     [Header("Settings")]
     [SerializeField] private BossSettings settings;
 
@@ -34,24 +38,25 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [SerializeField] private Transform rushStopRight;
     [SerializeField] private Collider2D plungeCollider;
     [SerializeField] private Collider2D rushCollider;
-    [SerializeField] private Collider2D chestLaserCollider;
     [SerializeField] private Collider2D radialLaserCollider;
     [SerializeField] private Collider2D projectileHitbox;
     [SerializeField] private EnemyProjectile projectilePrefab;
+    [SerializeField] private Transform volleyCenter;
+    [SerializeField] private Transform volleyHeight;
 
     [Header("Debug Sword Gizmo")]
     [SerializeField] private bool debugDrawSwordGizmo = true;
     [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
     [SerializeField] private float debugArcStepDeg = 5f;
     [SerializeField] private LineRenderer swingLine;
+    [SerializeField] private Color volleyWarningColor = new(1f, 0.9f, 0.4f, 0.9f);
+    [SerializeField] private Color volleyFiringColor = new(1f, 0.2f, 0.1f, 0.9f);
 
     private float gravityOriginal;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
     private BossStateMachine stateMachine;
     private bool lethalActive;
     private AttackContext attackCx;
-    private int p1Stacks;
-    private int p2Stacks;
 
     protected override string DeathAnimName => AnimDeath;
 
@@ -84,9 +89,10 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public Transform RushStopRight => rushStopRight;
     public Collider2D PlungeCollider => plungeCollider;
     public Collider2D RushCollider => rushCollider;
-    public Collider2D ChestLaserCollider => chestLaserCollider;
     public Collider2D RadialLaserCollider => radialLaserCollider;
     public EnemyProjectile MissilePrefab => projectilePrefab;
+    public Transform VolleyCenter => volleyCenter;
+    public Transform VolleyHeight => volleyHeight;
     public bool LethalActive => lethalActive;
     public float FacingDir => FacingDirection;
     public float OriginalGravityScale => gravityOriginal;
@@ -188,11 +194,19 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void DecideP1()
     {
-        //int r = UnityEngine.Random.Range(0, 3);
-        //if (r == 0) ChangeToSwordDrop();
-        //else if (r == 1) ChangeToPlungeRush();
-        //else ChangeToVolleyLaser();
-        ChangeToPlungeRush();
+        int r = UnityEngine.Random.Range(0, 3);
+        switch (r)
+        {
+            case 0:
+                ChangeToSwordDrop();
+                break;
+            case 1:
+                ChangeToPlungeRush();
+                break;
+            default:
+                ChangeToVolleyLaser();
+                break;
+        }
     }
 
     public void ConsumeP1Stack()
@@ -395,5 +409,30 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         Gizmos.DrawLine(p2, p3);
         Gizmos.DrawLine(p3, p4);
         Gizmos.DrawLine(p4, p1);
+    }
+
+    public void UpdateVolleyLaserLine(Vector2 origin, Vector2 dir, float length, bool firing)
+    {
+        if (swingLine == null) return;
+
+        swingLine.useWorldSpace = true;
+        swingLine.positionCount = 2;
+        swingLine.widthMultiplier = settings.laserThickness;
+
+        Vector3 a = origin;
+        Vector3 b = a + (Vector3)(dir.normalized * length);
+
+        swingLine.SetPosition(0, a);
+        swingLine.SetPosition(1, b);
+
+        Color c = firing ? volleyFiringColor : volleyWarningColor;
+        swingLine.startColor = c;
+        swingLine.endColor = c;
+    }
+
+    public void ClearVolleyLaserLine()
+    {
+        if (swingLine == null) return;
+        swingLine.positionCount = 0;
     }
 }
