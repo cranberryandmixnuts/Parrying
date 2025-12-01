@@ -16,9 +16,8 @@ public sealed class BossSwordDropState : BossState
 
     public override BossStateType StateType => BossStateType.SwordDrop;
 
-    public BossSwordDropState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
-    {
-    }
+    public BossSwordDropState(BossController boss, BossStateMachine stateMachine)
+        : base(boss, stateMachine) { }
 
     public override void Enter()
     {

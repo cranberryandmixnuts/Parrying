@@ -6,7 +6,8 @@ public sealed class DeathState : PlayerState
 
     public override PlayerStateType StateType => PlayerStateType.Death;
 
-    public DeathState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public DeathState(PlayerController player, PlayerStateMachine stateMachine)
+        : base(player, stateMachine) { }
 
     public override void Enter()
     {

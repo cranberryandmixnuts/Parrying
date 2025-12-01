@@ -7,7 +7,8 @@ public sealed class HitState : PlayerState
 
     public override PlayerStateType StateType => PlayerStateType.Hit;
 
-    public HitState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public HitState(PlayerController player, PlayerStateMachine stateMachine)
+        : base(player, stateMachine) { }
 
     public override void Enter()
     {

@@ -14,7 +14,8 @@ public sealed class DashState : PlayerState
 
     public override PlayerStateType StateType => PlayerStateType.Dash;
 
-    public DashState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public DashState(PlayerController player, PlayerStateMachine stateMachine)
+        : base(player, stateMachine) { }
 
     public override void Enter()
     {
@@ -64,6 +65,7 @@ public sealed class DashState : PlayerState
         }
         else
             extremeDashSuccess = false;
+        player.Dash.Play();
     }
 
     public override void Update()
@@ -103,5 +105,6 @@ public sealed class DashState : PlayerState
         player.postDashCarryTimer = player.Settings.postDashCarryWindow;
         player.Rigidbody.linearVelocity = Vector2.zero;
         player.SetEffectState(PlayerController.PlayerEffectState.None);
+        player.Dash.Stop();
     }
 }

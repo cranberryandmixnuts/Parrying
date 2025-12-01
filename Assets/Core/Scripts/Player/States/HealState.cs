@@ -18,7 +18,8 @@ public sealed class HealState : PlayerState
 
     public override PlayerStateType StateType => PlayerStateType.Heal;
 
-    public HealState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public HealState(PlayerController player, PlayerStateMachine stateMachine)
+        : base(player, stateMachine) { }
 
     public override void Enter()
     {
@@ -32,6 +33,7 @@ public sealed class HealState : PlayerState
         healTickTimer = 0f;
         enterTimeLeft = player.GetAnimLength("Enter_Heal");
         exitTimeLeft = 0f;
+        player.Healing.Play();
     }
 
     public override void Update()
@@ -119,6 +121,7 @@ public sealed class HealState : PlayerState
             case HealPhase.Exit:
                 {
                     exitTimeLeft -= Time.deltaTime;
+                    player.Healing.Stop();
 
                     if (exitTimeLeft <= 0f)
                     {

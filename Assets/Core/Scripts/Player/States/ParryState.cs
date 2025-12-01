@@ -8,7 +8,8 @@ public sealed class ParryState : PlayerState
 
     public override PlayerStateType StateType => PlayerStateType.Parry;
 
-    public ParryState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public ParryState(PlayerController player, PlayerStateMachine stateMachine)
+        : base(player, stateMachine) { }
 
     public override void Enter()
     {

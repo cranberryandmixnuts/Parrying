@@ -47,7 +47,7 @@ MonoBehaviour:
   volleySideOffset: 6
   laserLength: 30
   laserThickness: 0.3
-  radialSets: 12
-  radialBeat: 0.25
-  radialActiveEach: 0.18
   radialDamage: 10
+  radialBeat: 0.3
+  radialBeamCountRange: {x: 8, y: 12}
+  radialMinAngleSeparationDeg: 30

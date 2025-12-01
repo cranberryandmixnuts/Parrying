@@ -21,9 +21,8 @@ public sealed class BossPlungeRushState : BossState
 
     public override BossStateType StateType => BossStateType.PlungeRush;
 
-    public BossPlungeRushState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
-    {
-    }
+    public BossPlungeRushState(BossController boss, BossStateMachine stateMachine)
+        : base(boss, stateMachine) { }
 
     public override void Enter()
     {

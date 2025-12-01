@@ -8,7 +8,8 @@ public sealed class CounterParryState : PlayerState
 
     public override PlayerStateType StateType => PlayerStateType.CounterParry;
 
-    public CounterParryState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+    public CounterParryState(PlayerController player, PlayerStateMachine stateMachine)
+        : base(player, stateMachine) { }
 
     public override void Enter()
     {

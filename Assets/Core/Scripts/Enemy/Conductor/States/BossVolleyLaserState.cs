@@ -37,9 +37,8 @@ public sealed class BossVolleyLaserState : BossState
 
     public override BossStateType StateType => BossStateType.VolleyLaser;
 
-    public BossVolleyLaserState(BossController boss, BossStateMachine stateMachine) : base(boss, stateMachine)
-    {
-    }
+    public BossVolleyLaserState(BossController boss, BossStateMachine stateMachine)
+        : base(boss, stateMachine) { }
 
     public override void Enter()
     {

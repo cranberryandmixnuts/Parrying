@@ -31,22 +31,22 @@ public sealed class BossSettings : ScriptableObject
     public float missBehindTime = 0.6f;
     public int rushDamage = 10;
 
-    [Header("Volley+Laser Tuning")]
+    [Header("Volley&Laser Tuning")]
     public int missileVolleys = 3;
     public float missileVolleyInterval = 0.5f;
     public float laserWindupTime = 1f;
-    public float extraWarningTail = 0.3f;
+    public float extraWarningTail = 0.5f;
     public float laserActiveTime = 0.3f;
     public float missileToLaserExtraDelay = 0.5f;
-    public float laserTurnSpeedDegPerSec = 300f;
+    public float laserTurnSpeedDegPerSec = 240f;
     public int laserDamage = 10;
     public float volleySideOffset = 6f;
-    public float laserLength = 30f;
-    public float laserThickness = 0.3f;
+    public float laserLength = 14f;
+    public float laserThickness = 0.25f;
 
     [Header("Radial Tuning")]
-    public int radialSets = 12;
-    public float radialBeat = 0.25f;
-    public float radialActiveEach = 0.18f;
     public int radialDamage = 10;
+    public float radialBeat = 0.3f;
+    public Vector2 radialBeamCountRange = new(8f, 16f);
+    public float radialMinAngleSeparationDeg = 8f;
 }

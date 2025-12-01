@@ -8,10 +8,8 @@ public sealed class BossIdleState : BossState
 
     public override BossStateType StateType => BossStateType.Idle;
 
-    public BossIdleState(BossController boss, BossStateMachine stateMachine, bool grounded) : base(boss, stateMachine)
-    {
-        this.grounded = grounded;
-    }
+    public BossIdleState(BossController boss, BossStateMachine stateMachine, bool grounded)
+        : base(boss, stateMachine) { this.grounded = grounded; }
 
     public override void Enter()
     {

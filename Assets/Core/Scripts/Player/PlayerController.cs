@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -23,14 +24,6 @@ public class PlayerController : MonoBehaviour
 
     public event Action<PlayerEffectState> OnEffectStateChanged;
 
-    [SerializeField] private PlayerVitals vitals;
-    [SerializeField] private PlayerSettings settings;
-    [SerializeField] private KeyData keyData;
-
-    public PlayerVitals Vitals => vitals;
-    public PlayerSettings Settings => settings;
-    public KeyData KeyData => keyData;
-
     public float MoveInput { get; private set; }
     public bool DashPressed { get; private set; }
     public bool ParryPressed { get; private set; }
@@ -48,6 +41,15 @@ public class PlayerController : MonoBehaviour
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
     public Vector2 CurrentVelocity => rb.linearVelocity;
 
+    [Header("Scene Refs")]
+    [SerializeField] private PlayerVitals vitals;
+    [SerializeField] private PlayerSettings settings;
+    [SerializeField] private KeyData keyData;
+
+    public PlayerVitals Vitals => vitals;
+    public PlayerSettings Settings => settings;
+    public KeyData KeyData => keyData;
+
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private BoxCollider2D groundCheckBox;
@@ -56,7 +58,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private CircleCollider2D parryDetectCollider;
     [SerializeField] private CircleCollider2D dashDetectCollider;
 
-    [HideInInspector] public bool isGround;
+    [Header("VisualEffect Scene Refs")]
+    [SerializeField] private VisualEffect healing;
+    [SerializeField] private VisualEffect dash;
+
+    public VisualEffect Healing => healing;
+    public VisualEffect Dash => dash;
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCol;
@@ -64,7 +71,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public List<ParryCandidate> parryCandidates = new();
     [HideInInspector] public List<DashCandidate> dashCandidates = new();
 
-
+    [HideInInspector] public bool isGround;
     [HideInInspector] public int facingDirection = 1;
     [HideInInspector] public bool isJumping;
     [HideInInspector] public bool JumpHeld;
@@ -74,28 +81,24 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool canAirDash = true;
     [HideInInspector] public float lastDashTime = -999f;
     [HideInInspector] public float lastExtremeDash = -999f;
-
     [HideInInspector] public float currentSpeedAbs;
     [HideInInspector] public int lastMoveSign;
     [HideInInspector] public float postDashCarryTimer;
     [HideInInspector] public int postDashCarryDir;
-
     [HideInInspector] public float parryBufferTimer;
     [HideInInspector] public bool airParryAvailable = true;
-
     [HideInInspector] public float parryHoldTimer;
     [HideInInspector] public bool inCounterParryPrep;
     [HideInInspector] public float counterParryPrepTickTimer;
     [HideInInspector] public bool counterParryPrepLocked;
     [HideInInspector] public float counterParryPrepElapsed;
-
     [HideInInspector] public float parryWindowStartTime;
     [HideInInspector] public float parryWindowDuration;
     [HideInInspector] public bool parryHadSuccessThisWindow;
     [HideInInspector] public bool counterParryFirstResolved;
-    public bool CanExtremeDash => (Time.time - lastExtremeDash) >= settings.extremeDashCooldown;
-
     [HideInInspector] public Vector2 lastHitKnockDir;
+
+    public bool CanExtremeDash => (Time.time - lastExtremeDash) >= settings.extremeDashCooldown;
     private PlayerStateMachine stateMachine;
 
     private void Awake()

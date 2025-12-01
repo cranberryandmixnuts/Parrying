@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.VFX;
 
 public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectileOwner
 {
@@ -30,27 +31,36 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [Header("Settings")]
     [SerializeField] private BossSettings settings;
 
-    [Header("Scene Refs")]
+    [Header("SwordDrop")]
     [SerializeField] private Transform leftTop;
     [SerializeField] private Transform rightTop;
+
+    [Header("PlungeRush")]
     [SerializeField] private Transform ceilingPoint;
     [SerializeField] private Transform rushStopLeft;
     [SerializeField] private Transform rushStopRight;
     [SerializeField] private Collider2D plungeCollider;
     [SerializeField] private Collider2D rushCollider;
-    [SerializeField] private Collider2D radialLaserCollider;
+
+    [Header("VolleyLaser")]
     [SerializeField] private Collider2D projectileHitbox;
     [SerializeField] private EnemyProjectile projectilePrefab;
     [SerializeField] private Transform volleyCenter;
     [SerializeField] private Transform volleyHeight;
 
-    [Header("Debug Sword Gizmo")]
+    [Header("RadialLaser")]
+    [SerializeField] private Transform radialLaserPoint;
+
+    [Header("VisualEffect")]
+
+
+    [Header("Debug Gizmo")]
     [SerializeField] private bool debugDrawSwordGizmo = true;
     [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
     [SerializeField] private float debugArcStepDeg = 5f;
-    [SerializeField] private LineRenderer swingLine;
-    [SerializeField] private Color volleyWarningColor = new(1f, 0.9f, 0.4f, 0.9f);
-    [SerializeField] private Color volleyFiringColor = new(1f, 0.2f, 0.1f, 0.9f);
+    [SerializeField] private LineRenderer Line;
+    [SerializeField] private Color LaserWarningColor = new(1f, 0.9f, 0.4f, 0.9f);
+    [SerializeField] private Color LaserFiringColor = new(1f, 0.2f, 0.1f, 0.9f);
 
     private float gravityOriginal;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
@@ -89,10 +99,11 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public Transform RushStopRight => rushStopRight;
     public Collider2D PlungeCollider => plungeCollider;
     public Collider2D RushCollider => rushCollider;
-    public Collider2D RadialLaserCollider => radialLaserCollider;
     public EnemyProjectile MissilePrefab => projectilePrefab;
     public Transform VolleyCenter => volleyCenter;
     public Transform VolleyHeight => volleyHeight;
+    public Transform RadialLaserPoint => radialLaserPoint;
+
     public bool LethalActive => lethalActive;
     public float FacingDir => FacingDirection;
     public float OriginalGravityScale => gravityOriginal;
@@ -325,20 +336,20 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void DebugUpdateSwingLine(Vector2 origin, Vector2 dir, float length)
     {
-        if (swingLine == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
-        swingLine.widthMultiplier = settings.swordBladeThickness;
-        swingLine.useWorldSpace = true;
-        swingLine.positionCount = 2;
+        if (Line == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
+        Line.widthMultiplier = settings.swordBladeThickness;
+        Line.useWorldSpace = true;
+        Line.positionCount = 2;
         Vector3 a = origin;
         Vector3 b = origin + dir.normalized * length;
-        swingLine.SetPosition(0, a);
-        swingLine.SetPosition(1, b);
+        Line.SetPosition(0, a);
+        Line.SetPosition(1, b);
     }
 
     public void DebugClearSwingLine()
     {
-        if (swingLine == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
-        swingLine.positionCount = 0;
+        if (Line == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
+        Line.positionCount = 0;
     }
 
     private bool IsColliderWithinCircle(Collider2D col, Vector2 center, float radius)
@@ -413,26 +424,68 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void UpdateVolleyLaserLine(Vector2 origin, Vector2 dir, float length, bool firing)
     {
-        if (swingLine == null) return;
+        if (Line == null) return;
 
-        swingLine.useWorldSpace = true;
-        swingLine.positionCount = 2;
-        swingLine.widthMultiplier = settings.laserThickness;
+        Line.useWorldSpace = true;
+        Line.positionCount = 2;
+        Line.widthMultiplier = settings.laserThickness;
 
         Vector3 a = origin;
         Vector3 b = a + (Vector3)(dir.normalized * length);
 
-        swingLine.SetPosition(0, a);
-        swingLine.SetPosition(1, b);
+        Line.SetPosition(0, a);
+        Line.SetPosition(1, b);
 
-        Color c = firing ? volleyFiringColor : volleyWarningColor;
-        swingLine.startColor = c;
-        swingLine.endColor = c;
+        Color c = firing ? LaserFiringColor : LaserWarningColor;
+        Line.startColor = c;
+        Line.endColor = c;
     }
 
     public void ClearVolleyLaserLine()
     {
-        if (swingLine == null) return;
-        swingLine.positionCount = 0;
+        if (Line == null) return;
+        Line.positionCount = 0;
+    }
+
+    public void UpdateRadialLaserLines(Vector2 origin, Vector2[] dirs, float length, bool firing)
+    {
+        if (Line == null) return;
+
+        if (dirs == null || dirs.Length == 0)
+        {
+            Line.positionCount = 0;
+            return;
+        }
+
+        Line.useWorldSpace = true;
+        Line.widthMultiplier = settings.laserThickness;
+
+        int count = dirs.Length * 2;
+        Line.positionCount = count;
+
+        Color c = firing ? LaserFiringColor : LaserWarningColor;
+        Line.startColor = c;
+        Line.endColor = c;
+
+        Vector3 o = origin;
+        int idx = 0;
+
+        for (int i = 0; i < dirs.Length; i++)
+        {
+            Vector2 d = dirs[i];
+            if (d.sqrMagnitude < 0.0001f) d = Vector2.right;
+            d.Normalize();
+
+            Vector3 tip = o + (Vector3)(d * length);
+
+            Line.SetPosition(idx++, o);
+            Line.SetPosition(idx++, tip);
+        }
+    }
+
+    public void ClearRadialLaserLines()
+    {
+        if (Line == null) return;
+        Line.positionCount = 0;
     }
 }
