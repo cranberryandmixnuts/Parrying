@@ -2700,7 +2700,7 @@ GameObject:
   - component: {fileID: 7030029952035548321}
   - component: {fileID: 5437039746433121570}
   m_Layer: 7
-  m_Name: Conductor
+  m_Name: ConductorBoss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
