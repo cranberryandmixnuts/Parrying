@@ -53,11 +53,13 @@ MonoBehaviour:
   minLinearBlend: 0.1
   perfectParryEnergyGain: 100
   imperfectParryEnergyGain: 50
-  powerParryHoldTime: 0.1
-  powerParryEnterCost: 300
-  powerParryDrainTick: 0.1
-  powerParryDrainCost: 5
-  powerParryNoDrainTime: 0.6
+  parryExtraInvincibility: 0.1
+  counterParryHoldTime: 0.1
+  counterParryEnterCost: 300
+  counterParryDrainTick: 0.1
+  counterParryDrainCost: 5
+  counterParryNoDrainTime: 0.6
+  counterParryExtraInvincibility: 0.5
   healTickInterval: 0.1
   healEnergyPerTick: 10
   healHealthPerTick: 10

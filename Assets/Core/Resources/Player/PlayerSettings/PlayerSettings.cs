@@ -30,6 +30,7 @@ public sealed class PlayerSettings : ScriptableObject
     [Header("Parry")]
     public int perfectParryEnergyGain = 100;
     public int imperfectParryEnergyGain = 50;
+    public float parryExtraInvincibility = 0.1f;
 
     [Header("Counter Parry")]
     public float counterParryHoldTime = 0.1f;
@@ -37,7 +38,7 @@ public sealed class PlayerSettings : ScriptableObject
     public float counterParryDrainTick = 0.1f;
     public int counterParryDrainCost = 5;
     public float counterParryNoDrainTime = 0.6f;
-    public float counterParryExtraInvincibility = 0.3f;
+    public float counterParryExtraInvincibility = 0.5f;
 
     [Header("Heal")]
     public float healTickInterval = 0.1f;

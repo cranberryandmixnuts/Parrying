@@ -126,6 +126,9 @@ public sealed class ParryState : PlayerState
         if (wasAirParry && !player.isGround)
             player.Anim.Play("Fall");
 
+        if(player.parryHadSuccessThisWindow)
+            player.Vitals.SetInvincibleTimer(player.Settings.parryExtraInvincibility);
+
         player.SetEffectState(PlayerEffectState.None);
         player.NotifyParryWindowEnd();
     }
