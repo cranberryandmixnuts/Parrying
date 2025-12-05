@@ -9,6 +9,10 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Movement")]
     public float moveSpeed = 10f;
+    public float accelTime = 0.25f;
+    public float airReleaseDecelTime = 0.3f;
+    [Range(0f, 1f)] public float startSpeedRatio = 0.35f;
+    public float postDashCarryWindow = 0.1f;
 
     [Header("Jump")]
     public AnimationCurve jumpForceCurve;
@@ -48,10 +52,4 @@ public sealed class PlayerSettings : ScriptableObject
     [Header("Hit")]
     public float hitInvincibleTime = 1f;
     public float knockbackForce = 10f;
-
-    [Header("Move Inertia")]
-    public float accelTime = 0.25f;
-    public float airReleaseDecelTime = 0.3f;
-    [Range(0f, 1f)] public float startSpeedRatio = 0.35f;
-    public float postDashCarryWindow = 0.1f;
 }
