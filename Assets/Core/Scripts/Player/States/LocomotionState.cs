@@ -7,16 +7,13 @@ public sealed class LocomotionState : PlayerState
     public LocomotionState(PlayerController player, PlayerStateMachine stateMachine)
         : base(player, stateMachine) { }
 
-    public override void Enter()
-    {
-        player.SetEffectState(PlayerController.PlayerEffectState.None);
-    }
+    public override void Enter() { }
 
     public override void Update()
     {
         if (TryHandleDash()) return;
 
-        bool canNormalParry = (player.isGround || player.airParryAvailable) && player.HasParryBuffer();
+        bool canNormalParry = (player.isGround || player.airParryAvailable) && player.HasParryBuffer;
         bool holding = player.ParryHeld;
         bool prepLocked = player.counterParryPrepLocked;
 
@@ -66,7 +63,6 @@ public sealed class LocomotionState : PlayerState
             {
                 player.inCounterParryPrep = false;
                 player.parryHoldTimer = 0f;
-                player.ConsumeParryPressed();
                 player.ConsumeParryBuffer();
                 stateMachine.ChangeState(new CounterParryState(player, stateMachine));
                 return;
@@ -80,7 +76,6 @@ public sealed class LocomotionState : PlayerState
 
         if (canNormalParry && !player.inCounterParryPrep && (!holding || player.parryHoldTimer < player.Settings.counterParryHoldTime))
         {
-            player.ConsumeParryPressed();
             player.ConsumeParryBuffer();
             stateMachine.ChangeState(new ParryState(player, stateMachine));
             return;
@@ -142,11 +137,11 @@ public sealed class LocomotionState : PlayerState
 
     private bool TryHandleDash()
     {
-        if (!player.DashPressed) return false;
+        if (!player.HasDashBuffer) return false;
         if (Time.time < player.lastDashTime + player.Settings.dashCooldown) return false;
         if (!(player.isGround || player.canAirDash)) return false;
 
-        player.ConsumeDashPressed();
+        player.ConsumeDashBuffer();
         stateMachine.ChangeState(new DashState(player, stateMachine));
         return true;
     }

@@ -1,37 +1,31 @@
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
+using UnityEngine.VFX;
 
-public sealed class GameEffects : MonoBehaviour
+public sealed class PlayerEffects : MonoBehaviour
 {
-    public static GameEffects Instance { get; private set; }
-
     [SerializeField] private Camera targetCamera;
 
-    [SerializeField] private float perfectShakeAmplitude = 0.3f;
-    [SerializeField] private float perfectShakeDuration = 0.15f;
+    [Header("Parry")]
+    [SerializeField] private float perfectShakeAmplitude = 0.1f;
+    [SerializeField] private float perfectShakeDuration = 0.1f;
 
-    [SerializeField] private float counterFreezeDuration = 0.1f;
-    [SerializeField] private float counterShakeAmplitude = 0.3f;
+    [Header("Counter Parry")]
+    [SerializeField] private float counterFreezeDuration = 0.15f;
+    [SerializeField] private float counterShakeAmplitude = 0.15f;
     [SerializeField] private float counterShakeDuration = 0.2f;
-
-    [SerializeField] private float extremeSlowFadeTime = 0.1f;
-    [SerializeField] private float extremeSlowScale = 0.1f;
-
     [SerializeField] private GameObject counterFlashOverlay;
+
+    [Header("Dash")]
+    [SerializeField] private float extremeSlowFadeTime = 0.1f;
+    [SerializeField] private float extremeSlowScale = 0.3f;
     [SerializeField] private GameObject slowmoOverlay;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-
-        if (targetCamera == null) targetCamera = Camera.main;
-    }
+    [Header("VFX")]
+    [SerializeField] private VisualEffect dash;
+    [SerializeField] private VisualEffect healing;
+    public VisualEffect Dash => dash;
+    public VisualEffect Healing => healing;
 
     public void DoPerfectParryImpact()
     {

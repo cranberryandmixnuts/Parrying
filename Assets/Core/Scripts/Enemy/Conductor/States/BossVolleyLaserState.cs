@@ -275,11 +275,7 @@ public sealed class BossVolleyLaserState : BossState
         GetLaserRect(out Vector2 center, out Vector2 half, out float angleDeg);
 
         boss.PlayerTarget.GetParryDetectCircle(out Vector2 pCenter, out float pRadius);
-        if (RectCircleIntersects(center, half, angleDeg, pCenter, pRadius))
-        {
-            Vector2 tip = laserOrigin + laserDir * laserLength;
-            boss.PlayerTarget.RegisterParryCandidate(boss, tip, boss.Settings.laserDamage);
-        }
+        if (RectCircleIntersects(center, half, angleDeg, pCenter, pRadius)) boss.PlayerTarget.RegisterParryCandidate(boss, boss.transform.position, boss.Settings.laserDamage);
     }
 
     private void RegisterDashCandidates()
@@ -307,7 +303,7 @@ public sealed class BossVolleyLaserState : BossState
             PlayerController pc = hits[i].collider.GetComponentInParent<PlayerController>();
             if (pc == boss.PlayerTarget)
             {
-                if (boss.PlayerTarget.TryHit(boss.Settings.laserDamage, hits[i].point))
+                if (boss.PlayerTarget.TryHit(boss.Settings.laserDamage, boss.transform.position))
                 {
                     boss.PlayerTarget.ClearParryCandidate(boss);
                     boss.SetLethal(BossController.AttackContext.None, false);

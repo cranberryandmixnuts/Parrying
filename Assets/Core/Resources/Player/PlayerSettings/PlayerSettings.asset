@@ -15,6 +15,11 @@ MonoBehaviour:
   maxHealth: 1000
   maxEnergy: 500
   moveSpeed: 10
+  groundAccelTime: 0.25
+  airAccelTime: 0.3
+  airReleaseDecelTime: 0.3
+  startSpeedRatio: 0.15
+  postDashCarryWindow: 0.1
   jumpForceCurve:
     serializedVersion: 2
     m_Curve:
@@ -41,8 +46,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxJumpTime: 0.3
   maxJumpForce: 20
-  jumpHeightMultiplier: 1
-  jumpBufferTime: 0.1
   coyoteTime: 0.1
   dashDistance: 6
   dashCooldown: 0.8
@@ -53,6 +56,10 @@ MonoBehaviour:
   minLinearBlend: 0.1
   perfectParryEnergyGain: 100
   imperfectParryEnergyGain: 50
+  airParryKnockbackForce: 10
+  airParryKnockbackDuration: 0.2
+  airParryKnockbackSlowDuration: 0.3
+  airParryKnockbackSlowScale: 0.6
   parryExtraInvincibility: 0.1
   counterParryHoldTime: 0.1
   counterParryEnterCost: 300
@@ -65,7 +72,6 @@ MonoBehaviour:
   healHealthPerTick: 10
   hitInvincibleTime: 1
   knockbackForce: 10
-  accelTime: 0.25
-  airReleaseDecelTime: 0.3
-  startSpeedRatio: 0.35
-  postDashCarryWindow: 0.1
+  jumpBufferTime: 0.1
+  parryBufferTime: 0.06
+  dashBufferTime: 0.1

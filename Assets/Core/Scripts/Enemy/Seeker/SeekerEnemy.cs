@@ -43,7 +43,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     private SeekerState state;
     private float fireCooldown;
     private float fireTimer = -999f;
-    private readonly float fireStateLength;
+    private float fireStateLength;
     private bool fired;
     private float deathTimer;
     private int keepSide = 1;
@@ -126,7 +126,9 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
         state = SeekerState.Fire;
         Body.linearVelocity = Vector2.zero;
         Anim.Play(AnimFire);
-        fireTimer = GetAnimLength(AnimFire);
+
+        fireStateLength = GetAnimLength(AnimFire);
+        fireTimer = fireStateLength;
         fired = false;
     }
 
@@ -134,11 +136,15 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     {
         fireTimer -= Time.deltaTime;
 
-        float elapsed = fireStateLength - fireTimer;
-        if (!fired && elapsed >= fireStateLength * fireShootPercent)
+        if (fireStateLength > 0f)
         {
-            FireOne();
-            fired = true;
+            float progress = 1f - (fireTimer / fireStateLength);
+
+            if (!fired && progress >= fireShootPercent)
+            {
+                FireOne();
+                fired = true;
+            }
         }
 
         if (fireTimer <= 0f)

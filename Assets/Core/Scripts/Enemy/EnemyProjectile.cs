@@ -65,11 +65,11 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
         player.GetParryDetectCircle(out Vector2 center, out float radius);
         if (IsColliderWithinCircle(hitCollider, center, radius))
-            player.RegisterParryCandidate(this, hitCollider.bounds.center, damage);
+            player.RegisterParryCandidate(this, transform.position, damage);
 
         player.GetDashDetectCircle(out Vector2 dcenter, out float dradius);
         if (IsColliderWithinCircle(hitCollider, dcenter, dradius))
-            player.RegisterDashCandidate(hitCollider.bounds.center);
+            player.RegisterDashCandidate(transform.position);
 
         if (OverlapsGround())
         {
@@ -79,7 +79,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
         if (OverlapsPlayerBody())
         {
-            if (player.TryHit(damage, hitCollider.bounds.center))
+            if (player.TryHit(damage, transform.position))
             {
                 Destroy(gameObject);
                 return;

@@ -13,12 +13,11 @@ public sealed class CounterParryState : PlayerState
 
     public override void Enter()
     {
-        player.CancelJump(true);
+        player.CancelJump();
         cachedGravity = player.Rigidbody.gravityScale;
         player.Rigidbody.gravityScale = 0f;
         player.Rigidbody.linearVelocity = Vector2.zero;
         player.currentSpeedAbs = 0f;
-        player.SetEffectState(PlayerEffectState.CounterParry);
         player.counterParryFirstResolved = false;
         if (player.isGround)
         {
@@ -52,7 +51,7 @@ public sealed class CounterParryState : PlayerState
                 {
                     player.counterParryFirstResolved = true;
                     c.attacker.OnCounterParry(c.hitPoint);
-                    GameEffects.Instance.DoCounterParryImpact();
+                    player.Effects.DoCounterParryImpact();
 
                     player.ClearParryCandidate(c.attacker);
                     player.parryCandidates.Clear();
@@ -73,7 +72,6 @@ public sealed class CounterParryState : PlayerState
     public override void Exit()
     {
         player.Rigidbody.gravityScale = cachedGravity;
-        player.SetEffectState(PlayerEffectState.None);
         if (player.counterParryFirstResolved)
             player.Vitals.SetInvincibleTimer(player.Settings.counterParryExtraInvincibility);
     }

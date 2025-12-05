@@ -72,9 +72,9 @@ public sealed class BossRadialLaserState : BossState
         }
 
         volleyTimer += dt;
-        float t = volleyTimer;
+        float laserTimer = volleyTimer;
 
-        if (t >= totalLaserDuration)
+        if (laserTimer >= totalLaserDuration)
         {
             EndVolley();
             return;
@@ -82,8 +82,8 @@ public sealed class BossRadialLaserState : BossState
 
         laserOrigin = boss.transform.position;
 
-        bool inWarning = t < laserWarningDuration;
-        bool inFiring = t >= laserWarningDuration;
+        bool inWarning = laserTimer < laserWarningDuration;
+        bool inFiring = laserTimer >= laserWarningDuration;
 
         boss.UpdateRadialLaserLines(laserOrigin, beamDirs, laserLength, inFiring);
 
@@ -91,6 +91,9 @@ public sealed class BossRadialLaserState : BossState
         {
             if (inWarning)
             {
+                float warningTailStart = laserWarningDuration - boss.Settings.extraWarningTail;
+                if (laserTimer >= warningTailStart)
+                    RegisterDashCandidates();
             }
             else if (inFiring)
             {
@@ -193,6 +196,29 @@ public sealed class BossRadialLaserState : BossState
         beamAnglesDeg = null;
     }
 
+    private void RegisterDashCandidates()
+    {
+        if (beamDirs == null || beamDirs.Length == 0)
+            return;
+
+        boss.PlayerTarget.GetDashDetectCircle(out Vector2 dCenter, out float dRadius);
+
+        for (int i = 0; i < beamDirs.Length; i++)
+        {
+            GetBeamRect(beamDirs[i], out Vector2 center, out Vector2 half, out float angleDeg);
+            if (RectCircleIntersects(center, half, angleDeg, dCenter, dRadius))
+            {
+                Vector2 dir = beamDirs[i];
+                if (dir.sqrMagnitude < 0.0001f) dir = Vector2.right;
+                dir.Normalize();
+
+                Vector2 tip = laserOrigin + dir * laserLength;
+                boss.PlayerTarget.RegisterDashCandidate(tip);
+                break;
+            }
+        }
+    }
+
     private void RegisterParryCandidates()
     {
         boss.PlayerTarget.GetParryDetectCircle(out Vector2 pCenter, out float pRadius);
@@ -202,8 +228,7 @@ public sealed class BossRadialLaserState : BossState
             GetBeamRect(beamDirs[i], out Vector2 center, out Vector2 half, out float angleDeg);
             if (RectCircleIntersects(center, half, angleDeg, pCenter, pRadius))
             {
-                Vector2 tip = laserOrigin + beamDirs[i] * laserLength;
-                boss.PlayerTarget.RegisterParryCandidate(boss, tip, boss.Settings.radialDamage);
+                boss.PlayerTarget.RegisterParryCandidate(boss, boss.transform.position, boss.Settings.radialDamage);
                 break;
             }
         }
@@ -224,7 +249,7 @@ public sealed class BossRadialLaserState : BossState
                 PlayerController pc = hits[h].collider.GetComponentInParent<PlayerController>();
                 if (pc == boss.PlayerTarget)
                 {
-                    if (boss.PlayerTarget.TryHit(boss.Settings.radialDamage, hits[h].point))
+                    if (boss.PlayerTarget.TryHit(boss.Settings.radialDamage, boss.transform.position))
                     {
                         boss.PlayerTarget.ClearParryCandidate(boss);
                         boss.SetLethal(BossController.AttackContext.None, false);

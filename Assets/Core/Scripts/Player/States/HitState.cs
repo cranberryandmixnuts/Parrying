@@ -5,21 +5,23 @@ public sealed class HitState : PlayerState
 {
     private float timer;
 
+
     public override PlayerStateType StateType => PlayerStateType.Hit;
 
-    public HitState(PlayerController player, PlayerStateMachine stateMachine)
-        : base(player, stateMachine) { }
+    private readonly bool KnockDirIsRight;
+
+    public HitState(PlayerController player, PlayerStateMachine stateMachine, bool KnockDirIsRight)
+        : base(player, stateMachine) { this.KnockDirIsRight = KnockDirIsRight; }
 
     public override void Enter()
     {
         player.Vitals.SetInvincibleTimer(player.Settings.hitInvincibleTime);
         player.currentSpeedAbs = 0f;
         player.Rigidbody.linearVelocity = Vector2.zero;
-        Vector2 dir = player.lastHitKnockDir.sqrMagnitude > 0f ? player.lastHitKnockDir : Vector2.up;
-        player.Rigidbody.AddForce(dir.normalized * player.Settings.knockbackForce, ForceMode2D.Impulse);
+        Vector2 KnockDir = KnockDirIsRight ? new Vector2(1f, 1f) : new Vector2(-1f, 1f);
+        player.Rigidbody.AddForce(KnockDir.normalized * player.Settings.knockbackForce, ForceMode2D.Impulse);
         player.Anim.Play("Hit");
         timer = player.GetAnimLength("Hit");
-        player.SetEffectState(PlayerEffectState.Hit);
     }
 
     public override void Update()
@@ -27,7 +29,6 @@ public sealed class HitState : PlayerState
         timer -= Time.deltaTime;
         if (timer <= 0f)
         {
-            player.SetEffectState(PlayerEffectState.None);
             stateMachine.ChangeState(new LocomotionState(player, stateMachine));
         }
     }

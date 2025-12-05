@@ -1,10 +1,14 @@
 using UnityEngine;
-using static PlayerController;
 
 public sealed class ParryState : PlayerState
 {
+    private const float AirParryKnockbackAngle = 60f;
+
     private float timer;
     private bool wasAirParry;
+    private float airParryKnockbackTimer;
+    private float airParryKnockbackSlowTimer;
+    private float airParryKnockbackHorizontalSign;
 
     public override PlayerStateType StateType => PlayerStateType.Parry;
 
@@ -14,6 +18,9 @@ public sealed class ParryState : PlayerState
     public override void Enter()
     {
         wasAirParry = !player.isGround;
+        airParryKnockbackTimer = 0f;
+        airParryKnockbackSlowTimer = 0f;
+        airParryKnockbackHorizontalSign = 0f;
 
         if (!player.isGround)
             player.airParryAvailable = false;
@@ -38,7 +45,6 @@ public sealed class ParryState : PlayerState
         player.NotifyParryWindowBegin(timer);
         player.Vitals.SetInvincibleTimer(timer);
         player.parryHadSuccessThisWindow = false;
-        player.SetEffectState(PlayerEffectState.Parry);
     }
 
     public override void Update()
@@ -71,7 +77,7 @@ public sealed class ParryState : PlayerState
 
                     if (frac <= 0.5f)
                     {
-                        GameEffects.Instance.DoPerfectParryImpact();
+                        player.Effects.DoPerfectParryImpact();
                         player.Vitals.GainEnergy(player.Settings.perfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnPerfectParry(c.hitPoint);
@@ -88,7 +94,10 @@ public sealed class ParryState : PlayerState
                     }
 
                     if (!player.isGround)
+                    {
+                        ApplyAirParryKnockback(c);
                         player.airParryAvailable = true;
+                    }
 
                     player.ClearParryCandidate(c.attacker);
                     player.parryCandidates.Clear();
@@ -96,9 +105,8 @@ public sealed class ParryState : PlayerState
             }
         }
 
-        if (player.parryHadSuccessThisWindow && player.ParryPressed)
+        if (player.parryHadSuccessThisWindow && player.HasParryBuffer)
         {
-            player.ConsumeParryPressed();
             player.ConsumeParryBuffer();
             stateMachine.ChangeState(new ParryState(player, stateMachine));
             return;
@@ -113,7 +121,25 @@ public sealed class ParryState : PlayerState
     {
         if (!player.isGround)
         {
-            player.HandleMove(player.Settings.moveSpeed);
+            if (airParryKnockbackTimer > 0f)
+            {
+                airParryKnockbackTimer -= Time.fixedDeltaTime;
+            }
+            else
+            {
+                float moveSpeed = player.Settings.moveSpeed;
+
+                if (airParryKnockbackSlowTimer > 0f)
+                {
+                    airParryKnockbackSlowTimer -= Time.fixedDeltaTime;
+
+                    if (IsMovingAgainstAirParryKnockback())
+                        moveSpeed *= player.Settings.airParryKnockbackSlowScale;
+                }
+
+                player.HandleMove(moveSpeed);
+            }
+
             player.HandleJump();
 
             if (player.isJumping && player.jumpTimeCounter >= player.Settings.maxJumpTime)
@@ -126,10 +152,46 @@ public sealed class ParryState : PlayerState
         if (wasAirParry && !player.isGround)
             player.Anim.Play("Fall");
 
-        if(player.parryHadSuccessThisWindow)
+        if (player.parryHadSuccessThisWindow)
             player.Vitals.SetInvincibleTimer(player.Settings.parryExtraInvincibility);
 
-        player.SetEffectState(PlayerEffectState.None);
         player.NotifyParryWindowEnd();
+    }
+
+    private void ApplyAirParryKnockback(ParryCandidate c)
+    {
+        Vector2 playerPos = player.transform.position;
+        Vector2 hitPoint = c.hitPoint;
+
+        float horizontalSign = playerPos.x >= hitPoint.x ? 1f : -1f;
+        float rad = AirParryKnockbackAngle * Mathf.Deg2Rad;
+
+        player.CancelJump();
+        player.Rigidbody.linearVelocity = Vector2.zero;
+
+        Vector2 dir = new Vector2(horizontalSign * Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
+        player.Rigidbody.AddForce(dir * player.Settings.airParryKnockbackForce, ForceMode2D.Impulse);
+
+        airParryKnockbackTimer = player.Settings.airParryKnockbackDuration;
+        airParryKnockbackSlowTimer = player.Settings.airParryKnockbackSlowDuration;
+        airParryKnockbackHorizontalSign = Mathf.Sign(dir.x);
+    }
+
+    private bool IsMovingAgainstAirParryKnockback()
+    {
+        if (airParryKnockbackHorizontalSign == 0f)
+            return false;
+
+        float vx = player.Rigidbody.linearVelocity.x;
+        if (Mathf.Approximately(vx, 0f))
+            return false;
+
+        float currentSign = Mathf.Sign(vx);
+        float knockbackSign = Mathf.Sign(airParryKnockbackHorizontalSign);
+
+        if (currentSign == 0f)
+            return false;
+
+        return currentSign == -knockbackSign;
     }
 }

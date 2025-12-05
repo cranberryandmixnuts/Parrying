@@ -11,7 +11,6 @@ public sealed class DeathState : PlayerState
 
     public override void Enter()
     {
-        player.SetEffectState(PlayerController.PlayerEffectState.Death);
         player.Anim.Play("Death");
         timer = player.GetAnimLength("Death");
         player.Rigidbody.linearVelocity = Vector2.zero;

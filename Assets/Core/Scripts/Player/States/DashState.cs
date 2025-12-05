@@ -19,12 +19,11 @@ public sealed class DashState : PlayerState
 
     public override void Enter()
     {
-        player.CancelJump(true);
+        player.CancelJump();
         player.lastDashTime = Time.time;
 
         cachedConstraints = player.Rigidbody.constraints;
         player.Rigidbody.constraints = cachedConstraints | RigidbodyConstraints2D.FreezePositionY;
-        player.SetEffectState(PlayerController.PlayerEffectState.Dash);
 
         player.Anim.Play("Dash");
         dashDuration = player.GetAnimLength("Dash");
@@ -49,7 +48,7 @@ public sealed class DashState : PlayerState
 
         player.dashCandidates.Clear();
 
-        if (detected > 0 && player.CanExtremeDash)
+        if (detected > 0 && (Time.time - player.lastExtremeDash) >= player.Settings.extremeDashCooldown)
         {
             extremeDashSuccess = true;
             player.lastExtremeDash = Time.time;
@@ -60,12 +59,12 @@ public sealed class DashState : PlayerState
             if (detected >= 3) gain += 10;
 
             player.Vitals.GainEnergy(gain);
-            GameEffects.Instance.DoExtremeDashImpact();
+            player.Effects.DoExtremeDashImpact();
             dashDistance += player.Settings.extremeDashExtraDistance;
         }
         else
             extremeDashSuccess = false;
-        player.Dash.Play();
+        player.Effects.Dash.Play();
     }
 
     public override void Update()
@@ -96,7 +95,7 @@ public sealed class DashState : PlayerState
         if (extremeDashSuccess)
         {
             player.canAirDash = true;
-            player.lastDashTime = Time.time - player.Settings.dashCooldown;
+            player.lastDashTime = Time.time;
             player.Vitals.SetInvincibleTimer(player.Settings.extremeDashExtraInvincibility);
         }
 
@@ -104,7 +103,6 @@ public sealed class DashState : PlayerState
         player.postDashCarryDir = player.facingDirection;
         player.postDashCarryTimer = player.Settings.postDashCarryWindow;
         player.Rigidbody.linearVelocity = Vector2.zero;
-        player.SetEffectState(PlayerController.PlayerEffectState.None);
-        player.Dash.Stop();
+        player.Effects.Dash.Stop();
     }
 }

@@ -26,14 +26,13 @@ public sealed class HealState : PlayerState
         player.currentSpeedAbs = 0f;
         player.Rigidbody.linearVelocity = Vector2.zero;
 
-        player.SetEffectState(PlayerEffectState.Heal);
         player.Anim.Play("Enter_Heal");
         phase = HealPhase.Enter;
         allowLoop = true;
         healTickTimer = 0f;
         enterTimeLeft = player.GetAnimLength("Enter_Heal");
         exitTimeLeft = 0f;
-        player.Healing.Play();
+        player.Effects.Healing.Play();
     }
 
     public override void Update()
@@ -79,7 +78,7 @@ public sealed class HealState : PlayerState
                         player.isGround &&
                         player.Vitals.Energy >= player.Settings.healEnergyPerTick &&
                         player.Vitals.Health < player.Vitals.MaxHealth;
-
+                    
                     if (!canStay)
                     {
                         player.Anim.Play("Exit_Heal");
@@ -121,11 +120,10 @@ public sealed class HealState : PlayerState
             case HealPhase.Exit:
                 {
                     exitTimeLeft -= Time.deltaTime;
-                    player.Healing.Stop();
+                    player.Effects.Healing.Stop();
 
                     if (exitTimeLeft <= 0f)
                     {
-                        player.SetEffectState(PlayerEffectState.None);
                         stateMachine.ChangeState(new LocomotionState(player, stateMachine));
                     }
 

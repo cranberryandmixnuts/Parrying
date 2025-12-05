@@ -9,16 +9,16 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Movement")]
     public float moveSpeed = 10f;
-    public float accelTime = 0.25f;
+    public float groundAccelTime = 0.25f;
+    public float airAccelTime = 0.3f;
     public float airReleaseDecelTime = 0.3f;
-    [Range(0f, 1f)] public float startSpeedRatio = 0.35f;
+    [Range(0f, 1f)] public float startSpeedRatio = 0.15f;
     public float postDashCarryWindow = 0.1f;
 
     [Header("Jump")]
     public AnimationCurve jumpForceCurve;
     public float maxJumpTime = 0.3f;
     public float maxJumpForce = 20f;
-    public float jumpHeightMultiplier = 1f;
     public float coyoteTime = 0.1f;
 
     [Header("Dash")]
@@ -33,6 +33,10 @@ public sealed class PlayerSettings : ScriptableObject
     [Header("Parry")]
     public int perfectParryEnergyGain = 100;
     public int imperfectParryEnergyGain = 50;
+    public float airParryKnockbackForce = 5f;
+    public float airParryKnockbackDuration = 0.2f;
+    public float airParryKnockbackSlowDuration = 0.3f;
+    public float airParryKnockbackSlowScale = 0.5f;
     public float parryExtraInvincibility = 0.1f;
 
     [Header("Counter Parry")]
@@ -54,4 +58,6 @@ public sealed class PlayerSettings : ScriptableObject
 
     [Header("Buffer Time")]
     public float jumpBufferTime = 0.1f;
+    public float parryBufferTime = 0.06f;
+    public float dashBufferTime = 0.1f;
 }

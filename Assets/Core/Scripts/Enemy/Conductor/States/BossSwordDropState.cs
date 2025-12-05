@@ -81,7 +81,7 @@ public sealed class BossSwordDropState : BossState
                 PlayerController pc = hits[i].collider.GetComponentInParent<PlayerController>();
                 if (pc == boss.PlayerTarget)
                 {
-                    if (boss.PlayerTarget.TryHit(boss.Settings.swordDamage, hits[i].point))
+                    if (boss.PlayerTarget.TryHit(boss.Settings.swordDamage, boss.transform.position))
                     {
                         boss.PlayerTarget.ClearParryCandidate(boss);
                         boss.SetLethal(BossController.AttackContext.Sword, false);
@@ -152,14 +152,12 @@ public sealed class BossSwordDropState : BossState
 
         Vector2 rectCenter = BladeCenter(angleDeg);
         Vector2 half = new(boss.Settings.swordBladeLength * 0.5f, boss.Settings.swordBladeThickness * 0.5f);
-        Vector2 origin = (Vector2)boss.transform.position;
-        Vector2 tip = origin + TipDir(angleDeg) * boss.Settings.swordBladeLength;
 
         boss.PlayerTarget.GetParryDetectCircle(out Vector2 pc, out float pr);
         boss.PlayerTarget.GetDashDetectCircle(out Vector2 dc, out float dr);
 
-        if (RectCircleIntersects(rectCenter, half, angleDeg, pc, pr)) boss.PlayerTarget.RegisterParryCandidate(boss, tip, boss.Settings.swordDamage);
-        if (RectCircleIntersects(rectCenter, half, angleDeg, dc, dr)) boss.PlayerTarget.RegisterDashCandidate(tip);
+        if (RectCircleIntersects(rectCenter, half, angleDeg, pc, pr)) boss.PlayerTarget.RegisterParryCandidate(boss, boss.transform.position, boss.Settings.swordDamage);
+        if (RectCircleIntersects(rectCenter, half, angleDeg, dc, dr)) boss.PlayerTarget.RegisterDashCandidate(boss.transform.position);
     }
 
     private bool RectCircleIntersects(Vector2 rectCenter, Vector2 rectHalf, float angleDeg, Vector2 circleCenter, float radius)

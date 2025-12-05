@@ -11,24 +11,24 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Instance { get; private set; }
     public Animator Anim { get; private set; }
 
-    public enum PlayerEffectState
-    {
-        None,
-        Dash,
-        Heal,
-        Parry,
-        CounterParry,
-        Hit,
-        Death
-    }
-
-    public event Action<PlayerEffectState> OnEffectStateChanged;
-
     public float MoveInput { get; private set; }
-    public bool DashPressed { get; private set; }
-    public bool ParryPressed { get; private set; }
     public bool ParryHeld { get; private set; }
     public bool HealHeld { get; private set; }
+    public bool ParryPressed
+    {
+        set
+        {
+            if (value) parryBufferTimer = settings.parryBufferTime;
+        }
+    }
+
+    public bool DashPressed
+    {
+        set
+        {
+            if (value) dashBufferTimer = settings.dashBufferTime;
+        }
+    }
 
     public bool JumpPressed
     {
@@ -44,24 +44,18 @@ public class PlayerController : MonoBehaviour
     [Header("Scene Refs")]
     [SerializeField] private PlayerVitals vitals;
     [SerializeField] private PlayerSettings settings;
-
+    [SerializeField] private PlayerEffects effects;
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
+    public PlayerEffects Effects => effects;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private BoxCollider2D groundCheckBox;
 
-    [Header("Detect")]
+    [Header("Combat Detect")]
     [SerializeField] private CircleCollider2D parryDetectCollider;
     [SerializeField] private CircleCollider2D dashDetectCollider;
-
-    [Header("VisualEffect Scene Refs")]
-    [SerializeField] private VisualEffect healing;
-    [SerializeField] private VisualEffect dash;
-
-    public VisualEffect Healing => healing;
-    public VisualEffect Dash => dash;
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCol;
@@ -84,6 +78,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float postDashCarryTimer;
     [HideInInspector] public int postDashCarryDir;
     [HideInInspector] public float parryBufferTimer;
+    [HideInInspector] public float dashBufferTimer;
     [HideInInspector] public bool airParryAvailable = true;
     [HideInInspector] public float parryHoldTimer;
     [HideInInspector] public bool inCounterParryPrep;
@@ -94,9 +89,13 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float parryWindowDuration;
     [HideInInspector] public bool parryHadSuccessThisWindow;
     [HideInInspector] public bool counterParryFirstResolved;
-    [HideInInspector] public Vector2 lastHitKnockDir;
 
-    public bool CanExtremeDash => (Time.time - lastExtremeDash) >= settings.extremeDashCooldown;
+    public bool HasParryBuffer => parryBufferTimer > 0f;
+    public void ConsumeParryBuffer() => parryBufferTimer = 0f;
+
+    public bool HasDashBuffer => dashBufferTimer > 0f;
+    public void ConsumeDashBuffer() => dashBufferTimer = 0f;
+
     private PlayerStateMachine stateMachine;
 
     private void Awake()
@@ -117,7 +116,6 @@ public class PlayerController : MonoBehaviour
     {
         stateMachine = new PlayerStateMachine();
         stateMachine.Initialize(new LocomotionState(this, stateMachine));
-        SetEffectState(PlayerEffectState.None);
     }
 
     private void Update()
@@ -128,6 +126,7 @@ public class PlayerController : MonoBehaviour
         if (postDashCarryTimer > 0f) postDashCarryTimer -= Time.deltaTime;
         if (jumpBufferTimer > 0f) jumpBufferTimer -= Time.deltaTime;
         if (parryBufferTimer > 0f) parryBufferTimer -= Time.deltaTime;
+        if (dashBufferTimer > 0f) dashBufferTimer -= Time.deltaTime;
 
         stateMachine.Update();
     }
@@ -152,24 +151,16 @@ public class PlayerController : MonoBehaviour
 
         MoveInput = input.MoveAxis;
 
-        bool jp = input.JumpDown;
-        JumpPressed = jp;
+        JumpPressed = input.JumpDown;
         JumpHeld = input.JumpHeld;
         if (input.JumpUp) StopRising();
 
         DashPressed = input.DashDown;
+
         ParryHeld = input.ParryHeld;
         ParryPressed = input.ParryDown;
-        if (ParryPressed) SetParryBuffer();
         if (!ParryHeld) parryHoldTimer = 0f;
         HealHeld = input.HealHeld;
-    }
-
-    public void SetEffectState(PlayerEffectState newState)
-    {
-        if (CurrentEffectState == newState) return;
-        CurrentEffectState = newState;
-        OnEffectStateChanged?.Invoke(newState);
     }
 
     private void UpdateGround()
@@ -193,15 +184,24 @@ public class PlayerController : MonoBehaviour
 
         if (inputSign == 0)
         {
-            if (isGround) currentSpeedAbs = 0f;
+            if (isGround)
+                currentSpeedAbs = 0f;
             else
             {
+                float baseSpeed = Mathf.Abs(rb.linearVelocity.x);
+
                 if (settings.airReleaseDecelTime > 0f)
                 {
-                    float decel = (currentSpeedAbs / settings.airReleaseDecelTime) * dt;
-                    currentSpeedAbs = Mathf.Max(0f, currentSpeedAbs - decel);
+                    float decel = (baseSpeed / settings.airReleaseDecelTime) * dt;
+                    currentSpeedAbs = Mathf.Max(0f, baseSpeed - decel);
                 }
-                else currentSpeedAbs = 0f;
+                else
+                    currentSpeedAbs = 0f;
+
+                if (Mathf.Abs(rb.linearVelocity.x) > 0.001f)
+                    lastMoveSign = rb.linearVelocity.x >= 0f ? 1 : -1;
+                else if (currentSpeedAbs <= 0.001f)
+                    lastMoveSign = 0;
             }
         }
         else
@@ -216,12 +216,16 @@ public class PlayerController : MonoBehaviour
             else
             {
                 float startSpeed = Mathf.Max(0.0001f, settings.startSpeedRatio * speed);
-                if (directionChanged || currentSpeedAbs <= 0f) currentSpeedAbs = startSpeed;
+                if (directionChanged || currentSpeedAbs <= 0f)
+                    currentSpeedAbs = startSpeed;
 
-                if (settings.accelTime <= 0f) currentSpeedAbs = speed;
+                float accelTime = isGround ? settings.groundAccelTime : settings.airAccelTime;
+
+                if (accelTime <= 0f)
+                    currentSpeedAbs = speed;
                 else
                 {
-                    float accel = (speed - currentSpeedAbs) / settings.accelTime * dt;
+                    float accel = (speed - currentSpeedAbs) / accelTime * dt;
                     currentSpeedAbs = Mathf.Clamp(currentSpeedAbs + accel, 0f, speed);
                 }
             }
@@ -230,7 +234,16 @@ public class PlayerController : MonoBehaviour
             facingDirection = inputSign > 0 ? 1 : -1;
         }
 
-        float vx = (inputSign != 0 ? inputSign : (currentSpeedAbs > 0.001f ? lastMoveSign : 0)) * currentSpeedAbs;
+        float vxDir;
+
+        if (inputSign != 0)
+            vxDir = inputSign;
+        else if (currentSpeedAbs > 0.001f)
+            vxDir = lastMoveSign;
+        else
+            vxDir = 0f;
+
+        float vx = vxDir * currentSpeedAbs;
         rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
 
         transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
@@ -242,7 +255,7 @@ public class PlayerController : MonoBehaviour
         {
             jumpTimeCounter += Time.fixedDeltaTime;
             float t = jumpTimeCounter / settings.maxJumpTime;
-            float force = settings.jumpForceCurve.Evaluate(t) * settings.maxJumpForce * settings.jumpHeightMultiplier;
+            float force = settings.jumpForceCurve.Evaluate(t) * settings.maxJumpForce;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, force);
         }
     }
@@ -253,10 +266,10 @@ public class PlayerController : MonoBehaviour
         jumpTimeCounter = settings.maxJumpTime;
     }
 
-    public void CancelJump(bool cutVelocity)
+    public void CancelJump()
     {
         isJumping = false;
-        if (cutVelocity) StopRising();
+        StopRising();
     }
 
     public void RegisterParryCandidate(IParryReactive attacker, Vector2 hitPoint, int damage)
@@ -309,33 +322,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        SetEffectState(PlayerEffectState.None);
-        Destroy(gameObject);
-    }
-
-    public void ConsumeParryPressed()
-    {
-        ParryPressed = false;
-    }
-
-    public void ConsumeDashPressed()
-    {
-        DashPressed = false;
-    }
-
-    public bool HasParryBuffer()
-    {
-        return parryBufferTimer > 0f;
-    }
-
-    public void SetParryBuffer()
-    {
-        parryBufferTimer = 0.06f;
-    }
-
-    public void ConsumeParryBuffer()
-    {
-        parryBufferTimer = 0f;
+        //Destroy(gameObject);
     }
 
     public void NotifyParryWindowBegin(float duration)
@@ -360,12 +347,7 @@ public class PlayerController : MonoBehaviour
         counterParryPrepTickTimer = 0f;
         counterParryPrepElapsed = 0f;
 
-
-        Vector2 dir = ((Vector2)transform.position - attackPos).normalized;
-        if (dir == Vector2.zero) dir = Vector2.up;
-        lastHitKnockDir = dir;
-
-        if(Vitals.Health > 0f) stateMachine.ChangeState(new HitState(this, stateMachine));
+        if (Vitals.Health > 0f) stateMachine.ChangeState(new HitState(this, stateMachine, ((Vector2)transform.position).x > attackPos.x));
         else stateMachine.ChangeState(new DeathState(this, stateMachine));
 
         return true;
@@ -413,5 +395,4 @@ public class PlayerController : MonoBehaviour
 
     public Rigidbody2D Rigidbody => rb;
     public BoxCollider2D BoxCollider => boxCol;
-    public PlayerEffectState CurrentEffectState { get; private set; }
 }
