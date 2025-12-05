@@ -19,7 +19,6 @@ public sealed class PlayerSettings : ScriptableObject
     public float maxJumpTime = 0.3f;
     public float maxJumpForce = 20f;
     public float jumpHeightMultiplier = 1f;
-    public float jumpBufferTime = 0.1f;
     public float coyoteTime = 0.1f;
 
     [Header("Dash")]
@@ -52,4 +51,7 @@ public sealed class PlayerSettings : ScriptableObject
     [Header("Hit")]
     public float hitInvincibleTime = 1f;
     public float knockbackForce = 10f;
+
+    [Header("Buffer Time")]
+    public float jumpBufferTime = 0.1f;
 }
