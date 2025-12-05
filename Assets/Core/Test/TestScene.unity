@@ -119,6 +119,57 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &40010784
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 40010786}
+  - component: {fileID: 40010785}
+  m_Layer: 0
+  m_Name: InputSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &40010785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40010784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 880cfaa4c79e43541a0f8c3626af4945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputService
+  actions: {fileID: -944628639613478452, guid: ce3d5fe899db28446a99cd146ca33cc4, type: 3}
+  playerMapName: Player
+  moveActionName: Move
+  jumpActionName: Jump
+  dashActionName: Dash
+  parryActionName: Parry
+  healActionName: Heal
+--- !u!4 &40010786
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40010784}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &95739141
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -373,7 +424,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &203805738
 Transform:
   m_ObjectHideFlags: 0
@@ -1938,7 +1989,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1495050627
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2218,7 +2269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4145107497863435758, guid: e7f16937e29b00c438850fa3c0b56384, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7337137167169514629, guid: e7f16937e29b00c438850fa3c0b56384, type: 3}
       propertyPath: attackDamage
@@ -3010,7 +3061,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   vitals: {fileID: 8455161177830103595}
   settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
-  keyData: {fileID: 11400000, guid: c821d049d65037d4d90d3be257eea45b, type: 2}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -3304,3 +3354,4 @@ SceneRoots:
   - {fileID: 1057590441}
   - {fileID: 2024086082}
   - {fileID: 499860205}
+  - {fileID: 40010786}

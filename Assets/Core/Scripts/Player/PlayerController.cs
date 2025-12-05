@@ -44,11 +44,9 @@ public class PlayerController : MonoBehaviour
     [Header("Scene Refs")]
     [SerializeField] private PlayerVitals vitals;
     [SerializeField] private PlayerSettings settings;
-    [SerializeField] private KeyData keyData;
 
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
-    public KeyData KeyData => keyData;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
@@ -150,22 +148,21 @@ public class PlayerController : MonoBehaviour
 
     private void PollInput()
     {
-        float horizontal = 0f;
-        if (Input.GetKey(keyData.Player.LeftMoveKey)) horizontal -= 1f;
-        if (Input.GetKey(keyData.Player.RightMoveKey)) horizontal += 1f;
-        MoveInput = horizontal;
+        InputService input = InputService.Instance;
 
-        bool jp = Input.GetKeyDown(keyData.Player.JumpKey);
+        MoveInput = input.MoveAxis;
+
+        bool jp = input.JumpDown;
         JumpPressed = jp;
-        JumpHeld = Input.GetKey(keyData.Player.JumpKey);
-        if (Input.GetKeyUp(keyData.Player.JumpKey)) StopRising();
+        JumpHeld = input.JumpHeld;
+        if (input.JumpUp) StopRising();
 
-        DashPressed = Input.GetKeyDown(keyData.Player.DashKey);
-        ParryHeld = Input.GetKey(keyData.Player.ParryKey);
-        ParryPressed = Input.GetKeyDown(keyData.Player.ParryKey);
+        DashPressed = input.DashDown;
+        ParryHeld = input.ParryHeld;
+        ParryPressed = input.ParryDown;
         if (ParryPressed) SetParryBuffer();
         if (!ParryHeld) parryHoldTimer = 0f;
-        HealHeld = Input.GetKey(keyData.Player.HealKey);
+        HealHeld = input.HealHeld;
     }
 
     public void SetEffectState(PlayerEffectState newState)
