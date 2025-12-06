@@ -10,6 +10,7 @@ public sealed class BossSettings : ScriptableObject
     public int p2Stacks = 1;
     public float idleDelay = 1f;
     public float groggyDuration = 2f;
+    public float repeatPenalty = 0.5f;
 
     [Header("Sword Drop")]
     public int swordDamage = 10;

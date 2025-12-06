@@ -67,6 +67,8 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     private BossStateMachine stateMachine;
     private bool lethalActive;
     private AttackContext attackCx;
+    private int lastPatternP1 = -1;
+    private int lastPatternP1Streak = 0;
 
     protected override string DeathAnimName => AnimDeath;
 
@@ -205,8 +207,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void DecideP1()
     {
-        int r = UnityEngine.Random.Range(0, 3);
-        switch (r)
+        int pattern = GetNextP1Pattern();
+
+        switch (pattern)
         {
             case 0:
                 ChangeToSwordDrop();
@@ -218,6 +221,75 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
                 ChangeToVolleyLaser();
                 break;
         }
+    }
+
+    private int GetNextP1Pattern()
+    {
+        if (lastPatternP1 < 0)
+            return ChooseInitialP1Pattern();
+
+        if (lastPatternP1Streak >= 3)
+            return ChooseDifferentPattern();
+
+        float[] weights = new float[3];
+
+        for (int i = 0; i < 3; i++)
+            weights[i] = 1f;
+
+        float penaltyFactor = Mathf.Pow(settings.repeatPenalty, lastPatternP1Streak);
+        weights[lastPatternP1] *= penaltyFactor;
+
+        int pattern = GetWeightedRandomIndex(weights);
+
+        if (pattern == lastPatternP1)
+            lastPatternP1Streak++;
+        else
+        {
+            lastPatternP1 = pattern;
+            lastPatternP1Streak = 1;
+        }
+
+        return pattern;
+    }
+
+    private int ChooseInitialP1Pattern()
+    {
+        int pattern = UnityEngine.Random.Range(0, 3);
+        lastPatternP1 = pattern;
+        lastPatternP1Streak = 1;
+        return pattern;
+    }
+
+    private int ChooseDifferentPattern()
+    {
+        int pattern = lastPatternP1;
+
+        while (pattern == lastPatternP1)
+            pattern = UnityEngine.Random.Range(0, 3);
+
+        lastPatternP1 = pattern;
+        lastPatternP1Streak = 1;
+        return pattern;
+    }
+
+    private int GetWeightedRandomIndex(float[] weights)
+    {
+        float total = 0f;
+
+        for (int i = 0; i < weights.Length; i++)
+            total += weights[i];
+
+        float r = UnityEngine.Random.Range(0f, total);
+        float cumulative = 0f;
+
+        for (int i = 0; i < weights.Length; i++)
+        {
+            cumulative += weights[i];
+            if (r <= cumulative)
+                return i;
+        }
+
+        return weights.Length - 1;
     }
 
     public void ConsumeP1Stack()
