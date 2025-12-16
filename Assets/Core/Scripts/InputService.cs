@@ -6,26 +6,15 @@ public sealed class InputService : MonoBehaviour
 {
     public static InputService Instance { get; private set; }
 
-    [SerializeField]
-    private InputActionAsset actions;
+    [SerializeField] private InputActionAsset actions;
+    [SerializeField] private string playerMapName = "Player";
 
-    [SerializeField]
-    private string playerMapName = "Player";
-
-    [SerializeField]
-    private string moveActionName = "Move";
-
-    [SerializeField]
-    private string jumpActionName = "Jump";
-
-    [SerializeField]
-    private string dashActionName = "Dash";
-
-    [SerializeField]
-    private string parryActionName = "Parry";
-
-    [SerializeField]
-    private string healActionName = "Heal";
+    [Header("Action Names")]
+    [SerializeField] private string moveActionName = "Move";
+    [SerializeField] private string jumpActionName = "Jump";
+    [SerializeField] private string dashActionName = "Dash";
+    [SerializeField] private string parryActionName = "Parry";
+    [SerializeField] private string healActionName = "Heal";
 
     private InputAction moveAction;
     private InputAction jumpAction;
@@ -37,58 +26,20 @@ public sealed class InputService : MonoBehaviour
 
     private const string RebindsKey = "InputService_Rebinds";
 
-    public float MoveAxis
-    {
-        get;
-        private set;
-    }
+    public float MoveAxis { get; private set; }
 
-    public bool JumpDown
-    {
-        get;
-        private set;
-    }
+    public bool JumpDown { get; private set; }
+    public bool JumpUp { get; private set; }
+    public bool JumpHeld { get; private set;}
 
-    public bool JumpUp
-    {
-        get;
-        private set;
-    }
+    public bool DashDown { get; private set;}
 
-    public bool JumpHeld
-    {
-        get;
-        private set;
-    }
+    public bool ParryDown { get; private set; }
+    public bool ParryHeld { get; private set; }
 
-    public bool DashDown
-    {
-        get;
-        private set;
-    }
+    public bool HealHeld { get; private set; }
 
-    public bool ParryDown
-    {
-        get;
-        private set;
-    }
-
-    public bool ParryHeld
-    {
-        get;
-        private set;
-    }
-
-    public bool HealHeld
-    {
-        get;
-        private set;
-    }
-
-    public InputActionAsset Actions
-    {
-        get { return actions; }
-    }
+    public InputActionAsset Actions { get { return actions; } }
 
     public event Action OnRebindStarted;
     public event Action OnRebindCompleted;
@@ -108,15 +59,9 @@ public sealed class InputService : MonoBehaviour
         LoadBindingOverrides();
     }
 
-    private void OnEnable()
-    {
-        EnableActions(true);
-    }
+    private void OnEnable() => EnableActions(true);
 
-    private void OnDisable()
-    {
-        EnableActions(false);
-    }
+    private void OnDisable() => EnableActions(false);
 
     private void Update()
     {
@@ -144,11 +89,7 @@ public sealed class InputService : MonoBehaviour
         healAction = FindAction(playerMapName, healActionName);
     }
 
-    private InputAction FindAction(string mapName, string actionName)
-    {
-        string path = mapName + "/" + actionName;
-        return actions.FindAction(path, false);
-    }
+    private InputAction FindAction(string mapName, string actionName) => actions.FindAction(mapName + "/" + actionName);
 
     private void EnableActions(bool enable)
     {
