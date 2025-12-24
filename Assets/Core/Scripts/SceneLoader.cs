@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
@@ -38,12 +39,19 @@ public class SceneLoader : MonoBehaviour
         fadeImage.color = imageColor;
     }
 
+    private void Start()
+    {
+        SceneType current = GetCurrentSceneType();
+        BgmId bgm = GetBgmForScene(current);
+        SoundManager.Instance.ChangeBgm(bgm, fadeDuration);
+    }
+
     public void LoadScene(SceneType scene)
     {
         string sceneName = scene.ToString();
         if (string.IsNullOrEmpty(sceneName) || scene == SceneType.None)
         {
-            Debug.LogError($"{sceneName}씬이 존재하지 않습니다!");
+            Debug.LogError($"{sceneName}씬이 존재하지 않습니다.");
             return;
         }
 
@@ -80,6 +88,9 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator LoadSceneSequence(SceneType scene)
     {
         IsTransitioning = true;
+
+        BgmId bgm = GetBgmForScene(scene);
+        SoundManager.Instance.ChangeBgm(bgm, fadeDuration);
 
         yield return FadeTo(1f).WaitForCompletion();
 
@@ -122,5 +133,24 @@ public class SceneLoader : MonoBehaviour
         float remaining = fadeTween.Duration(false) - fadeTween.Elapsed(false);
         if (remaining < 0f) remaining = 0f;
         return remaining;
+    }
+
+    private SceneType GetCurrentSceneType()
+    {
+        string name = SceneManager.GetActiveScene().name;
+        if (Enum.TryParse(name, out SceneType t))
+            return t;
+
+        Debug.LogError($"현재 씬 이름 '{name}' 이 SceneType enum과 일치하지 않습니다.");
+        return SceneType.None;
+    }
+
+    private BgmId GetBgmForScene(SceneType scene)
+    {
+        return scene switch
+        {
+            SceneType.TitleScene => BgmId.Title,
+            _ => BgmId.None,
+        };
     }
 }
