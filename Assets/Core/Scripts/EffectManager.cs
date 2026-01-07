@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public sealed class PlayerEffects : MonoBehaviour
+public sealed class EffectManager : MonoBehaviour
 {
     [SerializeField] private Camera targetCamera;
 

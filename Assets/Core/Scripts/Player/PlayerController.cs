@@ -44,10 +44,10 @@ public class PlayerController : MonoBehaviour
     [Header("Scene Refs")]
     [SerializeField] private PlayerVitals vitals;
     [SerializeField] private PlayerSettings settings;
-    [SerializeField] private PlayerEffects effects;
+    [SerializeField] private EffectManager effects;
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
-    public PlayerEffects Effects => effects;
+    public EffectManager Effects => effects;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer;
