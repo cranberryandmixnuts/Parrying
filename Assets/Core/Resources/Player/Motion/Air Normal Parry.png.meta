@@ -5,6 +5,27 @@ TextureImporter:
   - first:
       213: -6007950177110174980
     second: Air Normal Parry_0
+  - first:
+      213: -4265146186559092455
+    second: Air Normal Parry_1
+  - first:
+      213: 6470721141156361092
+    second: Air Normal Parry_2
+  - first:
+      213: -3131612157600703842
+    second: Air Normal Parry_3
+  - first:
+      213: 6292853649161618600
+    second: Air Normal Parry_4
+  - first:
+      213: -7680448775996473850
+    second: Air Normal Parry_5
+  - first:
+      213: 8769430274188297752
+    second: Air Normal Parry_6
+  - first:
+      213: 4595156167954936750
+    second: Air Normal Parry_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 250
+  spritePixelsToUnits: 500
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,7 +93,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -96,6 +117,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -105,8 +139,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +159,20 @@ TextureImporter:
       name: Air Normal Parry_1
       rect:
         serializedVersion: 2
-        x: 640
+        x: 1280
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: bf07e08b649310e4486b0ef80e9a34fc
-      internalID: -1766094387
+      spriteID: 919880b14282fc4c0800000000000000
+      internalID: -4265146186559092455
       vertices: []
       indices: 
       edges: []
@@ -147,20 +181,20 @@ TextureImporter:
       name: Air Normal Parry_2
       rect:
         serializedVersion: 2
-        x: 1280
+        x: 2560
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f893fd49d5ec37b488696f4cc47bd9a5
-      internalID: -1678999430
+      spriteID: 4833c33389e9cc950800000000000000
+      internalID: 6470721141156361092
       vertices: []
       indices: 
       edges: []
@@ -169,20 +203,20 @@ TextureImporter:
       name: Air Normal Parry_3
       rect:
         serializedVersion: 2
-        x: 1920
+        x: 3840
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f6ff948163135344c974e8968b7f43ae
-      internalID: -1264982383
+      spriteID: e9a5aeba5574a84d0800000000000000
+      internalID: -3131612157600703842
       vertices: []
       indices: 
       edges: []
@@ -191,20 +225,20 @@ TextureImporter:
       name: Air Normal Parry_4
       rect:
         serializedVersion: 2
-        x: 2560
+        x: 5120
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: ba6374afa7bef8a44b2f086e16ac0396
-      internalID: 1048367040
+      spriteID: 8a48ccd8d05b45750800000000000000
+      internalID: 6292853649161618600
       vertices: []
       indices: 
       edges: []
@@ -213,20 +247,20 @@ TextureImporter:
       name: Air Normal Parry_5
       rect:
         serializedVersion: 2
-        x: 3200
+        x: 6400
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f9153050cd1f75f418e3f7b60e8195ac
-      internalID: 1546837498
+      spriteID: 60e752fe780996590800000000000000
+      internalID: -7680448775996473850
       vertices: []
       indices: 
       edges: []
@@ -235,20 +269,20 @@ TextureImporter:
       name: Air Normal Parry_6
       rect:
         serializedVersion: 2
-        x: 3840
+        x: 7680
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f86f050ddfedc9440ad971535e4ce856
-      internalID: 1179524907
+      spriteID: 816cc873f5643b970800000000000000
+      internalID: 8769430274188297752
       vertices: []
       indices: 
       edges: []
@@ -257,86 +291,20 @@ TextureImporter:
       name: Air Normal Parry_7
       rect:
         serializedVersion: 2
-        x: 4480
+        x: 8960
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: b4d430ea62e65ec42a753e0aef15c4aa
-      internalID: -576381067
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Air Normal Parry_8
-      rect:
-        serializedVersion: 2
-        x: 5120
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0519104971ac66d4b9068ee48d5821f2
-      internalID: 1207457176
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Air Normal Parry_9
-      rect:
-        serializedVersion: 2
-        x: 5760
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fd84373fa7b03c24aa9dee9d54645f3b
-      internalID: 1758364534
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Air Normal Parry_10
-      rect:
-        serializedVersion: 2
-        x: 6400
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 43854dad5494a2b4c9b8179f4cb19309
-      internalID: 1813263097
+      spriteID: ea33666403645cf30800000000000000
+      internalID: 4595156167954936750
       vertices: []
       indices: 
       edges: []
@@ -345,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a711a7a660f4c004bb81b825a9b8dda1
+    spriteID: 9e184bd9bb423ad48bb01e2a347d4b81
     internalID: 0
     vertices: []
     indices: 
@@ -355,19 +323,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":640.0,"y":640.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Air Normal Parry_0: -6007950177110174980
-      Air Normal Parry_1: -1766094387
-      Air Normal Parry_10: 1813263097
-      Air Normal Parry_2: -1678999430
-      Air Normal Parry_3: -1264982383
-      Air Normal Parry_4: 1048367040
-      Air Normal Parry_5: 1546837498
-      Air Normal Parry_6: 1179524907
-      Air Normal Parry_7: -576381067
-      Air Normal Parry_8: 1207457176
-      Air Normal Parry_9: 1758364534
+      Air Normal Parry_1: -4265146186559092455
+      Air Normal Parry_2: 6470721141156361092
+      Air Normal Parry_3: -3131612157600703842
+      Air Normal Parry_4: 6292853649161618600
+      Air Normal Parry_5: -7680448775996473850
+      Air Normal Parry_6: 8769430274188297752
+      Air Normal Parry_7: 4595156167954936750
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

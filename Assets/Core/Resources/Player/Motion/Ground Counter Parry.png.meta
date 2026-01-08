@@ -5,6 +5,33 @@ TextureImporter:
   - first:
       213: -4646951761647621995
     second: Ground Counter Parry_0
+  - first:
+      213: -8027616041504634172
+    second: Ground Counter Parry_1
+  - first:
+      213: -7469723319741166914
+    second: Ground Counter Parry_2
+  - first:
+      213: 8039293579393912990
+    second: Ground Counter Parry_3
+  - first:
+      213: -8911831368127937609
+    second: Ground Counter Parry_4
+  - first:
+      213: -1412323631384891255
+    second: Ground Counter Parry_5
+  - first:
+      213: -8749100849451863795
+    second: Ground Counter Parry_6
+  - first:
+      213: -3766290363741639209
+    second: Ground Counter Parry_7
+  - first:
+      213: 4246931962064720055
+    second: Ground Counter Parry_8
+  - first:
+      213: -5084914599856147126
+    second: Ground Counter Parry_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +78,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 250
+  spritePixelsToUnits: 500
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,7 +99,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -96,6 +123,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -105,8 +145,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +165,20 @@ TextureImporter:
       name: Ground Counter Parry_1
       rect:
         serializedVersion: 2
-        x: 640
+        x: 1280
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 535fecf1a5c5f8d45b2424d3e3a8d55d
-      internalID: 864991148
+      spriteID: 4ca83ec0ebd289090800000000000000
+      internalID: -8027616041504634172
       vertices: []
       indices: 
       edges: []
@@ -147,20 +187,20 @@ TextureImporter:
       name: Ground Counter Parry_2
       rect:
         serializedVersion: 2
-        x: 1280
+        x: 2560
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 965effcb7a6473f4faa54afb3abef742
-      internalID: 409149442
+      spriteID: eba406c8736365890800000000000000
+      internalID: -7469723319741166914
       vertices: []
       indices: 
       edges: []
@@ -169,20 +209,20 @@ TextureImporter:
       name: Ground Counter Parry_3
       rect:
         serializedVersion: 2
-        x: 1920
+        x: 3840
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 679ef244984a9c648baa0226a27a7255
-      internalID: 1753312061
+      spriteID: e905adc9aee419f60800000000000000
+      internalID: 8039293579393912990
       vertices: []
       indices: 
       edges: []
@@ -191,20 +231,20 @@ TextureImporter:
       name: Ground Counter Parry_4
       rect:
         serializedVersion: 2
-        x: 2560
+        x: 5120
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 3f3c64f01bd9b044c8343bf7b69f11de
-      internalID: 1557922641
+      spriteID: 7b30d8c6690d25480800000000000000
+      internalID: -8911831368127937609
       vertices: []
       indices: 
       edges: []
@@ -213,20 +253,20 @@ TextureImporter:
       name: Ground Counter Parry_5
       rect:
         serializedVersion: 2
-        x: 3200
+        x: 6400
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 3cdee0b377b13564ebcc92f44d21ab6c
-      internalID: -1292505022
+      spriteID: 980f96bd32b666ce0800000000000000
+      internalID: -1412323631384891255
       vertices: []
       indices: 
       edges: []
@@ -235,20 +275,20 @@ TextureImporter:
       name: Ground Counter Parry_6
       rect:
         serializedVersion: 2
-        x: 3840
+        x: 7680
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 44422a56f8c4db94ab161fc2df0f9576
-      internalID: 1779328444
+      spriteID: d017a54d123f49680800000000000000
+      internalID: -8749100849451863795
       vertices: []
       indices: 
       edges: []
@@ -257,20 +297,20 @@ TextureImporter:
       name: Ground Counter Parry_7
       rect:
         serializedVersion: 2
-        x: 4480
+        x: 8960
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 968ec6c73f30b8d4abea80e36559c153
-      internalID: -1771259374
+      spriteID: 7dde33c6ed27bbbc0800000000000000
+      internalID: -3766290363741639209
       vertices: []
       indices: 
       edges: []
@@ -279,20 +319,20 @@ TextureImporter:
       name: Ground Counter Parry_8
       rect:
         serializedVersion: 2
-        x: 5120
+        x: 10240
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: eb2d0d74c65cdb44f863b72421cdc257
-      internalID: 1817957883
+      spriteID: 7b0de184e1220fa30800000000000000
+      internalID: 4246931962064720055
       vertices: []
       indices: 
       edges: []
@@ -301,42 +341,20 @@ TextureImporter:
       name: Ground Counter Parry_9
       rect:
         serializedVersion: 2
-        x: 5760
+        x: 11520
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 01e63c5f045d77f4d89a465fc5d745de
-      internalID: -1784685339
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ground Counter Parry_10
-      rect:
-        serializedVersion: 2
-        x: 6400
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2342d6407e8c6b7468f252944700bcbd
-      internalID: -2044003657
+      spriteID: a45706acc11ce69b0800000000000000
+      internalID: -5084914599856147126
       vertices: []
       indices: 
       edges: []
@@ -345,7 +363,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 0d1fa8296cb2a0543b2539d88e815daa
+    spriteID: 424f7c181cb497e46b05b79fef799c33
     internalID: 0
     vertices: []
     indices: 
@@ -355,19 +373,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":640.0,"y":640.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":10.0,"y":1.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Ground Counter Parry_0: -4646951761647621995
-      Ground Counter Parry_1: 864991148
-      Ground Counter Parry_10: -2044003657
-      Ground Counter Parry_2: 409149442
-      Ground Counter Parry_3: 1753312061
-      Ground Counter Parry_4: 1557922641
-      Ground Counter Parry_5: -1292505022
-      Ground Counter Parry_6: 1779328444
-      Ground Counter Parry_7: -1771259374
-      Ground Counter Parry_8: 1817957883
-      Ground Counter Parry_9: -1784685339
+      Ground Counter Parry_1: -8027616041504634172
+      Ground Counter Parry_2: -7469723319741166914
+      Ground Counter Parry_3: 8039293579393912990
+      Ground Counter Parry_4: -8911831368127937609
+      Ground Counter Parry_5: -1412323631384891255
+      Ground Counter Parry_6: -8749100849451863795
+      Ground Counter Parry_7: -3766290363741639209
+      Ground Counter Parry_8: 4246931962064720055
+      Ground Counter Parry_9: -5084914599856147126
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

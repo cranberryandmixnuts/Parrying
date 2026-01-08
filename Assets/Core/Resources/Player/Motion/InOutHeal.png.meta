@@ -5,6 +5,27 @@ TextureImporter:
   - first:
       213: -8094458133668951476
     second: InOutHeal_0
+  - first:
+      213: 1036145532244782494
+    second: InOutHeal_1
+  - first:
+      213: -6828668056669142809
+    second: InOutHeal_2
+  - first:
+      213: -4924586974783762752
+    second: InOutHeal_3
+  - first:
+      213: 8003243682844244818
+    second: InOutHeal_4
+  - first:
+      213: -2860333541532683215
+    second: InOutHeal_5
+  - first:
+      213: -8760367300463043354
+    second: InOutHeal_6
+  - first:
+      213: -6159426903393331488
+    second: InOutHeal_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 250
+  spritePixelsToUnits: 500
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,7 +93,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -96,6 +117,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -105,8 +139,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +159,20 @@ TextureImporter:
       name: InOutHeal_1
       rect:
         serializedVersion: 2
-        x: 640
+        x: 1280
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5fb1fefc71ecca64891ae27e7f88f4ef
-      internalID: 430440521
+      spriteID: e9dee013fd0216e00800000000000000
+      internalID: 1036145532244782494
       vertices: []
       indices: 
       edges: []
@@ -147,20 +181,20 @@ TextureImporter:
       name: InOutHeal_2
       rect:
         serializedVersion: 2
-        x: 1280
+        x: 2560
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 8220cb465d49da34290cc60cfaadfbff
-      internalID: -1984965120
+      spriteID: 7e0cd211592bb31a0800000000000000
+      internalID: -6828668056669142809
       vertices: []
       indices: 
       edges: []
@@ -169,20 +203,20 @@ TextureImporter:
       name: InOutHeal_3
       rect:
         serializedVersion: 2
-        x: 1920
+        x: 3840
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 01a1afe093119c24ea61525567e14ed1
-      internalID: 430945609
+      spriteID: 0ce8f7eec3a58abb0800000000000000
+      internalID: -4924586974783762752
       vertices: []
       indices: 
       edges: []
@@ -191,20 +225,20 @@ TextureImporter:
       name: InOutHeal_4
       rect:
         serializedVersion: 2
-        x: 2560
+        x: 5120
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: e303c9ec7f018e2478de76a2866623af
-      internalID: 985277882
+      spriteID: 25bf1def9bb311f60800000000000000
+      internalID: 8003243682844244818
       vertices: []
       indices: 
       edges: []
@@ -213,20 +247,20 @@ TextureImporter:
       name: InOutHeal_5
       rect:
         serializedVersion: 2
-        x: 3200
+        x: 6400
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: d0e09a33dcceb0e4d9302a266d9053e8
-      internalID: -1385045981
+      spriteID: 1343fc57ccd0e48d0800000000000000
+      internalID: -2860333541532683215
       vertices: []
       indices: 
       edges: []
@@ -235,20 +269,20 @@ TextureImporter:
       name: InOutHeal_6
       rect:
         serializedVersion: 2
-        x: 3840
+        x: 7680
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 7ff82c1089fc64a4b80139af78244d83
-      internalID: -578818357
+      spriteID: 6ecd3f9ca5cec6680800000000000000
+      internalID: -8760367300463043354
       vertices: []
       indices: 
       edges: []
@@ -257,42 +291,20 @@ TextureImporter:
       name: InOutHeal_7
       rect:
         serializedVersion: 2
-        x: 4480
+        x: 8960
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 8f37808a14d549e45ab64b12c76518e0
-      internalID: -47202084
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: InOutHeal_8
-      rect:
-        serializedVersion: 2
-        x: 5120
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d589edc9ff1deec4f8b78899fc57d3e2
-      internalID: -1571677502
+      spriteID: 0e6914b8dd1558aa0800000000000000
+      internalID: -6159426903393331488
       vertices: []
       indices: 
       edges: []
@@ -301,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: f4f18c970d3d81b4aaddf4839d361534
+    spriteID: 7e6aace7548f7a44882ed1da3ac5b518
     internalID: 0
     vertices: []
     indices: 
@@ -311,17 +323,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":9.0,"y":1.0},"gridSpriteSize":{"x":640.0,"y":640.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       InOutHeal_0: -8094458133668951476
-      InOutHeal_1: 430440521
-      InOutHeal_2: -1984965120
-      InOutHeal_3: 430945609
-      InOutHeal_4: 985277882
-      InOutHeal_5: -1385045981
-      InOutHeal_6: -578818357
-      InOutHeal_7: -47202084
-      InOutHeal_8: -1571677502
+      InOutHeal_1: 1036145532244782494
+      InOutHeal_2: -6828668056669142809
+      InOutHeal_3: -4924586974783762752
+      InOutHeal_4: 8003243682844244818
+      InOutHeal_5: -2860333541532683215
+      InOutHeal_6: -8760367300463043354
+      InOutHeal_7: -6159426903393331488
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

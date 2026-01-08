@@ -5,6 +5,27 @@ TextureImporter:
   - first:
       213: 2998501557946434608
     second: Ground Normal Parry_0
+  - first:
+      213: 6367969429353858297
+    second: Ground Normal Parry_1
+  - first:
+      213: -5120538678777873976
+    second: Ground Normal Parry_2
+  - first:
+      213: -5703738840519711028
+    second: Ground Normal Parry_3
+  - first:
+      213: 6123582965312161788
+    second: Ground Normal Parry_4
+  - first:
+      213: -7373370368328397690
+    second: Ground Normal Parry_5
+  - first:
+      213: 3578502389306781789
+    second: Ground Normal Parry_6
+  - first:
+      213: -2843960713854402755
+    second: Ground Normal Parry_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 250
+  spritePixelsToUnits: 500
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,7 +93,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 16384
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -96,6 +117,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -105,8 +139,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +159,20 @@ TextureImporter:
       name: Ground Normal Parry_1
       rect:
         serializedVersion: 2
-        x: 640
+        x: 1280
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: cebe5b63589ec534fb2c74c81c329355
-      internalID: -191930989
+      spriteID: 9f40f2105729f5850800000000000000
+      internalID: 6367969429353858297
       vertices: []
       indices: 
       edges: []
@@ -147,20 +181,20 @@ TextureImporter:
       name: Ground Normal Parry_2
       rect:
         serializedVersion: 2
-        x: 1280
+        x: 2560
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: ab4dfa7e7f22d994a87bc3930bb4a6e7
-      internalID: -1490460033
+      spriteID: 8c9fbc0933130f8b0800000000000000
+      internalID: -5120538678777873976
       vertices: []
       indices: 
       edges: []
@@ -169,20 +203,20 @@ TextureImporter:
       name: Ground Normal Parry_3
       rect:
         serializedVersion: 2
-        x: 1920
+        x: 3840
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 71cd6b40108b2b44fa484d332409a621
-      internalID: 2129076843
+      spriteID: cc669378ebf38d0b0800000000000000
+      internalID: -5703738840519711028
       vertices: []
       indices: 
       edges: []
@@ -191,20 +225,20 @@ TextureImporter:
       name: Ground Normal Parry_4
       rect:
         serializedVersion: 2
-        x: 2560
+        x: 5120
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 4ecf1e13959b94943b44552873402894
-      internalID: -850671451
+      spriteID: cf7801843465bf450800000000000000
+      internalID: 6123582965312161788
       vertices: []
       indices: 
       edges: []
@@ -213,20 +247,20 @@ TextureImporter:
       name: Ground Normal Parry_5
       rect:
         serializedVersion: 2
-        x: 3200
+        x: 6400
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 6b80eec430c02814d82efad1814f5e67
-      internalID: -1136596708
+      spriteID: 68c056e37b68ca990800000000000000
+      internalID: -7373370368328397690
       vertices: []
       indices: 
       edges: []
@@ -235,20 +269,20 @@ TextureImporter:
       name: Ground Normal Parry_6
       rect:
         serializedVersion: 2
-        x: 3840
+        x: 7680
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: c10e7c05bd933664c8e29d744e4e0ef1
-      internalID: -1402693121
+      spriteID: d50748e96f469a130800000000000000
+      internalID: 3578502389306781789
       vertices: []
       indices: 
       edges: []
@@ -257,86 +291,20 @@ TextureImporter:
       name: Ground Normal Parry_7
       rect:
         serializedVersion: 2
-        x: 4480
+        x: 8960
         y: 0
-        width: 640
-        height: 640
+        width: 1280
+        height: 1280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f6847940ecb6a5d4dbe0c4a309a67118
-      internalID: -33036748
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ground Normal Parry_8
-      rect:
-        serializedVersion: 2
-        x: 5120
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2089b6f142b602144b0aaaaaea58959d
-      internalID: 152795076
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ground Normal Parry_9
-      rect:
-        serializedVersion: 2
-        x: 5760
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6f5b7f7980a6fa14badf573e0a4d21ff
-      internalID: -1207944591
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ground Normal Parry_10
-      rect:
-        serializedVersion: 2
-        x: 6400
-        y: 0
-        width: 640
-        height: 640
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 42aea4dab633b454fa67e1ab86f843c5
-      internalID: -1698205052
+      spriteID: d3fba877cc83888d0800000000000000
+      internalID: -2843960713854402755
       vertices: []
       indices: 
       edges: []
@@ -345,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1de7dad215585c8488f936965cdefb85
+    spriteID: 166e69a4efdb96647adec8bdee910862
     internalID: 0
     vertices: []
     indices: 
@@ -355,19 +323,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":640.0,"y":640.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Ground Normal Parry_0: 2998501557946434608
-      Ground Normal Parry_1: -191930989
-      Ground Normal Parry_10: -1698205052
-      Ground Normal Parry_2: -1490460033
-      Ground Normal Parry_3: 2129076843
-      Ground Normal Parry_4: -850671451
-      Ground Normal Parry_5: -1136596708
-      Ground Normal Parry_6: -1402693121
-      Ground Normal Parry_7: -33036748
-      Ground Normal Parry_8: 152795076
-      Ground Normal Parry_9: -1207944591
+      Ground Normal Parry_1: 6367969429353858297
+      Ground Normal Parry_2: -5120538678777873976
+      Ground Normal Parry_3: -5703738840519711028
+      Ground Normal Parry_4: 6123582965312161788
+      Ground Normal Parry_5: -7373370368328397690
+      Ground Normal Parry_6: 3578502389306781789
+      Ground Normal Parry_7: -2843960713854402755
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
