@@ -1,5 +1,4 @@
 using UnityEngine;
-using static PlayerController;
 
 public sealed class HealState : PlayerState
 {
@@ -120,7 +119,6 @@ public sealed class HealState : PlayerState
             case HealPhase.Exit:
                 {
                     exitTimeLeft -= Time.deltaTime;
-                    player.Effects.Healing.Stop();
 
                     if (exitTimeLeft <= 0f)
                     {
@@ -130,5 +128,10 @@ public sealed class HealState : PlayerState
                     break;
                 }
         }
+    }
+
+    public override void Exit()
+    {
+        player.Effects.Healing.Stop();
     }
 }
