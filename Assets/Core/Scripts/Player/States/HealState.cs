@@ -1,4 +1,5 @@
 using UnityEngine;
+using static PlayerController;
 
 public sealed class HealState : PlayerState
 {
@@ -14,6 +15,8 @@ public sealed class HealState : PlayerState
     private float healTickTimer;
     private float enterTimeLeft;
     private float exitTimeLeft;
+    private float enterDuration;
+    private float exitDuration;
 
     public override PlayerStateType StateType => PlayerStateType.Heal;
 
@@ -29,8 +32,14 @@ public sealed class HealState : PlayerState
         phase = HealPhase.Enter;
         allowLoop = true;
         healTickTimer = 0f;
-        enterTimeLeft = player.GetAnimLength("Enter_Heal");
+
+        enterDuration = player.GetAnimLength("Enter_Heal");
+        enterTimeLeft = enterDuration;
+
+        exitDuration = 0f;
         exitTimeLeft = 0f;
+
+        player.healDelayGauge = 0f;
         player.Effects.Healing.Play();
     }
 
@@ -45,6 +54,11 @@ public sealed class HealState : PlayerState
 
                     enterTimeLeft -= Time.deltaTime;
 
+                    if (enterDuration > 0f)
+                        player.healDelayGauge = Mathf.Clamp01(1f - (enterTimeLeft / enterDuration));
+                    else
+                        player.healDelayGauge = 1f;
+
                     if (enterTimeLeft <= 0f)
                     {
                         bool canLoop =
@@ -58,12 +72,17 @@ public sealed class HealState : PlayerState
                         {
                             player.Anim.Play("Healing");
                             phase = HealPhase.Loop;
+                            player.healDelayGauge = 1f;
                         }
                         else
                         {
                             player.Anim.Play("Exit_Heal");
                             phase = HealPhase.Exit;
-                            exitTimeLeft = player.GetAnimLength("Exit_Heal");
+
+                            exitDuration = player.GetAnimLength("Exit_Heal");
+                            exitTimeLeft = exitDuration;
+
+                            player.healDelayGauge = 1f;
                         }
                     }
 
@@ -72,17 +91,23 @@ public sealed class HealState : PlayerState
 
             case HealPhase.Loop:
                 {
+                    player.healDelayGauge = 1f;
+
                     bool canStay =
                         player.HealHeld &&
                         player.isGround &&
                         player.Vitals.Energy >= player.Settings.healEnergyPerTick &&
                         player.Vitals.Health < player.Vitals.MaxHealth;
-                    
+
                     if (!canStay)
                     {
                         player.Anim.Play("Exit_Heal");
                         phase = HealPhase.Exit;
-                        exitTimeLeft = player.GetAnimLength("Exit_Heal");
+
+                        exitDuration = player.GetAnimLength("Exit_Heal");
+                        exitTimeLeft = exitDuration;
+
+                        player.healDelayGauge = 1f;
                     }
                     else
                     {
@@ -97,7 +122,11 @@ public sealed class HealState : PlayerState
                             {
                                 player.Anim.Play("Exit_Heal");
                                 phase = HealPhase.Exit;
-                                exitTimeLeft = player.GetAnimLength("Exit_Heal");
+
+                                exitDuration = player.GetAnimLength("Exit_Heal");
+                                exitTimeLeft = exitDuration;
+
+                                player.healDelayGauge = 1f;
                                 break;
                             }
 
@@ -107,7 +136,11 @@ public sealed class HealState : PlayerState
                             {
                                 player.Anim.Play("Exit_Heal");
                                 phase = HealPhase.Exit;
-                                exitTimeLeft = player.GetAnimLength("Exit_Heal");
+
+                                exitDuration = player.GetAnimLength("Exit_Heal");
+                                exitTimeLeft = exitDuration;
+
+                                player.healDelayGauge = 1f;
                                 break;
                             }
                         }
@@ -118,7 +151,13 @@ public sealed class HealState : PlayerState
 
             case HealPhase.Exit:
                 {
+                    if (exitDuration > 0f)
+                        player.healDelayGauge = Mathf.Clamp01(exitTimeLeft / exitDuration);
+                    else
+                        player.healDelayGauge = 0f;
+
                     exitTimeLeft -= Time.deltaTime;
+                    player.Effects.Healing.Stop();
 
                     if (exitTimeLeft <= 0f)
                     {
@@ -132,6 +171,7 @@ public sealed class HealState : PlayerState
 
     public override void Exit()
     {
+        player.healDelayGauge = 0f;
         player.Effects.Healing.Stop();
     }
 }

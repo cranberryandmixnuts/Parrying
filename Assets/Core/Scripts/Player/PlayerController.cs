@@ -90,6 +90,8 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool parryHadSuccessThisWindow;
     [HideInInspector] public bool counterParryFirstResolved;
 
+    [HideInInspector] public float healDelayGauge;
+
     public bool HasParryBuffer => parryBufferTimer > 0f;
     public void ConsumeParryBuffer() => parryBufferTimer = 0f;
 
