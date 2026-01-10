@@ -1,7 +1,7 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class PlayerVitals : MonoBehaviour
+public sealed class PlayerVitals : MonoBehaviour
 {
     [SerializeField] private PlayerSettings settings;
 

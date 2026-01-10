@@ -11,7 +11,7 @@ public enum SceneType
     TitleScene,
 }
 
-public class SceneLoader : MonoBehaviour
+public sealed class SceneLoader : MonoBehaviour
 {
     public static SceneLoader Instance { get; private set; }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FollowObject : MonoBehaviour
+public sealed class FollowObject : MonoBehaviour
 {
     [SerializeField] private Transform target;
 
