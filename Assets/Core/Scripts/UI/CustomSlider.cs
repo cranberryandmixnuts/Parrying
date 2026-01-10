@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 
-public sealed class Slider : MonoBehaviour, IPointerDownHandler, IDragHandler, IInitializePotentialDragHandler, IPointerUpHandler
+public sealed class CustomSlider : MonoBehaviour, IPointerDownHandler, IDragHandler, IInitializePotentialDragHandler, IPointerUpHandler
 {
     [System.Serializable]
     public sealed class FloatEvent : UnityEvent<float> { }

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public sealed class DebugTimeScaleController : MonoBehaviour
 {
-    [SerializeField] private UnityEngine.UI.Slider timeScaleSlider;
+    [SerializeField] private Slider timeScaleSlider;
     [SerializeField] private float slowTimeScale = 0.1f;
     [SerializeField] private float normalTimeScale = 1f;
 
