@@ -16,9 +16,7 @@ public readonly struct SceneScope : ISingletonScope
 }
 
 [DefaultExecutionOrder(-30000)]
-public abstract class Singleton<T, TScope> : MonoBehaviour
-    where T : MonoBehaviour
-    where TScope : struct, ISingletonScope
+public abstract class Singleton<T, TScope> : MonoBehaviour where T : MonoBehaviour where TScope : struct, ISingletonScope
 {
     public static T Instance { get; private set; }
 
@@ -37,7 +35,6 @@ public abstract class Singleton<T, TScope> : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = self;
 
         if (scope.IsGlobal) DontDestroyOnLoad(gameObject);
