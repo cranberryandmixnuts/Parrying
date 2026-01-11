@@ -1,16 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 public sealed class PlayerStatsGaugeUI : MonoBehaviour
 {
     [Header("Gauges")]
-    [SerializeField] private Image healthGauge;
-    [SerializeField] private Image energyGauge;
-    [SerializeField] private Image healDelayGauge;
-    [SerializeField] private Image counterParryHoldGauge;
+    [SerializeField, Required] private Image healthGauge;
+    [SerializeField, Required] private Image energyGauge;
+    [SerializeField, Required] private Image healDelayGauge;
+    [SerializeField, Required] private Image counterParryHoldGauge;
 
     [Header("Counter Parry Graduation")]
-    [SerializeField] private Image counterParryReadyImage;
+    [SerializeField, Required] private Image counterParryReadyImage;
     [SerializeField] private Sprite graduationSprite;
     [SerializeField] private Sprite disableGraduationSprite;
 

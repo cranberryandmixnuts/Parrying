@@ -1,16 +1,34 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 {
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float turnSpeed = 160f;
-    [SerializeField] private float reflectSpeed = 50f;
-    [SerializeField] private float reflectTurnSpeed = 600f;
-    [SerializeField] private float maxLifetime = 6f;
-    [SerializeField] private int damage = 10;
-    [SerializeField] private LayerMask groundMask;
-    [SerializeField] private LayerMask playerHitMask;
-    [SerializeField] private Collider2D hitCollider;
+    [TabGroup("Enemy Projectile", "Setup"), BoxGroup("Enemy Projectile/Setup/Masks"), SerializeField]
+    private LayerMask groundMask;
+
+    [TabGroup("Enemy Projectile", "Setup"), BoxGroup("Enemy Projectile/Setup/Masks"), SerializeField]
+    private LayerMask playerHitMask;
+
+    [TabGroup("Enemy Projectile", "Setup"), BoxGroup("Enemy Projectile/Setup/Colliders"), SerializeField, Required]
+    private Collider2D hitCollider;
+
+    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("u/s", true)]
+    private float speed = 10f;
+
+    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("deg/s", true)]
+    private float turnSpeed = 160f;
+
+    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Reflect"), SerializeField, MinValue(0f), SuffixLabel("u/s", true)]
+    private float reflectSpeed = 50f;
+
+    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Reflect"), SerializeField, MinValue(0f), SuffixLabel("deg/s", true)]
+    private float reflectTurnSpeed = 600f;
+
+    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Lifetime"), SerializeField, MinValue(0.01f), SuffixLabel("s", true)]
+    private float maxLifetime = 6f;
+
+    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
+    private int damage = 10;
 
     private IEnemyProjectileOwner owner;
     private PlayerController player;

@@ -3,13 +3,22 @@ using Sirenix.OdinInspector;
 
 public sealed class PlayerVitals : MonoBehaviour
 {
-    [SerializeField] private PlayerSettings settings;
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ReadOnly, SerializeField]
+    private int playerHealth;
 
-    [ReadOnly] [SerializeField] private int playerHealth;
-    [ReadOnly] [SerializeField] private int playerEnergy;
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ReadOnly, SerializeField]
+    private int playerEnergy;
 
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), ReadOnly, SerializeField]
     private bool IsInvincible = false;
+
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), ReadOnly, SerializeField]
     private float invincibleTimer = 0f;
+
+    [TabGroup("Player Vitals", "Setup"), BoxGroup("Player Vitals/Setup/Scene References"), SerializeField, Required]
+    private PlayerSettings settings;
+
+    [TabGroup("Player Vitals", "Setup"), BoxGroup("Player Vitals/Setup/Scene References"), SerializeField, Required]
     private PlayerController player;
 
     public int Health
@@ -39,11 +48,6 @@ public sealed class PlayerVitals : MonoBehaviour
     {
         Health = settings.maxHealth;
         Energy = settings.maxEnergy;
-    }
-
-    private void Start()
-    {
-        player = PlayerController.Instance;
     }
 
     private void Update()

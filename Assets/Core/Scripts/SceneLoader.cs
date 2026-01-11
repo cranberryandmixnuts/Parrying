@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 
 public enum SceneType
 {
@@ -12,12 +13,11 @@ public enum SceneType
     GameScene,
 }
 
-public sealed class SceneLoader : MonoBehaviour
+public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 {
-    public static SceneLoader Instance { get; private set; }
 
     [Header("Fade UI")]
-    [SerializeField] private Image fadeImage;
+    [SerializeField, Required] private Image fadeImage;
     [SerializeField] private float fadeDuration = 1.0f;
 
     public bool IsTransitioning { get; private set; } = false;
@@ -25,17 +25,6 @@ public sealed class SceneLoader : MonoBehaviour
     private Tween fadeTween;
     private Tween pendingRequestTween;
     private SceneType pendingScene = SceneType.None;
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
 
     private void Start()
     {
@@ -55,7 +44,7 @@ public sealed class SceneLoader : MonoBehaviour
         string sceneName = scene.ToString();
         if (string.IsNullOrEmpty(sceneName) || scene == SceneType.None)
         {
-            Debug.LogError($"{sceneName}¾ÀÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError($"{sceneName}ì”¬ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -145,7 +134,7 @@ public sealed class SceneLoader : MonoBehaviour
         if (Enum.TryParse(name, out SceneType t))
             return t;
 
-        Debug.LogError($"ÇöÀç ¾À ÀÌ¸§ '{name}' ÀÌ SceneType enum°ú ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
+        Debug.LogError($"í˜„ì¬ ì”¬ ì´ë¦„ '{name}' ì´ SceneType enumê³¼ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
         return SceneType.None;
     }
 

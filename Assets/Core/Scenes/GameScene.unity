@@ -150,11 +150,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InputService
   actions: {fileID: -944628639613478452, guid: ce3d5fe899db28446a99cd146ca33cc4, type: 3}
   playerMapName: Player
+  UIMapName: UI
   moveActionName: Move
   jumpActionName: Jump
   dashActionName: Dash
   parryActionName: Parry
   healActionName: Heal
+  pauseActionName: Pause
 --- !u!4 &40010786
 Transform:
   m_ObjectHideFlags: 0
@@ -3392,9 +3394,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f586b224db60df74386ce170200d9f33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerVitals
-  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
   playerHealth: 0
   playerEnergy: 0
+  IsInvincible: 0
+  invincibleTimer: 0
+  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
+  player: {fileID: 8455161177830103594}
 --- !u!4 &8716441742125073611
 Transform:
   m_ObjectHideFlags: 0
@@ -3439,7 +3444,6 @@ MonoBehaviour:
   volleyCenter: {fileID: 351247551}
   volleyHeight: {fileID: 1394207329}
   radialLaserPoint: {fileID: 1394207329}
-  debugDrawSwordGizmo: 1
   debugSwordColor: {r: 1, g: 0.3, b: 0.2, a: 0.8}
   debugArcStepDeg: 5
   Line: {fileID: 8716441742125073613}

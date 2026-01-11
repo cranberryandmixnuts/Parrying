@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
-using UnityEngine.VFX;
 
 public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectileOwner
 {
@@ -15,6 +14,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         LaserP2
     }
 
+    #region Animation Names
     public const string AnimGroundIdle = "Ground Idle";
     public const string AnimAirIdle = "Air Idle";
     public const string AnimGroggy = "Groggy";
@@ -24,38 +24,54 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public const string AnimFire = "Fire";
     public const string AnimCrackLaser = "Crack Laser";
     public const string AnimDeath = "Death";
+    #endregion
 
-    [ReadOnly] [SerializeField] private int p1Stacks;
-    [ReadOnly] [SerializeField] private int p2Stacks;
+    [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Stacks"), ReadOnly, SerializeField]
+    private int p1Stacks;
 
-    [Header("Settings")]
-    [SerializeField] private BossSettings settings;
+    [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Stacks"), ReadOnly, SerializeField]
+    private int p2Stacks;
 
-    [Header("SwordDrop")]
-    [SerializeField] private Transform leftTop;
-    [SerializeField] private Transform rightTop;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Settings"), SerializeField, Required]
+    private BossSettings settings;
 
-    [Header("PlungeRush")]
-    [SerializeField] private Transform ceilingPoint;
-    [SerializeField] private Transform rushStopLeft;
-    [SerializeField] private Transform rushStopRight;
-    [SerializeField] private Collider2D plungeCollider;
-    [SerializeField] private Collider2D rushCollider;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
+    private Transform leftTop;
 
-    [Header("VolleyLaser")]
-    [SerializeField] private Collider2D projectileHitbox;
-    [SerializeField] private EnemyProjectile projectilePrefab;
-    [SerializeField] private Transform volleyCenter;
-    [SerializeField] private Transform volleyHeight;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
+    private Transform rightTop;
 
-    [Header("RadialLaser")]
-    [SerializeField] private Transform radialLaserPoint;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
+    private Transform ceilingPoint;
 
-    [Header("VisualEffect")]
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
+    private Transform rushStopLeft;
 
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
+    private Transform rushStopRight;
 
-    [Header("Debug Gizmo")]
-    [SerializeField] private bool debugDrawSwordGizmo = true;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
+    private Collider2D plungeCollider;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
+    private Collider2D rushCollider;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
+    private Collider2D projectileHitbox;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField]
+    private EnemyProjectile projectilePrefab;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
+    private Transform volleyCenter;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
+    private Transform volleyHeight;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/RadialLaser"), SerializeField, Required]
+    private Transform radialLaserPoint;
+
+    [Header("Debug")]
     [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
     [SerializeField] private float debugArcStepDeg = 5f;
     [SerializeField] private LineRenderer Line;
@@ -82,17 +98,12 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         stateMachine.Initialize(new BossIdleState(this, stateMachine, true));
     }
 
-    protected override void OnUpdate()
-    {
-        stateMachine.Update();
-    }
+    protected override void OnUpdate() => stateMachine.Update();
 
-    protected override void OnFixedUpdate()
-    {
-        stateMachine.FixedUpdate();
-    }
+    protected override void OnFixedUpdate() => stateMachine.FixedUpdate();
 
-    public BossStateType CurrentStateType => stateMachine != null ? stateMachine.CurrentStateType : BossStateType.Missing;
+    #region Properties
+    public BossStateType CurrentStateType => stateMachine.CurrentStateType;
     public BossSettings Settings => settings;
     public Transform LeftTop => leftTop;
     public Transform RightTop => rightTop;
@@ -105,61 +116,29 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public Transform VolleyCenter => volleyCenter;
     public Transform VolleyHeight => volleyHeight;
     public Transform RadialLaserPoint => radialLaserPoint;
-
     public bool LethalActive => lethalActive;
     public float FacingDir => FacingDirection;
     public float OriginalGravityScale => gravityOriginal;
     public PlayerController PlayerTarget => Player;
+    public Transform ProjectileTargetTransform => transform;
+    public Collider2D ProjectileHitbox => projectileHitbox;
+    #endregion
 
-    public Transform ProjectileTargetTransform
-    {
-        get { return transform; }
-    }
+    public void OnHitByReflectedProjectile() => OnMissileReflectedHit();
 
-    public Collider2D ProjectileHitbox
-    {
-        get { return projectileHitbox; }
-    }
+    public void ChangeToIdle(bool grounded) => stateMachine.ChangeState(new BossIdleState(this, stateMachine, grounded));
 
-    public void OnHitByReflectedProjectile()
-    {
-        OnMissileReflectedHit();
-    }
+    public void ChangeToGroggy(float duration) => stateMachine.ChangeState(new BossGroggyState(this, stateMachine, duration));
 
-    public void ChangeToIdle(bool grounded)
-    {
-        stateMachine.ChangeState(new BossIdleState(this, stateMachine, grounded));
-    }
+    public void ChangeToSwordDrop() => stateMachine.ChangeState(new BossSwordDropState(this, stateMachine));
 
-    public void ChangeToGroggy(float duration)
-    {
-        stateMachine.ChangeState(new BossGroggyState(this, stateMachine, duration));
-    }
+    public void ChangeToPlungeRush() => stateMachine.ChangeState(new BossPlungeRushState(this, stateMachine));
 
-    public void ChangeToSwordDrop()
-    {
-        stateMachine.ChangeState(new BossSwordDropState(this, stateMachine));
-    }
+    public void ChangeToVolleyLaser() => stateMachine.ChangeState(new BossVolleyLaserState(this, stateMachine));
 
-    public void ChangeToPlungeRush()
-    {
-        stateMachine.ChangeState(new BossPlungeRushState(this, stateMachine));
-    }
+    public void ChangeToRadialLaser() => stateMachine.ChangeState(new BossRadialLaserState(this, stateMachine));
 
-    public void ChangeToVolleyLaser()
-    {
-        stateMachine.ChangeState(new BossVolleyLaserState(this, stateMachine));
-    }
-
-    public void ChangeToRadialLaser()
-    {
-        stateMachine.ChangeState(new BossRadialLaserState(this, stateMachine));
-    }
-
-    public void ChangeToDeath()
-    {
-        stateMachine.ChangeState(new BossDeathState(this, stateMachine));
-    }
+    public void ChangeToDeath() => stateMachine.ChangeState(new BossDeathState(this, stateMachine));
 
     public void OnPerfectParry(Vector2 hitPoint)
     {
@@ -436,8 +415,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     private void OnDrawGizmosSelected()
     {
-        if (!debugDrawSwordGizmo) return;
-
         Gizmos.color = debugSwordColor;
 
         int face = 1;

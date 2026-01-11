@@ -10,9 +10,9 @@ public sealed class CustomSlider : MonoBehaviour, IPointerDownHandler, IDragHand
     public sealed class FloatEvent : UnityEvent<float> { }
 
     [Header("References")]
-    [SerializeField] private RectTransform trackRect;
-    [SerializeField] private Image fillImage;
-    [SerializeField] private RectTransform handleRect;
+    [SerializeField, Required] private RectTransform trackRect;
+    [SerializeField, Required] private Image fillImage;
+    [SerializeField, Required] private RectTransform handleRect;
 
     [Header("Config")]
     [SerializeField] private Vector2 valueRange = new(0.0f, 1.0f);

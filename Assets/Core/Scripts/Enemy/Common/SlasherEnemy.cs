@@ -1,4 +1,5 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public sealed class SlasherEnemy : EnemyBase, IParryReactive
 {
@@ -13,6 +14,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Death
     }
 
+    #region Animation Names
     private const string AnimIdle = "Idle";
     private const string AnimWalk = "Walk";
     private const string AnimChase = "Chase";
@@ -20,28 +22,43 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private const string AnimAttack = "Attack";
     private const string AnimHit = "Hit";
     private const string AnimDeath = "Death";
+    #endregion
 
-    [Header("Ranges")]
-    [SerializeField] private Collider2D walkRange;
-    [SerializeField] private Collider2D backOffRange;
+    [TabGroup("Slasher Enemy", "Setup"), BoxGroup("Slasher Enemy/Setup/Ranges"), SerializeField, Required]
+    private Collider2D walkRange;
 
-    [Header("Movement Speeds")]
-    [SerializeField] private float walkSpeed = 1.5f;
-    [SerializeField] private float chaseSpeed = 4f;
+    [TabGroup("Slasher Enemy", "Setup"), BoxGroup("Slasher Enemy/Setup/Ranges"), SerializeField, Required]
+    private Collider2D backOffRange;
 
-    [Header("Attack Geometry")]
-    [SerializeField] private Transform attackOrigin;
-    [SerializeField] private float swingStartAngleDeg = 75f;
-    [SerializeField] private float swingEndAngleDeg = -30f;
-    [SerializeField] private float swingLength = 2f;
-    [SerializeField] private LayerMask playerHitMask;
+    [TabGroup("Slasher Enemy", "Setup"), BoxGroup("Slasher Enemy/Setup/Attack"), SerializeField, Required]
+    private Transform attackOrigin;
 
-    [Header("Attack Timing (Percent)")]
-    [SerializeField, Range(0f, 1f)] private float attackPrepPercent = 0.2f;
-    [SerializeField, Range(0f, 1f)] private float attackEndPercent = 0.9f;
+    [TabGroup("Slasher Enemy", "Setup"), BoxGroup("Slasher Enemy/Setup/Attack"), SerializeField]
+    private LayerMask playerHitMask;
 
-    [Header("Attack Damage")]
-    [SerializeField] private int attackDamage = 10;
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("u/s", true)]
+    private float walkSpeed = 1.5f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("u/s", true)]
+    private float chaseSpeed = 4f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Geometry"), SerializeField, SuffixLabel("deg", true)]
+    private float swingStartAngleDeg = 75f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Geometry"), SerializeField, SuffixLabel("deg", true)]
+    private float swingEndAngleDeg = -30f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Geometry"), SerializeField, MinValue(0f), SuffixLabel("u", true)]
+    private float swingLength = 2f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("일때", true)]
+    private float attackPrepPercent = 0.2f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("일때", true)]
+    private float attackEndPercent = 0.9f;
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
+    private int attackDamage = 10;
 
     [Header("Debug")]
     [SerializeField] private LineRenderer swingLine;
@@ -58,10 +75,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private float swingDurationRuntime;
     private float attackRecoverRuntime;
 
-    protected override string DeathAnimName
-    {
-        get { return AnimDeath; }
-    }
+    protected override string DeathAnimName => AnimDeath;
 
     protected override void Awake()
     {

@@ -1,29 +1,46 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.VFX;
+using Sirenix.OdinInspector;
 
 public sealed class EffectManager : MonoBehaviour
 {
-    [SerializeField] private Camera targetCamera;
+    [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/References"), SerializeField, Required]
+    private Camera targetCamera;
 
-    [Header("Parry")]
-    [SerializeField] private float perfectShakeAmplitude = 0.1f;
-    [SerializeField] private float perfectShakeDuration = 0.1f;
+    [TabGroup("Effect Manager", "Parry"), BoxGroup("Effect Manager/Parry/Shake"), SerializeField, MinValue(0f), SuffixLabel("u", true)]
+    private float perfectShakeAmplitude = 0.1f;
 
-    [Header("Counter Parry")]
-    [SerializeField] private float counterFreezeDuration = 0.15f;
-    [SerializeField] private float counterShakeAmplitude = 0.15f;
-    [SerializeField] private float counterShakeDuration = 0.2f;
-    [SerializeField] private GameObject counterFlashOverlay;
+    [TabGroup("Effect Manager", "Parry"), BoxGroup("Effect Manager/Parry/Shake"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float perfectShakeDuration = 0.1f;
 
-    [Header("Dash")]
-    [SerializeField] private float extremeSlowFadeTime = 0.1f;
-    [SerializeField] private float extremeSlowScale = 0.3f;
-    [SerializeField] private GameObject slowmoOverlay;
+    [TabGroup("Effect Manager", "Counter Parry"), BoxGroup("Effect Manager/Counter Parry/Freeze"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float counterFreezeDuration = 0.15f;
 
-    [Header("VFX")]
-    [SerializeField] private VisualEffect dash;
-    [SerializeField] private VisualEffect healing;
+    [TabGroup("Effect Manager", "Counter Parry"), BoxGroup("Effect Manager/Counter Parry/Shake"), SerializeField, MinValue(0f), SuffixLabel("u", true)]
+    private float counterShakeAmplitude = 0.15f;
+
+    [TabGroup("Effect Manager", "Counter Parry"), BoxGroup("Effect Manager/Counter Parry/Shake"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float counterShakeDuration = 0.2f;
+
+    [TabGroup("Effect Manager", "Counter Parry"), BoxGroup("Effect Manager/Counter Parry/Overlay"), SerializeField, Required]
+    private GameObject counterFlashOverlay;
+
+    [TabGroup("Effect Manager", "Dash"), BoxGroup("Effect Manager/Dash/Slowmo"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float extremeSlowFadeTime = 0.1f;
+
+    [TabGroup("Effect Manager", "Dash"), BoxGroup("Effect Manager/Dash/Slowmo"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("น่", true)]
+    private float extremeSlowScale = 0.3f;
+
+    [TabGroup("Effect Manager", "Dash"), BoxGroup("Effect Manager/Dash/Overlay"), SerializeField, Required]
+    private GameObject slowmoOverlay;
+
+    [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/Visual Effects"), SerializeField, Required]
+    private VisualEffect dash;
+
+    [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/Visual Effects"), SerializeField, Required]
+    private VisualEffect healing;
+
     public VisualEffect Dash => dash;
     public VisualEffect Healing => healing;
 

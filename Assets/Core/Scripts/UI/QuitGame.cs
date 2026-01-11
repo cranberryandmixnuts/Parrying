@@ -2,11 +2,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 
 public sealed class QuitGame : MonoBehaviour
 {
     [Header("Fade UI")]
-    [SerializeField] private Image fadeImage;
+    [SerializeField, Required] private Image fadeImage;
     [SerializeField] private float fadeDuration = 1.0f;
 
     private bool isQuitting;

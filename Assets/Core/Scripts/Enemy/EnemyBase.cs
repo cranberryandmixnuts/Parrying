@@ -11,15 +11,9 @@ public abstract class EnemyBase : MonoBehaviour
     protected Animator Anim { get; private set; }
     protected int FacingDirection { get; private set; } = 1;
 
-    protected virtual string DeathAnimName
-    {
-        get { return null; }
-    }
+    protected virtual string DeathAnimName => null;
 
-    protected virtual float DeathDespawnDelay
-    {
-        get { return 1f; }
-    }
+    protected virtual float DeathDespawnDelay => 1f;
 
     protected virtual void Awake()
     {
@@ -44,13 +38,9 @@ public abstract class EnemyBase : MonoBehaviour
         OnFixedUpdate();
     }
 
-    protected virtual void OnUpdate()
-    {
-    }
+    protected virtual void OnUpdate() { }
 
-    protected virtual void OnFixedUpdate()
-    {
-    }
+    protected virtual void OnFixedUpdate() { }
 
     protected void FacePlayer()
     {
@@ -127,8 +117,5 @@ public abstract class EnemyBase : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    public bool IsDead()
-    {
-        return dead;
-    }
+    public bool IsDead() => dead;
 }

@@ -21,13 +21,7 @@ public sealed class PlayerStateMachine
         currentState.Enter();
     }
 
-    public void Update()
-    {
-        currentState?.Update();
-    }
+    public void Update() => currentState?.Update();
 
-    public void FixedUpdate()
-    {
-        currentState?.FixedUpdate();
-    }
+    public void FixedUpdate() => currentState?.FixedUpdate();
 }

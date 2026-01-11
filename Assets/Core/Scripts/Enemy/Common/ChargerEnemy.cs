@@ -1,4 +1,5 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public sealed class ChargerEnemy : EnemyBase, IParryReactive
 {
@@ -12,32 +13,50 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         Death
     }
 
+    #region Animation Names
     private const string AnimWalk = "Walk";
     private const string AnimBackWalk = "BackWalk";
     private const string AnimCharge = "Charge";
     private const string AnimAttack = "Attack";
     private const string AnimStop = "Stop";
     private const string AnimDeath = "Death";
+    #endregion
 
-    [Header("Ranges")]
-    [SerializeField] private Collider2D attackCollider;
-    [SerializeField] private Collider2D backOffRange;
+    [TabGroup("Charger Enemy", "Setup"), BoxGroup("Charger Enemy/Setup/Ranges"), SerializeField, Required]
+    private Collider2D attackCollider;
 
-    [Header("Movement")]
-    [SerializeField] private float walkSpeed = 1f;
-    [SerializeField] private float attackSpeed = 7f;
-    [SerializeField] private float stopFriction = 20f;
+    [TabGroup("Charger Enemy", "Setup"), BoxGroup("Charger Enemy/Setup/Ranges"), SerializeField, Required]
+    private Collider2D backOffRange;
 
-    [Header("Timing")]
-    [SerializeField] private Vector2 attackCooldownRange = new(1.5f, 3f);
-    [SerializeField] private float missBehindDuration = 1f;
-    [SerializeField] private float overshootAfterParryDuration = 0.5f;
-    [SerializeField] private float backWalkDurationMin = 1f;
-    [SerializeField] private float backWalkDurationMax = 3f;
+    [TabGroup("Charger Enemy", "Setup"), BoxGroup("Charger Enemy/Setup/Attack"), SerializeField]
+    private LayerMask playerHitMask;
 
-    [Header("Attack")]
-    [SerializeField] private int contactDamage = 10;
-    [SerializeField] private LayerMask playerHitMask;
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("u/s", true)]
+    private float walkSpeed = 1f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("u/s", true)]
+    private float attackSpeed = 7f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Movement"), SerializeField, MinValue(0f), SuffixLabel("u/s^2", true)]
+    private float stopFriction = 20f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinMaxSlider(0f, 10f, true)]
+    private Vector2 attackCooldownRange = new(1.5f, 3f);
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float missBehindDuration = 1f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float overshootAfterParryDuration = 0.5f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float backWalkDurationMin = 1f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
+    private float backWalkDurationMax = 3f;
+
+    [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Attack"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
+    private int contactDamage = 10;
 
     private State state;
     private float cooldownTimer;
@@ -49,6 +68,8 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private float stopTimer;
     private float deathTimer;
     private bool lethalActive;
+
+    protected override string DeathAnimName => AnimDeath;
 
     private readonly Collider2D[] overlapResults = new Collider2D[8];
 

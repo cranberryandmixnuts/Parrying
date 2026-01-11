@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 public sealed class SceneLoadButton : MonoBehaviour
 {
     [SerializeField]
-    [ValidateInput(nameof(IsValidScene), "SceneTypeÀÌ NoneÀÌ¸é ·ÎµåÇÒ ¼ö ¾ø½À´Ï´Ù.")]
+    [ValidateInput(nameof(IsValidScene), "SceneTypeì´ Noneì´ë©´ ë¡œë“œí•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.")]
     private SceneType scene = SceneType.None;
 
     public void Load() => SceneLoader.Instance.LoadScene(this.scene);

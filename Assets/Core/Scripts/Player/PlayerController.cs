@@ -1,61 +1,48 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
+using Sirenix.OdinInspector;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Animator))]
-public sealed class PlayerController : MonoBehaviour
+public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 {
-    public static PlayerController Instance { get; private set; }
     public Animator Anim { get; private set; }
 
     public float MoveInput { get; private set; }
     public bool ParryHeld { get; private set; }
     public bool HealHeld { get; private set; }
-    public bool ParryPressed
-    {
-        set
-        {
-            if (value) parryBufferTimer = settings.parryBufferTime;
-        }
-    }
-
-    public bool DashPressed
-    {
-        set
-        {
-            if (value) dashBufferTimer = settings.dashBufferTime;
-        }
-    }
-
-    public bool JumpPressed
-    {
-        set
-        {
-            if (value) jumpBufferTimer = settings.jumpBufferTime;
-        }
-    }
+    public bool ParryPressed { set { if (value) parryBufferTimer = settings.parryBufferTime; } }
+    public bool DashPressed { set { if (value) dashBufferTimer = settings.dashBufferTime; } }
+    public bool JumpPressed { set { if (value) jumpBufferTimer = settings.jumpBufferTime; } }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
     public Vector2 CurrentVelocity => rb.linearVelocity;
 
-    [Header("Scene Refs")]
-    [SerializeField] private PlayerVitals vitals;
-    [SerializeField] private PlayerSettings settings;
-    [SerializeField] private EffectManager effects;
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
+    private PlayerVitals vitals;
+
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
+    private PlayerSettings settings;
+
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField]
+    private EffectManager effects;
+
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
     public EffectManager Effects => effects;
 
-    [Header("Ground Check")]
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private BoxCollider2D groundCheckBox;
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Ground Check"), SerializeField]
+    private LayerMask groundLayer;
 
-    [Header("Combat Detect")]
-    [SerializeField] private CircleCollider2D parryDetectCollider;
-    [SerializeField] private CircleCollider2D dashDetectCollider;
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Ground Check"), SerializeField, Required]
+    private BoxCollider2D groundCheckBox;
+
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Combat Detect"), SerializeField]
+    private CircleCollider2D parryDetectCollider;
+
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Combat Detect"), SerializeField]
+    private CircleCollider2D dashDetectCollider;
 
     private Rigidbody2D rb;
     private BoxCollider2D boxCol;
@@ -63,6 +50,7 @@ public sealed class PlayerController : MonoBehaviour
     [HideInInspector] public List<ParryCandidate> parryCandidates = new();
     [HideInInspector] public List<DashCandidate> dashCandidates = new();
 
+    #region HideInInspector public fields
     [HideInInspector] public bool isGround;
     [HideInInspector] public int facingDirection = 1;
     [HideInInspector] public bool isJumping;
@@ -89,8 +77,8 @@ public sealed class PlayerController : MonoBehaviour
     [HideInInspector] public float parryWindowDuration;
     [HideInInspector] public bool parryHadSuccessThisWindow;
     [HideInInspector] public bool counterParryFirstResolved;
-
     [HideInInspector] public float healDelayGauge;
+    #endregion
 
     public bool HasParryBuffer => parryBufferTimer > 0f;
     public void ConsumeParryBuffer() => parryBufferTimer = 0f;
@@ -100,18 +88,11 @@ public sealed class PlayerController : MonoBehaviour
 
     private PlayerStateMachine stateMachine;
 
-    private void Awake()
+    protected override void SingletonAwake()
     {
         rb = GetComponent<Rigidbody2D>();
         boxCol = GetComponent<BoxCollider2D>();
         Anim = GetComponent<Animator>();
-
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
     }
 
     private void Start()
@@ -133,10 +114,7 @@ public sealed class PlayerController : MonoBehaviour
         stateMachine.Update();
     }
 
-    private void FixedUpdate()
-    {
-        stateMachine.FixedUpdate();
-    }
+    private void FixedUpdate() => stateMachine.FixedUpdate();
 
     private void LateUpdate()
     {

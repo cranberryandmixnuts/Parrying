@@ -1,26 +1,43 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Sirenix.OdinInspector;
 
-public sealed class InputService : MonoBehaviour
+public sealed class InputService : Singleton<InputService, GlobalScope>
 {
-    public static InputService Instance { get; private set; }
+    [TabGroup("Input Service", "Setup"), SerializeField, Required]
+    private InputActionAsset actions;
 
-    [SerializeField] private InputActionAsset actions;
-    [SerializeField] private string playerMapName = "Player";
+    [TabGroup("Input Service", "Setup"), SerializeField]
+    private string playerMapName = "Player";
 
-    [Header("Action Names")]
-    [SerializeField] private string moveActionName = "Move";
-    [SerializeField] private string jumpActionName = "Jump";
-    [SerializeField] private string dashActionName = "Dash";
-    [SerializeField] private string parryActionName = "Parry";
-    [SerializeField] private string healActionName = "Heal";
+    [TabGroup("Input Service", "Setup"), SerializeField]
+    private string UIMapName = "UI";
+
+    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    private string moveActionName = "Move";
+
+    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    private string jumpActionName = "Jump";
+
+    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    private string dashActionName = "Dash";
+
+    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    private string parryActionName = "Parry";
+
+    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    private string healActionName = "Heal";
+
+    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/UI"), SerializeField]
+    private string pauseActionName = "Pause";
 
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction dashAction;
     private InputAction parryAction;
     private InputAction healAction;
+    private InputAction pauseAction;
 
     private InputActionRebindingExtensions.RebindingOperation currentRebind;
 
@@ -30,14 +47,16 @@ public sealed class InputService : MonoBehaviour
 
     public bool JumpDown { get; private set; }
     public bool JumpUp { get; private set; }
-    public bool JumpHeld { get; private set;}
+    public bool JumpHeld { get; private set; }
 
-    public bool DashDown { get; private set;}
+    public bool DashDown { get; private set; }
 
     public bool ParryDown { get; private set; }
     public bool ParryHeld { get; private set; }
 
     public bool HealHeld { get; private set; }
+
+    public bool PauseDown { get; private set; }
 
     public InputActionAsset Actions { get { return actions; } }
 
@@ -45,16 +64,8 @@ public sealed class InputService : MonoBehaviour
     public event Action OnRebindCompleted;
     public event Action OnRebindCanceled;
 
-    private void Awake()
+    protected override void SingletonAwake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
         InitializeActions();
         LoadBindingOverrides();
     }
@@ -78,6 +89,8 @@ public sealed class InputService : MonoBehaviour
         ParryHeld = parryAction.IsPressed();
 
         HealHeld = healAction.IsPressed();
+
+        PauseDown = pauseAction.WasPressedThisFrame();
     }
 
     private void InitializeActions()
@@ -87,6 +100,8 @@ public sealed class InputService : MonoBehaviour
         dashAction = FindAction(playerMapName, dashActionName);
         parryAction = FindAction(playerMapName, parryActionName);
         healAction = FindAction(playerMapName, healActionName);
+
+        pauseAction = FindAction(UIMapName, pauseActionName);
     }
 
     private InputAction FindAction(string mapName, string actionName) => actions.FindAction(mapName + "/" + actionName);
@@ -132,10 +147,7 @@ public sealed class InputService : MonoBehaviour
 
         var operation = action.PerformInteractiveRebinding(bindingIndex);
 
-        if (excludeMouse)
-        {
-            operation.WithControlsExcluding("Mouse");
-        }
+        if (excludeMouse) operation.WithControlsExcluding("Mouse");
 
         OnRebindStarted?.Invoke();
 

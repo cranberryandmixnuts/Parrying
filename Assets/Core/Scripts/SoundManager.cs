@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Audio;
+using Sirenix.OdinInspector;
 
 [RequireComponent(typeof(AudioSource))]
-public sealed class SoundManager : MonoBehaviour
+public sealed class SoundManager : Singleton<SoundManager, GlobalScope>
 {
-    public static SoundManager Instance { get; private set; }
 
     [Header("Storage")]
-    [SerializeField] private SoundStorage storage;
+    [SerializeField, Required] private SoundStorage storage;
 
     [Header("Audio Mixer Groups")]
-    [SerializeField] private AudioMixerGroup bgmMixerGroup;
-    [SerializeField] private AudioMixerGroup sfxMixerGroup;
+    [SerializeField, Required] private AudioMixerGroup bgmMixerGroup;
+    [SerializeField, Required] private AudioMixerGroup sfxMixerGroup;
 
     [Header("BGM")]
     [SerializeField] private float defaultBgmFadeTime = 1f;
     [SerializeField, Range(0f, 1f)] private float bgmMasterVolume = 1f;
-    [SerializeField] private AudioSource bgmSource;
+    [SerializeField, Required] private AudioSource bgmSource;
 
     private readonly Dictionary<BgmId, SoundStorage.BgmEntry> bgmLookup = new();
     private readonly Dictionary<SfxId, SoundStorage.SfxEntry> sfxLookup = new();
@@ -27,30 +27,10 @@ public sealed class SoundManager : MonoBehaviour
     private Sequence bgmSequence;
     private BgmId currentBgmId = BgmId.None;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        bgmSource.playOnAwake = false;
-        bgmSource.loop = true;
-        bgmSource.spatialBlend = 0f;
-        bgmSource.outputAudioMixerGroup = bgmMixerGroup;
-
-        BuildLookupTables();
-    }
-
     public void ChangeBgm(BgmId id, float fadeTime = -1f)
     {
         bool isfucked = true;
         if(isfucked) return;
-
 
         float t = fadeTime >= 0f ? fadeTime : defaultBgmFadeTime;
 
@@ -107,7 +87,6 @@ public sealed class SoundManager : MonoBehaviour
 
         sfxLookup.TryGetValue(id, out SoundStorage.SfxEntry entry);
         Vector3 worldPosition = transform.position;
-
 
         Transform parent = null;
         if (target is Transform tr)
@@ -181,4 +160,15 @@ public sealed class SoundManager : MonoBehaviour
             }
         }
     }
+
+    protected override void SingletonAwake()
+    {
+        bgmSource.playOnAwake = false;
+        bgmSource.loop = true;
+        bgmSource.spatialBlend = 0f;
+        bgmSource.outputAudioMixerGroup = bgmMixerGroup;
+
+        BuildLookupTables();
+    }
+
 }
