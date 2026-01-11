@@ -48,6 +48,10 @@ public sealed class SoundManager : MonoBehaviour
 
     public void ChangeBgm(BgmId id, float fadeTime = -1f)
     {
+        bool isfucked = true;
+        if(isfucked) return;
+
+
         float t = fadeTime >= 0f ? fadeTime : defaultBgmFadeTime;
 
         if (bgmSequence != null && bgmSequence.IsActive())

@@ -1,7 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 using UnityEngine.UI;
 using DG.Tweening;
 
@@ -9,6 +9,7 @@ public enum SceneType
 {
     None = 0,
     TitleScene,
+    GameScene,
 }
 
 public sealed class SceneLoader : MonoBehaviour
@@ -20,6 +21,7 @@ public sealed class SceneLoader : MonoBehaviour
     [SerializeField] private float fadeDuration = 1.0f;
 
     public bool IsTransitioning { get; private set; } = false;
+
     private Tween fadeTween;
     private Tween pendingRequestTween;
     private SceneType pendingScene = SceneType.None;
@@ -33,10 +35,6 @@ public sealed class SceneLoader : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        Color imageColor = fadeImage.color;
-        imageColor.a = 0f;
-        fadeImage.color = imageColor;
     }
 
     private void Start()
@@ -44,6 +42,12 @@ public sealed class SceneLoader : MonoBehaviour
         SceneType current = GetCurrentSceneType();
         BgmId bgm = GetBgmForScene(current);
         SoundManager.Instance.ChangeBgm(bgm, fadeDuration);
+
+        Color imageColor = fadeImage.color;
+        imageColor.a = 0f;
+        fadeImage.color = imageColor;
+
+        fadeImage.gameObject.SetActive(false);
     }
 
     public void LoadScene(SceneType scene)
@@ -88,6 +92,7 @@ public sealed class SceneLoader : MonoBehaviour
     private IEnumerator LoadSceneSequence(SceneType scene)
     {
         IsTransitioning = true;
+        fadeImage.gameObject.SetActive(true);
 
         BgmId bgm = GetBgmForScene(scene);
         SoundManager.Instance.ChangeBgm(bgm, fadeDuration);
@@ -101,6 +106,7 @@ public sealed class SceneLoader : MonoBehaviour
         yield return FadeTo(0f).WaitForCompletion();
 
         IsTransitioning = false;
+        fadeImage.gameObject.SetActive(false);
 
         if (pendingScene != SceneType.None)
         {
@@ -114,8 +120,6 @@ public sealed class SceneLoader : MonoBehaviour
     {
         if (fadeTween != null && fadeTween.IsActive())
             fadeTween.Kill(false);
-
-        fadeImage.raycastTarget = Mathf.Approximately(targetAlpha, 1f);
 
         fadeTween = fadeImage
             .DOFade(targetAlpha, fadeDuration)

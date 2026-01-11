@@ -5,6 +5,7 @@ public enum BgmId
 {
     None = 0,
     Title,
+    Game,
 }
 
 public enum SfxId
