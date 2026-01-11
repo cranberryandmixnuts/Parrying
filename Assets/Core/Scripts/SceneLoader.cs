@@ -31,8 +31,8 @@ public sealed class SceneLoader : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
+        DontDestroyOnLoad(gameObject);
 
         Color imageColor = fadeImage.color;
         imageColor.a = 0f;
