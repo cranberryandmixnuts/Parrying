@@ -127,7 +127,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     private void PollInput()
     {
-        InputService input = InputService.Instance;
+        InputManager input = InputManager.Instance;
 
         MoveInput = input.MoveAxis;
 

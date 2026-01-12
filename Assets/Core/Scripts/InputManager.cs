@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 
-public sealed class InputService : Singleton<InputService, GlobalScope>
+public sealed class InputManager : Singleton<InputManager, GlobalScope>
 {
     [TabGroup("Input Service", "Setup"), SerializeField, Required]
     private InputActionAsset actions;

@@ -76,8 +76,8 @@ public sealed class PlayerSettings : ScriptableObject
     [TabGroup("PlayerSettings", "전투"), FoldoutGroup("PlayerSettings/전투/Normal Parry", Expanded = true), SuffixLabel("s", true), MinValue(0f), MaxValue(60f)]
     public float airParryKnockbackSlowDuration = 0.3f;
 
-    [TabGroup("PlayerSettings", "전투"), FoldoutGroup("PlayerSettings/전투/Normal Parry", Expanded = true), PropertyRange(0f, 1f)]
-    public float airParryKnockbackSlowScale = 0.5f;
+    [TabGroup("PlayerSettings", "전투"), FoldoutGroup("PlayerSettings/전투/Normal Parry", Expanded = true), PropertyRange(0f, 1f), SuffixLabel("배", true)]
+    public float airParryKnockbackSlowScale = 0.6f;
 
     [TabGroup("PlayerSettings", "전투"), FoldoutGroup("PlayerSettings/전투/Normal Parry", Expanded = true), SuffixLabel("s", true), MinValue(0f), MaxValue(60f)]
     public float parryExtraInvincibility = 0.1f;
