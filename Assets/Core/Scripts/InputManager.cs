@@ -41,6 +41,10 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     private InputActionRebindingExtensions.RebindingOperation currentRebind;
 
+    private InputAction currentRebindAction;
+    private int currentRebindBindingIndex;
+    private bool currentRebindExcludeMouse;
+
     private const string RebindsKey = "InputService_Rebinds";
 
     public float MoveAxis { get; private set; }
@@ -57,6 +61,8 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     public bool HealHeld { get; private set; }
 
     public bool EscapeDown { get; private set; }
+
+    public bool IsRebinding { get; private set; }
 
     public InputActionAsset Actions { get { return actions; } }
 
@@ -76,6 +82,25 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     private void Update()
     {
+        if (IsRebinding)
+        {
+            MoveAxis = 0f;
+
+            JumpDown = false;
+            JumpUp = false;
+            JumpHeld = false;
+
+            DashDown = false;
+
+            ParryDown = false;
+            ParryHeld = false;
+
+            HealHeld = false;
+
+            EscapeDown = false;
+            return;
+        }
+
         Vector2 move = moveAction.ReadValue<Vector2>();
         MoveAxis = Mathf.Clamp(move.x, -1f, 1f);
 
@@ -135,36 +160,86 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         PlayerPrefs.DeleteKey(RebindsKey);
     }
 
-    public void StartRebind(string mapName, string actionName, int bindingIndex, bool excludeMouse)
+    public void CancelCurrentRebind()
+    {
+        if (currentRebind == null)
+            return;
+
+        currentRebind.Cancel();
+    }
+
+    public void StartRebind(string mapName, string actionName, int bindingIndex)
     {
         InputAction action = FindAction(mapName, actionName);
+
+        if (action == null)
+            return;
 
         if (bindingIndex < 0 || bindingIndex >= action.bindings.Count)
             return;
 
-        currentRebind.Cancel();
+        currentRebind?.Cancel();
+
+        IsRebinding = true;
+
+        currentRebindAction = action;
+        currentRebindBindingIndex = bindingIndex;
+        currentRebindExcludeMouse = false;
 
         action.Disable();
 
+        OnRebindStarted?.Invoke();
+
+        currentRebind = BuildRebindOperation(action, bindingIndex, currentRebindExcludeMouse);
+        currentRebind.Start();
+    }
+
+    public void SetCurrentRebindExcludeMouse(bool excludeMouse)
+    {
+        if (!IsRebinding)
+            return;
+
+        if (currentRebind == null)
+            return;
+
+        if (currentRebindAction == null)
+            return;
+
+        if (currentRebindExcludeMouse == excludeMouse)
+            return;
+
+        currentRebindExcludeMouse = excludeMouse;
+
+        currentRebind.Dispose();
+        currentRebind = null;
+
+        currentRebind = BuildRebindOperation(currentRebindAction, currentRebindBindingIndex, currentRebindExcludeMouse);
+        currentRebind.Start();
+    }
+
+    private InputActionRebindingExtensions.RebindingOperation BuildRebindOperation(InputAction action, int bindingIndex, bool excludeMouse)
+    {
         var operation = action.PerformInteractiveRebinding(bindingIndex);
 
         if (excludeMouse) operation.WithControlsExcluding("Mouse");
 
-        OnRebindStarted?.Invoke();
+        operation.OnMatchWaitForAnother(0.1f);
 
-        currentRebind = operation
-            .OnMatchWaitForAnother(0.1f)
+        return operation
             .OnComplete(o => FinishRebind(action))
             .OnCancel(o => CancelRebind(action));
-
-        currentRebind.Start();
     }
 
     private void FinishRebind(InputAction action)
     {
         action.Enable();
-        currentRebind?.Dispose();
+
+        currentRebind.Dispose();
         currentRebind = null;
+
+        currentRebindAction = null;
+
+        IsRebinding = false;
 
         SaveBindingOverrides();
         OnRebindCompleted?.Invoke();
@@ -173,8 +248,13 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     private void CancelRebind(InputAction action)
     {
         action.Enable();
-        currentRebind?.Dispose();
+
+        currentRebind.Dispose();
         currentRebind = null;
+
+        currentRebindAction = null;
+
+        IsRebinding = false;
 
         OnRebindCanceled?.Invoke();
     }
