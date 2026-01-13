@@ -1,2 +1,17 @@
 fileFormatVersion: 2
 guid: 652146b8e97ca7a41b6b726b12e9f625
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - vitals: {instanceID: 0}
+  - settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
+  - effects: {instanceID: 0}
+  - groundCheckBox: {instanceID: 0}
+  - parryDetectCollider: {instanceID: 0}
+  - dashDetectCollider: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

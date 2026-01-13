@@ -1,2 +1,25 @@
 fileFormatVersion: 2
 guid: 26986fc0b45fb59478ad2cb6ef8112b6
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - settings: {fileID: 11400000, guid: 2870cb9b992bb8546b04be23cfb6b0cf, type: 2}
+  - leftTop: {instanceID: 0}
+  - rightTop: {instanceID: 0}
+  - ceilingPoint: {instanceID: 0}
+  - rushStopLeft: {instanceID: 0}
+  - rushStopRight: {instanceID: 0}
+  - plungeCollider: {instanceID: 0}
+  - rushCollider: {instanceID: 0}
+  - projectileHitbox: {instanceID: 0}
+  - projectilePrefab: {instanceID: 0}
+  - volleyCenter: {instanceID: 0}
+  - volleyHeight: {instanceID: 0}
+  - radialLaserPoint: {instanceID: 0}
+  - Line: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -15,12 +15,13 @@ public enum SceneType
 
 public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 {
-
     [Header("Fade UI")]
     [SerializeField, Required] private Image fadeImage;
     [SerializeField] private float fadeDuration = 1.0f;
 
     public bool IsTransitioning { get; private set; } = false;
+
+    public SceneType CurrentSceneType { get; private set; } = SceneType.None;
 
     private Tween fadeTween;
     private Tween pendingRequestTween;
@@ -28,8 +29,9 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 
     private void Start()
     {
-        SceneType current = GetCurrentSceneType();
-        BgmId bgm = GetBgmForScene(current);
+        CurrentSceneType = GetCurrentSceneType();
+
+        BgmId bgm = GetBgmForScene(CurrentSceneType);
         SoundManager.Instance.ChangeBgm(bgm, fadeDuration);
 
         Color imageColor = fadeImage.color;
@@ -91,6 +93,8 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene.ToString());
         while (!asyncLoad.isDone)
             yield return null;
+
+        CurrentSceneType = GetCurrentSceneType();
 
         yield return FadeTo(0f).WaitForCompletion();
 

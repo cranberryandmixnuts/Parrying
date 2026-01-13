@@ -193,6 +193,7 @@ public sealed class CustomSlider : MonoBehaviour, IPointerDownHandler, IDragHand
 
         value = clamped;
         UpdateVisuals();
+        onValueChanged.Invoke(value);
     }
 
     private void UpdateFromPointer(PointerEventData eventData)

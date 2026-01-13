@@ -30,14 +30,14 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     private string healActionName = "Heal";
 
     [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/UI"), SerializeField]
-    private string pauseActionName = "Pause";
+    private string escapeActionName = "Escape";
 
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction dashAction;
     private InputAction parryAction;
     private InputAction healAction;
-    private InputAction pauseAction;
+    private InputAction escapeAction;
 
     private InputActionRebindingExtensions.RebindingOperation currentRebind;
 
@@ -56,7 +56,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     public bool HealHeld { get; private set; }
 
-    public bool PauseDown { get; private set; }
+    public bool EscapeDown { get; private set; }
 
     public InputActionAsset Actions { get { return actions; } }
 
@@ -90,7 +90,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
         HealHeld = healAction.IsPressed();
 
-        PauseDown = pauseAction.WasPressedThisFrame();
+        EscapeDown = escapeAction.WasPressedThisFrame();
     }
 
     private void InitializeActions()
@@ -101,7 +101,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         parryAction = FindAction(playerMapName, parryActionName);
         healAction = FindAction(playerMapName, healActionName);
 
-        pauseAction = FindAction(UIMapName, pauseActionName);
+        escapeAction = FindAction(UIMapName, escapeActionName);
     }
 
     private InputAction FindAction(string mapName, string actionName) => actions.FindAction(mapName + "/" + actionName);
@@ -121,6 +121,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     public void LoadBindingOverrides()
     {
+        Debug.Log("Loading input binding overrides.");
         if (!PlayerPrefs.HasKey(RebindsKey))
             return;
 

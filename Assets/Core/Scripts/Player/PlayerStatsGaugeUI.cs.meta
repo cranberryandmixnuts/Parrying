@@ -1,2 +1,18 @@
 fileFormatVersion: 2
 guid: 75c02dc97759e0a40a95f430057ceb5b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - healthGauge: {instanceID: 0}
+  - energyGauge: {instanceID: 0}
+  - healDelayGauge: {instanceID: 0}
+  - counterParryHoldGauge: {instanceID: 0}
+  - counterParryReadyImage: {instanceID: 0}
+  - graduationSprite: {fileID: 21300000, guid: 1d24458298d87534c84b62c379e060dc, type: 3}
+  - disableGraduationSprite: {fileID: 21300000, guid: 60d5983c80019b340ae3fd3d99e6af29, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
