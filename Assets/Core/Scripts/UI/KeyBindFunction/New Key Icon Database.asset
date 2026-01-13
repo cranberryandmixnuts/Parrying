@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d43c4755b1459b4f8065da0e793afd4, type: 3}
+  m_Name: New Key Icon Database
+  m_EditorClassIdentifier: Assembly-CSharp::KeyIconDatabase
+  entries:
+  - ControlPath: <Mouse>/leftButton
+    Sprite: {fileID: 21300000, guid: c89454fea750d744691c2843d1e1bb44, type: 3}
+  - ControlPath: <Mouse>/rightButton
+    Sprite: {fileID: 21300000, guid: 465ce3f26e53d3549a2400783215a0f0, type: 3}
+  - ControlPath: <Mouse>/middleButton
+    Sprite: {fileID: 21300000, guid: d1aa68d6546ad3342aee89c16827d5aa, type: 3}
+  - ControlPath: <Mouse>/forwardButton
+    Sprite: {fileID: 21300000, guid: c8d3aa5697cc057468d00a44932c70cc, type: 3}
+  - ControlPath: <Mouse>/backButton
+    Sprite: {fileID: 21300000, guid: 6cecf1742b55dd24d8b01c0b584d49b7, type: 3}
+  - ControlPath: <Keyboard>/space
+    Sprite: {fileID: 21300000, guid: c76f0b9e7549f124e95126dc956e35b5, type: 3}
+  - ControlPath: <Keyboard>/upArrow
+    Sprite: {fileID: 21300000, guid: 4747d9159f2838f40a6266b83999c86b, type: 3}
+  - ControlPath: <Keyboard>/downArrow
+    Sprite: {fileID: 21300000, guid: ecdba9d09a9cba24ebae75f83e5b3038, type: 3}
+  - ControlPath: <Keyboard>/leftArrow
+    Sprite: {fileID: 21300000, guid: c9e7616137a44aa48a62eb1584e4f57d, type: 3}
+  - ControlPath: <Keyboard>/rightArrow
+    Sprite: {fileID: 21300000, guid: 48a67109a1caab046adfa2b32838aeaa, type: 3}
+  - ControlPath: <Keyboard>/backspace
+    Sprite: {fileID: 21300000, guid: 00714f18a55c25c41844056c57a32e45, type: 3}
+  - ControlPath: <Keyboard>/enter
+    Sprite: {fileID: 21300000, guid: c13ab766f14a6804d9fd12e88f540a18, type: 3}
+  - ControlPath: <Keyboard>/leftShift
+    Sprite: {fileID: 21300000, guid: 058dfb1f8f373864ca7abe86927afd98, type: 3}
+  - ControlPath: <Keyboard>/rightShift
+    Sprite: {fileID: 21300000, guid: 058dfb1f8f373864ca7abe86927afd98, type: 3}
+  - ControlPath: <Keyboard>/tab
+    Sprite: {fileID: 21300000, guid: 8421e5f8b3c56d240ba2d43d6517860c, type: 3}

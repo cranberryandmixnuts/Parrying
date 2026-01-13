@@ -1,18 +1,17 @@
-using TMPro;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Sirenix.OdinInspector;
 
 public sealed class KeyBindingButton : MonoBehaviour
 {
     [BoxGroup("UI"), SerializeField, Required]
-    private TMP_Text keyValueText;
+    private KeyBindingVisual visual;
 
     [BoxGroup("Rebind Target"), SerializeField]
-    private string mapName;
+    private string mapName = "Player";
 
     [BoxGroup("Rebind Target"), SerializeField]
-    private string actionName;
+    private string actionName = "Jump";
 
     [BoxGroup("Rebind Target"), SerializeField, Min(0)]
     private int bindingIndex;
@@ -43,6 +42,6 @@ public sealed class KeyBindingButton : MonoBehaviour
         if (bindingIndex < 0 || bindingIndex >= action.bindings.Count)
             return;
 
-        keyValueText.text = action.GetBindingDisplayString(bindingIndex);
+        visual.Apply(action, bindingIndex);
     }
 }

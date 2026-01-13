@@ -13,6 +13,9 @@ public sealed class QuitGame : MonoBehaviour
     private bool isQuitting;
     private Tween fadeTween;
 
+    private float cachedTimeScale = 1f;
+    private bool timePausedByThis;
+
     private void Awake()
     {
         Color imageColor = fadeImage.color;
@@ -32,6 +35,7 @@ public sealed class QuitGame : MonoBehaviour
     private IEnumerator QuitSequence()
     {
         isQuitting = true;
+        PauseTime();
 
         if (!fadeImage.gameObject.activeSelf)
             fadeImage.gameObject.SetActive(true);
@@ -50,5 +54,29 @@ public sealed class QuitGame : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
         Application.Quit();
+    }
+
+    private void PauseTime()
+    {
+        if (timePausedByThis) return;
+        if (Time.timeScale == 0f) return;
+
+        cachedTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        timePausedByThis = true;
+    }
+
+    private void ResumeTime()
+    {
+        if (!timePausedByThis) return;
+
+        Time.timeScale = cachedTimeScale;
+        timePausedByThis = false;
+    }
+
+    private void OnDisable()
+    {
+        if (timePausedByThis)
+            ResumeTime();
     }
 }

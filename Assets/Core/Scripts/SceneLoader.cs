@@ -27,6 +27,9 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
     private Tween pendingRequestTween;
     private SceneType pendingScene = SceneType.None;
 
+    private float cachedTimeScale = 1f;
+    private bool timePausedByThis;
+
     private void Start()
     {
         CurrentSceneType = GetCurrentSceneType();
@@ -67,7 +70,7 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
             pendingRequestTween.Kill(false);
 
         float delay = GetRemainingFadeTime();
-        pendingRequestTween = DOVirtual.DelayedCall(delay, TryExecutePending, false);
+        pendingRequestTween = DOVirtual.DelayedCall(delay, TryExecutePending, true).SetUpdate(true);
     }
 
     private void TryExecutePending()
@@ -83,6 +86,8 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
     private IEnumerator LoadSceneSequence(SceneType scene)
     {
         IsTransitioning = true;
+        PauseTime();
+
         fadeImage.gameObject.SetActive(true);
 
         BgmId bgm = GetBgmForScene(scene);
@@ -101,6 +106,8 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
         IsTransitioning = false;
         fadeImage.gameObject.SetActive(false);
 
+        ResumeTime();
+
         if (pendingScene != SceneType.None)
         {
             SceneType next = pendingScene;
@@ -116,7 +123,8 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 
         fadeTween = fadeImage
             .DOFade(targetAlpha, fadeDuration)
-            .SetEase(Ease.Linear);
+            .SetEase(Ease.Linear)
+            .SetUpdate(true);
 
         return fadeTween;
     }
@@ -130,6 +138,30 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
         float remaining = fadeTween.Duration(false) - fadeTween.Elapsed(false);
         if (remaining < 0f) remaining = 0f;
         return remaining;
+    }
+
+    private void PauseTime()
+    {
+        if (timePausedByThis) return;
+        if (Time.timeScale == 0f) return;
+
+        cachedTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        timePausedByThis = true;
+    }
+
+    private void ResumeTime()
+    {
+        if (!timePausedByThis) return;
+
+        Time.timeScale = cachedTimeScale;
+        timePausedByThis = false;
+    }
+
+    private void OnDisable()
+    {
+        if (timePausedByThis)
+            ResumeTime();
     }
 
     private SceneType GetCurrentSceneType()

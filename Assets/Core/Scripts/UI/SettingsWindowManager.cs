@@ -18,6 +18,9 @@ public sealed class SettingsWindowManager : MonoBehaviour
 
     public SettingsTab CurrentTab { get; private set; } = SettingsTab.Root;
 
+    private float cachedTimeScale = 1f;
+    private bool timePausedByThis;
+
     private void Update()
     {
         if (!InputManager.Instance.EscapeDown) return;
@@ -39,6 +42,8 @@ public sealed class SettingsWindowManager : MonoBehaviour
 
     public void OpenSettings()
     {
+        PauseTime();
+
         SettingsWindow.SetActive(true);
         RootPanel.SetActive(true);
         AudioPanel.SetActive(false);
@@ -48,10 +53,14 @@ public sealed class SettingsWindowManager : MonoBehaviour
 
     public void CloseSettings()
     {
+        CurrentTab = SettingsTab.Root;
+
         RootPanel.SetActive(true);
         AudioPanel.SetActive(false);
         ControlPanel.SetActive(false);
         SettingsWindow.SetActive(false);
+
+        ResumeTime();
     }
 
     public void ChangeTab(SettingsTab tab)
@@ -60,5 +69,27 @@ public sealed class SettingsWindowManager : MonoBehaviour
         RootPanel.SetActive(tab == SettingsTab.Root);
         AudioPanel.SetActive(tab == SettingsTab.Audio);
         ControlPanel.SetActive(tab == SettingsTab.Control);
+    }
+
+    private void PauseTime()
+    {
+        if (timePausedByThis) return;
+
+        cachedTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        timePausedByThis = true;
+    }
+
+    private void ResumeTime()
+    {
+        if (!timePausedByThis) return;
+
+        Time.timeScale = cachedTimeScale;
+        timePausedByThis = false;
+    }
+
+    private void OnDisable()
+    {
+        if (timePausedByThis) ResumeTime();
     }
 }
