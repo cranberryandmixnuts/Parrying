@@ -76,9 +76,17 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         LoadBindingOverrides();
     }
 
-    private void OnEnable() => EnableActions(true);
+    private void OnEnable()
+    {
+        if (Instance != this) return;
+        EnableActions(true);
+    }
 
-    private void OnDisable() => EnableActions(false);
+    private void OnDisable()
+    {
+        if (Instance != this) return;
+        EnableActions(false);
+    }
 
     private void Update()
     {
