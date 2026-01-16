@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,9 +38,10 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 
     public void LoadScene(SceneType scene)
     {
-        if (!TryResolveSceneName(scene, out string sceneName))
+        string sceneName = SceneTypeMap.GetName(scene);
+        if (string.IsNullOrEmpty(sceneName) || scene == SceneType.None)
         {
-            Debug.LogError($"씬 로드 거부: SceneType '{scene}' 에 대한 씬 이름을 해석할 수 없습니다. SceneTypeMap 생성/설정/Build Settings를 확인하세요.");
+            Debug.LogError($"{sceneName}씬이 존재하지 않습니다.");
             return;
         }
 
@@ -87,9 +87,10 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 
         yield return FadeTo(1f).WaitForCompletion();
 
-        if (!TryResolveSceneName(scene, out string sceneName))
+        string sceneName = SceneTypeMap.GetName(scene);
+        if (string.IsNullOrEmpty(sceneName) || scene == SceneType.None)
         {
-            Debug.LogError($"씬 로드 실패: SceneType '{scene}' 에 대한 씬 이름을 해석할 수 없습니다. SceneTypeMap 생성/설정/Build Settings를 확인하세요.");
+            Debug.LogError($"{sceneName}씬이 존재하지 않습니다.");
             IsTransitioning = false;
             fadeImage.gameObject.SetActive(false);
             ResumeTime();
@@ -167,37 +168,12 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 
     private SceneType GetCurrentSceneType()
     {
-        string activeName = SceneManager.GetActiveScene().name;
+        string name = SceneManager.GetActiveScene().name;
+        if (SceneTypeMap.TryGetTypeByName(name, out SceneType t))
+            return t;
 
-        SceneType[] values = (SceneType[])Enum.GetValues(typeof(SceneType));
-        for (int i = 0; i < values.Length; ++i)
-        {
-            SceneType t = values[i];
-            if (t == SceneType.None)
-                continue;
-
-            string mappedName = SceneTypeMap.GetName(t);
-            if (string.Equals(mappedName, activeName, StringComparison.Ordinal))
-                return t;
-        }
-
-        Debug.LogError($"현재 씬 이름 '{activeName}' 이 SceneTypeMap과 일치하지 않습니다.");
+        Debug.LogError($"현재 씬 이름 '{name}' 이 SceneTypeMap과 일치하지 않습니다.");
         return SceneType.None;
-    }
-
-    private bool TryResolveSceneName(SceneType scene, out string sceneName)
-    {
-        if (scene == SceneType.None)
-        {
-            sceneName = "";
-            return false;
-        }
-
-        sceneName = SceneTypeMap.GetName(scene);
-        if (string.IsNullOrEmpty(sceneName))
-            return false;
-
-        return true;
     }
 
     private BgmId GetBgmForScene(SceneType scene)

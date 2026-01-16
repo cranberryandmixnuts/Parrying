@@ -84,18 +84,17 @@ public static class SceneNameGenerator
         string enumCode = BuildEnumCode(settings, entries);
 
         bool enumChanged = WriteIfChanged(enumPath, enumCode);
-        if (enumChanged)
-            AssetDatabase.ImportAsset(enumPath, ImportAssetOptions.ForceUpdate);
+        bool mapChanged = false;
 
         if (settings.GenerateMap)
         {
             string mapPath = CombineAssetPath(folder, settings.MapFileName);
             string mapCode = BuildMapCode(settings, entries);
-
-            bool mapChanged = WriteIfChanged(mapPath, mapCode);
-            if (mapChanged)
-                AssetDatabase.ImportAsset(mapPath, ImportAssetOptions.ForceUpdate);
+            mapChanged = WriteIfChanged(mapPath, mapCode);
         }
+
+        if (enumChanged || mapChanged)
+            AssetDatabase.Refresh();
     }
 
     private static bool TryGetSingleSettings(out SceneNameGeneratorSettings settings, out string error)
@@ -150,12 +149,17 @@ public static class SceneNameGenerator
         }
 
         ValidateFileName(settings.EnumFileName, "Settings.EnumFileName", errors);
-        ValidateFileName(settings.MapFileName, "Settings.MapFileName", errors);
 
-        if (!string.IsNullOrWhiteSpace(settings.EnumFileName) && !string.IsNullOrWhiteSpace(settings.MapFileName))
+        if (settings.GenerateMap)
+            ValidateFileName(settings.MapFileName, "Settings.MapFileName", errors);
+
+        if (settings.GenerateMap)
         {
-            if (string.Equals(settings.EnumFileName, settings.MapFileName, StringComparison.Ordinal))
-                errors.Add("Settings.EnumFileName 과 Settings.MapFileName 이 동일합니다. 서로 다른 파일명이어야 합니다.");
+            if (!string.IsNullOrWhiteSpace(settings.EnumFileName) && !string.IsNullOrWhiteSpace(settings.MapFileName))
+            {
+                if (string.Equals(settings.EnumFileName, settings.MapFileName, StringComparison.Ordinal))
+                    errors.Add("Settings.EnumFileName 과 Settings.MapFileName 이 동일합니다. 서로 다른 파일명이어야 합니다.");
+            }
         }
 
         if (settings.UseNamespace)
@@ -261,7 +265,7 @@ public static class SceneNameGenerator
 
     private static string BuildMapCode(SceneNameGeneratorSettings settings, List<SceneEntry> entries)
     {
-        var sb = new StringBuilder(4096);
+        var sb = new StringBuilder(6144);
 
         string indent = "";
         if (settings.UseNamespace && !string.IsNullOrWhiteSpace(settings.NamespaceName))
@@ -270,6 +274,10 @@ public static class SceneNameGenerator
             sb.AppendLine("{");
             indent = "    ";
         }
+
+        sb.AppendLine($"{indent}using System;");
+        sb.AppendLine($"{indent}using System.Collections.Generic;");
+        sb.AppendLine();
 
         sb.AppendLine($"{indent}public static class SceneTypeMap");
         sb.AppendLine($"{indent}{{");
@@ -298,11 +306,19 @@ public static class SceneNameGenerator
         sb.AppendLine($"{indent}    }};");
         sb.AppendLine();
 
+        sb.AppendLine($"{indent}    private static readonly Dictionary<string, SceneType> NameToType = new(StringComparer.Ordinal)");
+        sb.AppendLine($"{indent}    {{");
+        for (int i = 0; i < entries.Count; ++i)
+            sb.AppendLine($"{indent}        {{ \"{EscapeString(entries[i].Name)}\", SceneType.{entries[i].Name} }},");
+        sb.AppendLine($"{indent}    }};");
+        sb.AppendLine();
+
         sb.AppendLine($"{indent}    public static int TotalCount => SceneNames.Length;");
         sb.AppendLine($"{indent}    public static int BuildSceneCount => SceneNames.Length - 1;");
         sb.AppendLine($"{indent}    public static string GetName(SceneType sceneType) => SceneNames[(int)sceneType];");
         sb.AppendLine($"{indent}    public static string GetPath(SceneType sceneType) => ScenePaths[(int)sceneType];");
         sb.AppendLine($"{indent}    public static bool IsEnabledInBuildSettings(SceneType sceneType) => EnabledInBuildSettings[(int)sceneType];");
+        sb.AppendLine($"{indent}    public static bool TryGetTypeByName(string sceneName, out SceneType sceneType) => NameToType.TryGetValue(sceneName, out sceneType);");
 
         sb.AppendLine($"{indent}}}");
 

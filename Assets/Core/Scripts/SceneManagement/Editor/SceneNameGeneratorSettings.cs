@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Tools/Scene Management/Scene Name Generator Settings", fileName = "SceneNameGeneratorSettings")]
+[CreateAssetMenu(fileName = "SceneNameGeneratorSettings", menuName = "Scriptable Objects/SceneNameGeneratorSettings")]
 public sealed class SceneNameGeneratorSettings : ScriptableObject
 {
     [Title("Output")]

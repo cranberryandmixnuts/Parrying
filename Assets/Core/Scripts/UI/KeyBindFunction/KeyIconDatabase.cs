@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Input/Key Icon Database")]
+[CreateAssetMenu(fileName = "KeyIconDatabase", menuName = "Scriptable Objects/KeyIconDatabase")]
 public sealed class KeyIconDatabase : ScriptableObject
 {
     [Serializable]
