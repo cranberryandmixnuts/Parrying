@@ -40,7 +40,6 @@ public sealed class HealState : PlayerState
         exitTimeLeft = 0f;
 
         player.healDelayGauge = 0f;
-        player.Effects.Healing.Play();
     }
 
     public override void Update()
@@ -157,7 +156,6 @@ public sealed class HealState : PlayerState
                         player.healDelayGauge = 0f;
 
                     exitTimeLeft -= Time.deltaTime;
-                    player.Effects.Healing.Stop();
 
                     if (exitTimeLeft <= 0f)
                     {
@@ -172,6 +170,5 @@ public sealed class HealState : PlayerState
     public override void Exit()
     {
         player.healDelayGauge = 0f;
-        player.Effects.Healing.Stop();
     }
 }
