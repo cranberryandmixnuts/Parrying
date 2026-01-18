@@ -162,7 +162,7 @@ Transform:
   m_GameObject: {fileID: 63637457}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.79, y: 0.14, z: 2.1675494}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1642,6 +1642,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEffects
   targetCamera: {fileID: 0}
+  followPlayerRoot: {fileID: 0}
+  followEnemyRoot: {fileID: 0}
   perfectShakeAmplitude: 0.1
   perfectShakeDuration: 0.1
   counterFreezeDuration: 0.15
@@ -1653,6 +1655,19 @@ MonoBehaviour:
   slowmoOverlay: {fileID: 1817467236}
   dash: {fileID: 2046782522}
   healing: {fileID: 728825428}
+  healLine: {fileID: 0}
+  counterParryCharge: {fileID: 0}
+  counterParry: {fileID: 0}
+  counterParrySuccess: {fileID: 0}
+  hit: {fileID: 0}
+  parryTemplate: {fileID: 0}
+  parryLocalOffset: {x: 0, y: 0, z: 0}
+  parryPrewarmCount: 8
+  parryAutoReleaseTimeout: 2
+  laserTemplate: {fileID: 0}
+  laserLocalOffset: {x: 0, y: 0, z: 0}
+  laserPrewarmCount: 20
+  laserAutoReleaseTimeout: 3
 --- !u!1 &1735242525
 GameObject:
   m_ObjectHideFlags: 0
@@ -2339,7 +2354,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Runtime::UnityEngine.VFX.Utility.VFXPropertyBinder
   m_ExecuteInEditor: 1
-  m_Bindings: []
+  m_Bindings:
+  - {fileID: 2046782519}
   m_VisualEffect: {fileID: 2046782522}
 --- !u!73398921 &2046782521
 VFXRenderer:
@@ -2616,6 +2632,7 @@ MonoBehaviour:
   parryWindowDuration: 0
   parryHadSuccessThisWindow: 0
   counterParryFirstResolved: 0
+  healDelayGauge: 0
 --- !u!114 &2064369110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2628,9 +2645,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f586b224db60df74386ce170200d9f33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerVitals
-  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
   playerHealth: 0
   playerEnergy: 0
+  IsInvincible: 0
+  invincibleTimer: 0
+  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
+  player: {fileID: 0}
 --- !u!212 &2064369111
 SpriteRenderer:
   m_ObjectHideFlags: 0

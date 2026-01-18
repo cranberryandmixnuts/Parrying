@@ -1,13 +1,17 @@
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
-using Sirenix.OdinInspector;
+using UnityEngine.Windows;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Animator))]
 public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 {
+    public EffectManager Effects { get; private set; }
     public Animator Anim { get; private set; }
+    public Rigidbody2D Rigidbody { get; private set; }
+    public BoxCollider2D BoxCollider { get; private set; } 
 
     public float MoveInput { get; private set; }
     public bool ParryHeld { get; private set; }
@@ -17,7 +21,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     public bool JumpPressed { set { if (value) jumpBufferTimer = settings.jumpBufferTime; } }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
-    public Vector2 CurrentVelocity => rb.linearVelocity;
+    public Vector2 CurrentVelocity => Rigidbody.linearVelocity;
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private PlayerVitals vitals;
@@ -25,12 +29,11 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private PlayerSettings settings;
 
-    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField]
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private EffectManager effects;
 
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
-    public EffectManager Effects => effects;
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Ground Check"), SerializeField]
     private LayerMask groundLayer;
@@ -43,9 +46,6 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Combat Detect"), SerializeField]
     private CircleCollider2D dashDetectCollider;
-
-    private Rigidbody2D rb;
-    private BoxCollider2D boxCol;
 
     [HideInInspector] public List<ParryCandidate> parryCandidates = new();
     [HideInInspector] public List<DashCandidate> dashCandidates = new();
@@ -90,8 +90,9 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     protected override void SingletonAwake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        boxCol = GetComponent<BoxCollider2D>();
+        Effects = EffectManager.Instance;
+        Rigidbody = GetComponent<Rigidbody2D>();
+        BoxCollider = GetComponent<BoxCollider2D>();
         Anim = GetComponent<Animator>();
     }
 
@@ -110,6 +111,8 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         if (jumpBufferTimer > 0f) jumpBufferTimer -= Time.deltaTime;
         if (parryBufferTimer > 0f) parryBufferTimer -= Time.deltaTime;
         if (dashBufferTimer > 0f) dashBufferTimer -= Time.deltaTime;
+
+        Effects.ControlCounterParryCharge(inCounterParryPrep);
 
         stateMachine.Update();
     }
@@ -168,7 +171,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
                 currentSpeedAbs = 0f;
             else
             {
-                float baseSpeed = Mathf.Abs(rb.linearVelocity.x);
+                float baseSpeed = Mathf.Abs(Rigidbody.linearVelocity.x);
 
                 if (settings.airReleaseDecelTime > 0f)
                 {
@@ -178,8 +181,8 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
                 else
                     currentSpeedAbs = 0f;
 
-                if (Mathf.Abs(rb.linearVelocity.x) > 0.001f)
-                    lastMoveSign = rb.linearVelocity.x >= 0f ? 1 : -1;
+                if (Mathf.Abs(Rigidbody.linearVelocity.x) > 0.001f)
+                    lastMoveSign = Rigidbody.linearVelocity.x >= 0f ? 1 : -1;
                 else if (currentSpeedAbs <= 0.001f)
                     lastMoveSign = 0;
             }
@@ -224,7 +227,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
             vxDir = 0f;
 
         float vx = vxDir * currentSpeedAbs;
-        rb.linearVelocity = new Vector2(vx, rb.linearVelocity.y);
+        Rigidbody.linearVelocity = new Vector2(vx, Rigidbody.linearVelocity.y);
 
         transform.rotation = Quaternion.Euler(0f, facingDirection == -1 ? 180f : 0f, 0f);
     }
@@ -236,13 +239,13 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
             jumpTimeCounter += Time.fixedDeltaTime;
             float t = jumpTimeCounter / settings.maxJumpTime;
             float force = settings.jumpForceCurve.Evaluate(t) * settings.maxJumpForce;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, force);
+            Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocity.x, force);
         }
     }
 
     public void StopRising()
     {
-        if (rb.linearVelocity.y > 0f) rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.3f);
+        if (Rigidbody.linearVelocity.y > 0f) Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocity.x, Rigidbody.linearVelocity.y * 0.3f);
         jumpTimeCounter = settings.maxJumpTime;
     }
 
@@ -372,7 +375,4 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         Debug.LogError($"PlayerController: Animator state '{stateName}' not found or not playing.");
         return 0f;
     }
-
-    public Rigidbody2D Rigidbody => rb;
-    public BoxCollider2D BoxCollider => boxCol;
 }

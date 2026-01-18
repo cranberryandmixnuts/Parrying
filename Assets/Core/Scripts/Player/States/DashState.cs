@@ -64,6 +64,8 @@ public sealed class DashState : PlayerState
         }
         else
             extremeDashSuccess = false;
+
+        player.Effects.PlayDash();
     }
 
     public override void Update()
@@ -102,5 +104,6 @@ public sealed class DashState : PlayerState
         player.postDashCarryDir = player.facingDirection;
         player.postDashCarryTimer = player.Settings.postDashCarryWindow;
         player.Rigidbody.linearVelocity = Vector2.zero;
+        player.Effects.StopDash();
     }
 }

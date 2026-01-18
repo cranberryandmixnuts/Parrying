@@ -1,5 +1,4 @@
 using UnityEngine;
-using static PlayerController;
 
 public sealed class HitState : PlayerState
 {
@@ -22,6 +21,7 @@ public sealed class HitState : PlayerState
         player.Rigidbody.AddForce(KnockDir.normalized * player.Settings.knockbackForce, ForceMode2D.Impulse);
         player.Anim.Play("Hit");
         timer = player.GetAnimLength("Hit");
+        player.Effects.PlayHit();
     }
 
     public override void Update()

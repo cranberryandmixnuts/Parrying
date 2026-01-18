@@ -1,5 +1,4 @@
 using UnityEngine;
-using static PlayerController;
 
 public sealed class CounterParryState : PlayerState
 {
@@ -31,6 +30,7 @@ public sealed class CounterParryState : PlayerState
         }
 
         player.Vitals.SetInvincibleTimer(timer);
+        player.Effects.PlayCounterParry();
     }
 
     public override void Update()
@@ -52,6 +52,7 @@ public sealed class CounterParryState : PlayerState
                     player.counterParryFirstResolved = true;
                     c.attacker.OnCounterParry(c.hitPoint);
                     player.Effects.DoCounterParryImpact();
+                    player.Effects.PlayCounterParrySuccess();
 
                     player.ClearParryCandidate(c.attacker);
                     player.parryCandidates.Clear();

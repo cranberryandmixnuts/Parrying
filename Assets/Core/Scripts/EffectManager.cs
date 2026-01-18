@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public sealed class EffectManager : MonoBehaviour
+public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 {
     [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/References"), SerializeField, Required]
     private Camera targetCamera;
@@ -96,13 +96,11 @@ public sealed class EffectManager : MonoBehaviour
     private readonly List<VisualEffect> laserActive = new();
     private readonly Dictionary<VisualEffect, Coroutine> laserReleaseCoroutines = new();
 
-    private void Awake()
+    protected override void SingletonAwake()
     {
-        if (parryTemplate.gameObject.activeSelf)
-            parryTemplate.gameObject.SetActive(false);
-
-        if (laserTemplate.gameObject.activeSelf)
-            laserTemplate.gameObject.SetActive(false);
+        parryTemplate.gameObject.SetActive(false);
+        laserTemplate.gameObject.SetActive(false);
+        ControlCounterParryCharge(false);
 
         for (int i = 0; i < parryPrewarmCount; i++)
         {
@@ -146,10 +144,9 @@ public sealed class EffectManager : MonoBehaviour
         parryActive.Clear();
     }
 
-    public void PlayDash()
-    {
-        Restart(dash);
-    }
+    public void PlayDash() => Restart(dash);
+
+    public void StopDash() => dash.Stop();
 
     public void PlayHeal()
     {
@@ -163,38 +160,18 @@ public sealed class EffectManager : MonoBehaviour
         healLine.Stop();
     }
 
-    public void PlayCounterParryCharge()
+    public void ControlCounterParryCharge(bool play)
     {
-        if (counterParryCharge.activeSelf)
-        {
-            counterParryCharge.SetActive(false);
-            StartCoroutine(CoEnableNextFrame(counterParryCharge));
-            return;
-        }
+        if(counterParryCharge.activeSelf == play) return;
 
-        counterParryCharge.SetActive(true);
+        counterParryCharge.SetActive(play);
     }
 
-    public void StopCounterParryCharge()
-    {
-        if (counterParryCharge.activeSelf)
-            counterParryCharge.SetActive(false);
-    }
+    public void PlayCounterParry() => Restart(counterParry);
 
-    public void PlayCounterParry()
-    {
-        Restart(counterParry);
-    }
+    public void PlayCounterParrySuccess() => Restart(counterParrySuccess);
 
-    public void PlayCounterParrySuccess()
-    {
-        Restart(counterParrySuccess);
-    }
-
-    public void PlayHit()
-    {
-        Restart(hit);
-    }
+    public void PlayHit() => Restart(hit);
 
     public void PlayLaser(float zRotationDegrees)
     {
@@ -295,11 +272,18 @@ public sealed class EffectManager : MonoBehaviour
     private IEnumerator CoAutoReleaseParry(VisualEffect vfx)
     {
         float elapsed = 0f;
+        bool hadAlive = false;
 
-        yield return null;
-
-        while (vfx.aliveParticleCount > 0 && elapsed < parryAutoReleaseTimeout)
+        while (elapsed < parryAutoReleaseTimeout)
         {
+            int alive = vfx.aliveParticleCount;
+
+            if (alive > 0)
+                hadAlive = true;
+
+            if (hadAlive && alive == 0)
+                break;
+
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
@@ -332,11 +316,18 @@ public sealed class EffectManager : MonoBehaviour
     private IEnumerator CoAutoReleaseLaser(VisualEffect vfx)
     {
         float elapsed = 0f;
+        bool hadAlive = false;
 
-        yield return null;
-
-        while (vfx.aliveParticleCount > 0 && elapsed < laserAutoReleaseTimeout)
+        while (elapsed < laserAutoReleaseTimeout)
         {
+            int alive = vfx.aliveParticleCount;
+
+            if (alive > 0)
+                hadAlive = true;
+
+            if (hadAlive && alive == 0)
+                break;
+
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
@@ -357,12 +348,6 @@ public sealed class EffectManager : MonoBehaviour
         vfx.Stop();
         vfx.gameObject.SetActive(false);
         laserPool.Enqueue(vfx);
-    }
-
-    private IEnumerator CoEnableNextFrame(GameObject go)
-    {
-        yield return null;
-        go.SetActive(true);
     }
 
     private void Shake(float duration, float amplitude)

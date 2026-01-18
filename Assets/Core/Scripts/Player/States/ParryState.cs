@@ -63,7 +63,7 @@ public sealed class ParryState : PlayerState
             if (player.parryCandidates.Count > 0)
             {
                 ParryCandidate c = player.parryCandidates[0];
-                UnityEngine.Object uo = c.attacker as UnityEngine.Object;
+                Object uo = c.attacker as Object;
 
                 if (uo == null)
                 {
@@ -78,6 +78,7 @@ public sealed class ParryState : PlayerState
                     if (frac <= 0.5f)
                     {
                         player.Effects.DoPerfectParryImpact();
+                        player.Effects.PlayParry();
                         player.Vitals.GainEnergy(player.Settings.perfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnPerfectParry(c.hitPoint);
