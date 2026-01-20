@@ -75,8 +75,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
     [SerializeField] private float debugArcStepDeg = 5f;
     [SerializeField] private LineRenderer Line;
-    [SerializeField] private Color LaserWarningColor = new(1f, 0.9f, 0.4f, 0.9f);
-    [SerializeField] private Color LaserFiringColor = new(1f, 0.2f, 0.1f, 0.9f);
 
     private float gravityOriginal;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
@@ -469,72 +467,5 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         Gizmos.DrawLine(p2, p3);
         Gizmos.DrawLine(p3, p4);
         Gizmos.DrawLine(p4, p1);
-    }
-
-    public void UpdateVolleyLaserLine(Vector2 origin, Vector2 dir, float length, bool firing)
-    {
-        if (Line == null) return;
-
-        Line.useWorldSpace = true;
-        Line.positionCount = 2;
-        Line.widthMultiplier = settings.laserThickness;
-
-        Vector3 a = origin;
-        Vector3 b = a + (Vector3)(dir.normalized * length);
-
-        Line.SetPosition(0, a);
-        Line.SetPosition(1, b);
-
-        Color c = firing ? LaserFiringColor : LaserWarningColor;
-        Line.startColor = c;
-        Line.endColor = c;
-    }
-
-    public void ClearVolleyLaserLine()
-    {
-        if (Line == null) return;
-        Line.positionCount = 0;
-    }
-
-    public void UpdateRadialLaserLines(Vector2 origin, Vector2[] dirs, float length, bool firing)
-    {
-        if (Line == null) return;
-
-        if (dirs == null || dirs.Length == 0)
-        {
-            Line.positionCount = 0;
-            return;
-        }
-
-        Line.useWorldSpace = true;
-        Line.widthMultiplier = settings.laserThickness;
-
-        int count = dirs.Length * 2;
-        Line.positionCount = count;
-
-        Color c = firing ? LaserFiringColor : LaserWarningColor;
-        Line.startColor = c;
-        Line.endColor = c;
-
-        Vector3 o = origin;
-        int idx = 0;
-
-        for (int i = 0; i < dirs.Length; i++)
-        {
-            Vector2 d = dirs[i];
-            if (d.sqrMagnitude < 0.0001f) d = Vector2.right;
-            d.Normalize();
-
-            Vector3 tip = o + (Vector3)(d * length);
-
-            Line.SetPosition(idx++, o);
-            Line.SetPosition(idx++, tip);
-        }
-    }
-
-    public void ClearRadialLaserLines()
-    {
-        if (Line == null) return;
-        Line.positionCount = 0;
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 public sealed class BossRadialLaserState : BossState
 {
@@ -17,6 +18,8 @@ public sealed class BossRadialLaserState : BossState
     private float laserThickness;
 
     private bool interactionsDisabled;
+
+    private VisualEffect[] beamVfx;
 
     public override BossStateType StateType => BossStateType.RadialLaser;
 
@@ -50,8 +53,9 @@ public sealed class BossRadialLaserState : BossState
         beamAnglesDeg = null;
         laserOrigin = boss.transform.position;
 
+        beamVfx = null;
+
         boss.SetLethal(BossController.AttackContext.LaserP2, false);
-        boss.ClearRadialLaserLines();
     }
 
     public override void Update()
@@ -62,19 +66,15 @@ public sealed class BossRadialLaserState : BossState
         {
             delayTimer -= dt;
             if (delayTimer > 0f)
-            {
-                boss.UpdateRadialLaserLines(boss.transform.position, null, 0f, false);
                 return;
-            }
 
             StartVolley();
             return;
         }
 
         volleyTimer += dt;
-        float laserTimer = volleyTimer;
 
-        if (laserTimer >= totalLaserDuration)
+        if (volleyTimer >= totalLaserDuration)
         {
             EndVolley();
             return;
@@ -82,17 +82,15 @@ public sealed class BossRadialLaserState : BossState
 
         laserOrigin = boss.transform.position;
 
-        bool inWarning = laserTimer < laserWarningDuration;
-        bool inFiring = laserTimer >= laserWarningDuration;
-
-        boss.UpdateRadialLaserLines(laserOrigin, beamDirs, laserLength, inFiring);
+        bool inWarning = volleyTimer < laserWarningDuration;
+        bool inFiring = volleyTimer >= laserWarningDuration;
 
         if (!interactionsDisabled && boss.LethalActive)
         {
             if (inWarning)
             {
                 float warningTailStart = laserWarningDuration - boss.Settings.extraWarningTail;
-                if (laserTimer >= warningTailStart)
+                if (volleyTimer >= warningTailStart)
                     RegisterDashCandidates();
             }
             else if (inFiring)
@@ -119,7 +117,8 @@ public sealed class BossRadialLaserState : BossState
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
         boss.SetLethal(BossController.AttackContext.LaserP2, false);
-        boss.ClearRadialLaserLines();
+
+        StopBeamVfx();
     }
 
     private void TeleportToRadialPosition()
@@ -135,8 +134,6 @@ public sealed class BossRadialLaserState : BossState
         int minBeams = Mathf.Max(1, Mathf.RoundToInt(boss.Settings.radialBeamCountRange.x));
         int maxBeams = Mathf.Max(minBeams, Mathf.RoundToInt(boss.Settings.radialBeamCountRange.y));
         int beamCount = Random.Range(minBeams, maxBeams + 1);
-
-        if (beamCount <= 0) beamCount = minBeams;
 
         beamDirs = new Vector2[beamCount];
         beamAnglesDeg = new float[beamCount];
@@ -173,12 +170,16 @@ public sealed class BossRadialLaserState : BossState
             beamDirs[i] = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
         }
 
+        StopBeamVfx();
+        beamVfx = new VisualEffect[beamCount];
+        for (int i = 0; i < beamCount; i++)
+            beamVfx[i] = EffectManager.Instance.BeginLaser(beamAnglesDeg[i]);
+
         volleyTimer = 0f;
         volleyActive = true;
         interactionsDisabled = false;
 
         boss.SetLethal(BossController.AttackContext.LaserP2, true);
-        boss.UpdateRadialLaserLines(boss.transform.position, beamDirs, laserLength, false);
     }
 
     private void EndVolley()
@@ -190,10 +191,24 @@ public sealed class BossRadialLaserState : BossState
         boss.SetLethal(BossController.AttackContext.LaserP2, false);
 
         delayTimer = boss.Settings.radialBeat;
-        boss.ClearRadialLaserLines();
+
+        StopBeamVfx();
 
         beamDirs = null;
         beamAnglesDeg = null;
+    }
+
+    private void StopBeamVfx()
+    {
+        if (beamVfx == null) return;
+
+        for (int i = 0; i < beamVfx.Length; i++)
+        {
+            if (beamVfx[i] != null)
+                EffectManager.Instance.EndLaser(beamVfx[i]);
+        }
+
+        beamVfx = null;
     }
 
     private void RegisterDashCandidates()

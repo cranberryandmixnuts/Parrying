@@ -39,9 +39,9 @@ MonoBehaviour:
   rushDamage: 10
   missileVolleys: 3
   missileVolleyInterval: 0.5
-  laserWindupTime: 1
-  extraWarningTail: 0.3
-  laserActiveTime: 0.3
+  laserWindupTime: 0.6
+  extraWarningTail: 0.2
+  laserActiveTime: 0.6
   missileToLaserExtraDelay: 0.5
   laserTurnSpeedDegPerSec: 300
   laserDamage: 10

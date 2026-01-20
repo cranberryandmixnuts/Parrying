@@ -11,7 +11,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     public EffectManager Effects { get; private set; }
     public Animator Anim { get; private set; }
     public Rigidbody2D Rigidbody { get; private set; }
-    public BoxCollider2D BoxCollider { get; private set; } 
+    public BoxCollider2D BoxCollider { get; private set; }
 
     public float MoveInput { get; private set; }
     public bool ParryHeld { get; private set; }
@@ -86,6 +86,17 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     public bool HasDashBuffer => dashBufferTimer > 0f;
     public void ConsumeDashBuffer() => dashBufferTimer = 0f;
 
+    private bool ShouldShowCounterParryCharge =>
+        ParryHeld &&
+        (
+            inCounterParryPrep ||
+            (
+                !counterParryPrepLocked &&
+                parryHoldTimer >= settings.counterParryHoldTime &&
+                Vitals.Energy >= settings.counterParryEnterCost
+            )
+        );
+
     private PlayerStateMachine stateMachine;
 
     protected override void SingletonAwake()
@@ -112,7 +123,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         if (parryBufferTimer > 0f) parryBufferTimer -= Time.deltaTime;
         if (dashBufferTimer > 0f) dashBufferTimer -= Time.deltaTime;
 
-        Effects.ControlCounterParryCharge(inCounterParryPrep);
+        Effects.ControlCounterParryCharge(ShouldShowCounterParryCharge);
 
         stateMachine.Update();
     }

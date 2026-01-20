@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 public sealed class BossVolleyLaserState : BossState
 {
@@ -35,6 +36,8 @@ public sealed class BossVolleyLaserState : BossState
     private float laserThickness;
     private float laserAngleDeg;
 
+    private VisualEffect laserVfx;
+
     public override BossStateType StateType => BossStateType.VolleyLaser;
 
     public BossVolleyLaserState(BossController boss, BossStateMachine stateMachine)
@@ -58,7 +61,6 @@ public sealed class BossVolleyLaserState : BossState
         missileInterval = boss.Settings.missileVolleyInterval;
         missilesFired = 0;
 
-        missilePhaseEndTime = 0f;
         float lastShotTime = (missileCount - 1) * missileInterval;
         missilePhaseEndTime = lastShotTime + missileInterval + boss.Settings.missileToLaserExtraDelay;
 
@@ -79,10 +81,11 @@ public sealed class BossVolleyLaserState : BossState
         laserDir = Vector2.right;
         laserAngleDeg = 0f;
 
+        laserVfx = null;
+
         phase = Phase.Missiles;
 
         boss.SetLethal(BossController.AttackContext.LaserP1, false);
-        boss.ClearVolleyLaserLine();
     }
 
     public override void Update()
@@ -102,25 +105,16 @@ public sealed class BossVolleyLaserState : BossState
         {
             UpdateMissiles();
             if (elapsed >= laserStartTime)
-            {
                 phase = Phase.Laser;
-            }
             else
-            {
                 return;
-            }
         }
 
-        if (phase == Phase.Laser)
-        {
-            if (!laserStarted)
-            {
-                StartLaser();
-            }
+        if (!laserStarted)
+            StartLaser();
 
-            laserTime = Mathf.Max(0f, elapsed - laserStartTime);
-            UpdateLaser();
-        }
+        laserTime = Mathf.Max(0f, elapsed - laserStartTime);
+        UpdateLaser();
     }
 
     public override void FixedUpdate()
@@ -134,7 +128,13 @@ public sealed class BossVolleyLaserState : BossState
         boss.SetGravityScale(boss.OriginalGravityScale);
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
-        boss.ClearVolleyLaserLine();
+
+        if (laserVfx != null)
+        {
+            EffectManager.Instance.EndLaser(laserVfx);
+            laserVfx = null;
+        }
+
         boss.SetLethal(BossController.AttackContext.None, false);
     }
 
@@ -175,11 +175,9 @@ public sealed class BossVolleyLaserState : BossState
 
     private void FireMissile()
     {
-        Transform originTransform = boss.transform;
-        Vector2 origin = originTransform.position;
-        Vector2 dir;
+        Vector2 origin = boss.transform.position;
 
-        dir = (Vector2)boss.PlayerTarget.transform.position - origin;
+        Vector2 dir = (Vector2)boss.PlayerTarget.transform.position - origin;
         if (dir.sqrMagnitude < 0.0001f) dir = Vector2.right;
         dir.Normalize();
 
@@ -194,16 +192,16 @@ public sealed class BossVolleyLaserState : BossState
         laserInteractionDisabled = false;
         laserDirectionLocked = false;
 
-        Transform originTransform = boss.transform;
-        laserOrigin = originTransform.position;
+        laserOrigin = boss.transform.position;
 
-        Vector2 initialDir;
-        initialDir = (Vector2)boss.PlayerTarget.transform.position - laserOrigin;
+        Vector2 initialDir = (Vector2)boss.PlayerTarget.transform.position - laserOrigin;
         if (initialDir.sqrMagnitude < 0.0001f) initialDir = Vector2.right;
         initialDir.Normalize();
 
         laserDir = initialDir;
         laserAngleDeg = Mathf.Atan2(laserDir.y, laserDir.x) * Mathf.Rad2Deg;
+
+        laserVfx = EffectManager.Instance.BeginLaser(laserAngleDeg);
 
         boss.SetLethal(BossController.AttackContext.LaserP1, true);
     }
@@ -216,12 +214,16 @@ public sealed class BossVolleyLaserState : BossState
             if (boss.LethalActive)
                 boss.SetLethal(BossController.AttackContext.None, false);
 
-            boss.ClearVolleyLaserLine();
+            if (laserVfx != null)
+            {
+                EffectManager.Instance.EndLaser(laserVfx);
+                laserVfx = null;
+            }
+
             return;
         }
 
-        Transform originTransform = boss.transform;
-        laserOrigin = originTransform.position;
+        laserOrigin = boss.transform.position;
 
         bool inWarning = laserTime < laserWarningDuration;
         bool inTracking = laserTime < laserTrackDuration;
@@ -239,7 +241,6 @@ public sealed class BossVolleyLaserState : BossState
                 if (inWarning)
                 {
                     float warningTailStart = laserWarningDuration - boss.Settings.extraWarningTail;
-
                     if (laserTime >= warningTailStart)
                         RegisterDashCandidates();
                 }
@@ -252,14 +253,11 @@ public sealed class BossVolleyLaserState : BossState
             else
                 laserInteractionDisabled = true;
         }
-
-        boss.UpdateVolleyLaserLine(laserOrigin, laserDir, laserLength, inFiring);
     }
 
     private void UpdateLaserDirectionTracking()
     {
-        Vector2 origin = laserOrigin;
-        Vector2 toPlayer = (Vector2)boss.PlayerTarget.transform.position - origin;
+        Vector2 toPlayer = (Vector2)boss.PlayerTarget.transform.position - laserOrigin;
         if (toPlayer.sqrMagnitude < 0.0001f) return;
 
         float desiredAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
@@ -268,6 +266,9 @@ public sealed class BossVolleyLaserState : BossState
 
         float rad = laserAngleDeg * Mathf.Deg2Rad;
         laserDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+
+        if (laserVfx != null)
+            EffectManager.Instance.UpdateLaser(laserVfx, laserAngleDeg);
     }
 
     private void RegisterParryCandidates()
@@ -275,7 +276,8 @@ public sealed class BossVolleyLaserState : BossState
         GetLaserRect(out Vector2 center, out Vector2 half, out float angleDeg);
 
         boss.PlayerTarget.GetParryDetectCircle(out Vector2 pCenter, out float pRadius);
-        if (RectCircleIntersects(center, half, angleDeg, pCenter, pRadius)) boss.PlayerTarget.RegisterParryCandidate(boss, boss.transform.position, boss.Settings.laserDamage);
+        if (RectCircleIntersects(center, half, angleDeg, pCenter, pRadius))
+            boss.PlayerTarget.RegisterParryCandidate(boss, boss.transform.position, boss.Settings.laserDamage);
     }
 
     private void RegisterDashCandidates()
@@ -343,7 +345,13 @@ public sealed class BossVolleyLaserState : BossState
     private void EndState()
     {
         boss.SetLethal(BossController.AttackContext.None, false);
-        boss.ClearVolleyLaserLine();
+
+        if (laserVfx != null)
+        {
+            EffectManager.Instance.EndLaser(laserVfx);
+            laserVfx = null;
+        }
+
         boss.ChangeToIdle(false);
     }
 }

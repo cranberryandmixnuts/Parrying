@@ -53,7 +53,13 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     private VisualEffect healLine;
 
     [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/References"), SerializeField, Required]
+    private VisualEffect healingUI;
+
+    [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/References"), SerializeField, Required]
     private GameObject counterParryCharge;
+
+    [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/References"), SerializeField, Required]
+    private GameObject counterParryChargeUI;
 
     [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/References"), SerializeField, Required]
     private VisualEffect counterParry;
@@ -66,9 +72,6 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 
     [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/Parry"), SerializeField, Required]
     private VisualEffect parryTemplate;
-
-    [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/Parry"), SerializeField]
-    private Vector3 parryLocalOffset;
 
     [TabGroup("Effect Manager", "VFX - FollowPlayer"), BoxGroup("Effect Manager/VFX - FollowPlayer/Parry"), SerializeField, MinValue(0)]
     private int parryPrewarmCount = 8;
@@ -124,7 +127,6 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 
         Transform tr = vfx.transform;
         tr.SetParent(followPlayerRoot, false);
-        tr.SetLocalPositionAndRotation(parryLocalOffset, Quaternion.identity);
         vfx.gameObject.SetActive(true);
         vfx.Reinit();
         vfx.Play();
@@ -152,19 +154,22 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     {
         Restart(healing);
         Restart(healLine);
+        Restart(healingUI);
     }
 
     public void StopHeal()
     {
         healing.Stop();
         healLine.Stop();
+        healingUI.Stop();
     }
 
     public void ControlCounterParryCharge(bool play)
     {
-        if(counterParryCharge.activeSelf == play) return;
+        if (counterParryCharge.activeSelf == play) return;
 
         counterParryCharge.SetActive(play);
+        counterParryChargeUI.SetActive(play);
     }
 
     public void PlayCounterParry() => Restart(counterParry);
@@ -187,6 +192,33 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 
         Coroutine co = StartCoroutine(CoAutoReleaseLaser(vfx));
         laserReleaseCoroutines[vfx] = co;
+    }
+
+    public VisualEffect BeginLaser(float zRotationDegrees)
+    {
+        VisualEffect vfx = laserPool.Count > 0 ? laserPool.Dequeue() : CreateLaserInstance();
+        laserActive.Add(vfx);
+
+        Transform tr = vfx.transform;
+        tr.SetParent(followEnemyRoot, false);
+        tr.SetLocalPositionAndRotation(laserLocalOffset, Quaternion.Euler(0f, 0f, zRotationDegrees));
+        vfx.gameObject.SetActive(true);
+        vfx.Reinit();
+        vfx.Play();
+
+        return vfx;
+    }
+
+    public void UpdateLaser(VisualEffect vfx, float zRotationDegrees)
+    {
+        Transform tr = vfx.transform;
+        tr.localRotation = Quaternion.Euler(0f, 0f, zRotationDegrees);
+    }
+
+    public void EndLaser(VisualEffect vfx)
+    {
+        laserActive.Remove(vfx);
+        ReturnLaserInstance(vfx);
     }
 
     public void StopAllLaser()
