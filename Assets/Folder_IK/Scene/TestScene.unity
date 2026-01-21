@@ -716,7 +716,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!73398921 &614682363
 VFXRenderer:
   serializedVersion: 1
@@ -725,7 +725,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 614682362}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -1001,8 +1001,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Runtime::UnityEngine.VFX.Utility.VFXPropertyBinder
   m_ExecuteInEditor: 1
-  m_Bindings:
-  - {fileID: 650765020}
+  m_Bindings: []
   m_VisualEffect: {fileID: 650765018}
 --- !u!114 &650765022
 MonoBehaviour:
@@ -1656,12 +1655,13 @@ MonoBehaviour:
   dash: {fileID: 2046782522}
   healing: {fileID: 728825428}
   healLine: {fileID: 0}
+  healingUI: {fileID: 0}
   counterParryCharge: {fileID: 0}
+  counterParryChargeUI: {fileID: 0}
   counterParry: {fileID: 0}
   counterParrySuccess: {fileID: 0}
   hit: {fileID: 0}
   parryTemplate: {fileID: 0}
-  parryLocalOffset: {x: 0, y: 0, z: 0}
   parryPrewarmCount: 8
   parryAutoReleaseTimeout: 2
   laserTemplate: {fileID: 0}
