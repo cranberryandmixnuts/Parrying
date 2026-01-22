@@ -106,14 +106,14 @@ public static class SceneNameGenerator
 
         if (guids.Length == 0)
         {
-            error = "SceneNameGeneratorSettings 에셋이 없습니다. Project 창에서 Create > Tools > Scene Management > Scene Name Generator Settings 로 생성한 뒤 다시 시도하세요.";
+            error = "SceneNameGeneratorSettings 에셋이 없습니다.";
             return false;
         }
 
         if (guids.Length > 1)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("SceneNameGeneratorSettings 에셋이 2개 이상 존재합니다. 하나만 남기고 나머지는 삭제/이동하세요.");
+            sb.AppendLine("SceneNameGeneratorSettings 에셋이 2개 이상 존재합니다.");
             for (int i = 0; i < guids.Length; ++i)
                 sb.AppendLine($"- {AssetDatabase.GUIDToAssetPath(guids[i])}");
 
@@ -142,10 +142,10 @@ public static class SceneNameGenerator
         if (!string.IsNullOrWhiteSpace(folder))
         {
             if (!IsAssetsPath(folder))
-                errors.Add($"Settings.GeneratedFolder 는 Assets 아래 경로여야 합니다. 현재: {folder}");
+                errors.Add($"Settings.GeneratedFolder는 Assets 아래 경로여야 합니다. 현재 경로: {folder}");
 
             if (IsAssetsPath(folder) && !AssetDatabase.IsValidFolder(folder))
-                errors.Add($"Settings.GeneratedFolder 폴더가 존재하지 않습니다. 폴더를 먼저 만든 뒤 다시 시도하세요. 현재: {folder}");
+                errors.Add($"Settings.GeneratedFolder 폴더가 존재하지 않습니다. 현재 경로: {folder}");
         }
 
         ValidateFileName(settings.EnumFileName, "Settings.EnumFileName", errors);
@@ -158,17 +158,17 @@ public static class SceneNameGenerator
             if (!string.IsNullOrWhiteSpace(settings.EnumFileName) && !string.IsNullOrWhiteSpace(settings.MapFileName))
             {
                 if (string.Equals(settings.EnumFileName, settings.MapFileName, StringComparison.Ordinal))
-                    errors.Add("Settings.EnumFileName 과 Settings.MapFileName 이 동일합니다. 서로 다른 파일명이어야 합니다.");
+                    errors.Add("Settings.EnumFileName과 Settings.MapFileName이 같습니다.");
             }
         }
 
         if (settings.UseNamespace)
         {
             if (string.IsNullOrWhiteSpace(settings.NamespaceName))
-                errors.Add("Settings.UseNamespace 가 켜져 있는데 Settings.NamespaceName 이 비어 있습니다.");
+                errors.Add("Settings.NamespaceName이 비어 있습니다.");
 
             if (!string.IsNullOrWhiteSpace(settings.NamespaceName) && !IsValidNamespace(settings.NamespaceName))
-                errors.Add($"Settings.NamespaceName 이 C# namespace 형식이 아닙니다. 현재: {settings.NamespaceName}");
+                errors.Add($"Settings.NamespaceName이 C# namespace 형식이 아닙니다. 현재: {settings.NamespaceName}");
         }
     }
 
@@ -176,18 +176,18 @@ public static class SceneNameGenerator
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
-            errors.Add($"{fieldName} 이 비어 있습니다.");
+            errors.Add($"{fieldName}이 비어 있습니다.");
             return;
         }
 
         if (!fileName.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
-            errors.Add($"{fieldName} 은 .cs 로 끝나야 합니다. 현재: {fileName}");
+            errors.Add($"{fieldName}은 .cs 로 끝나야 합니다. 현재 이름: {fileName}");
 
         if (fileName.Contains("/") || fileName.Contains("\\"))
-            errors.Add($"{fieldName} 에 경로 구분자(/ 또는 \\)가 포함되어 있습니다. 파일명만 입력해야 합니다. 현재: {fileName}");
+            errors.Add($"{fieldName}에 경로 구분자(/ 또는 \\)가 포함되어 있습니다. 현재 이름: {fileName}");
 
         if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-            errors.Add($"{fieldName} 에 파일명으로 사용할 수 없는 문자가 포함되어 있습니다. 현재: {fileName}");
+            errors.Add($"{fieldName} 에 파일명으로 사용할 수 없는 문자가 포함되어 있습니다. 현재 이름: {fileName}");
     }
 
     private static void ValidateAndCollectScenes(EditorBuildSettingsScene[] scenes, List<SceneEntry> entries, List<string> errors)
@@ -203,10 +203,10 @@ public static class SceneNameGenerator
             string sceneName = Path.GetFileNameWithoutExtension(scenePath);
 
             if (string.Equals(sceneName, "None", StringComparison.Ordinal))
-                errors.Add($"씬 이름이 'None' 입니다. SceneType의 예약 항목이므로 다른 이름으로 바꾸세요. path={scenePath}");
+                errors.Add($"씬 이름이 SceneType의 예약 항목이므로 다른 이름으로 바꾸세요. name={sceneName}, path={scenePath}");
 
             if (!IdentifierRegex.IsMatch(sceneName))
-                errors.Add($"씬 이름이 C# 식별자로 유효하지 않습니다(공백/특수문자/한글/시작 숫자 등). 씬 파일명을 바꾸세요. name={sceneName}, path={scenePath}");
+                errors.Add($"씬 이름이 C# 식별자로 유효하지 않습니다. 씬 파일명을 바꾸세요. name={sceneName}, path={scenePath}");
 
             if (CSharpKeywords.Contains(sceneName))
                 errors.Add($"씬 이름이 C# 예약어입니다. 씬 파일명을 바꾸세요. name={sceneName}, path={scenePath}");
@@ -368,7 +368,7 @@ public static class SceneNameGenerator
     private static string BuildErrorReport(List<string> errors)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("SceneNameGenerator: 문제가 발견되어 생성/업데이트를 거부했습니다. 아래 문제를 수정한 뒤 다시 시도하세요.");
+        sb.AppendLine("SceneNameGenerator: 생성/업데이트 실패. 아래 문제를 수정한 뒤 다시 시도하세요.");
         for (int i = 0; i < errors.Count; ++i)
         {
             sb.Append("- ");

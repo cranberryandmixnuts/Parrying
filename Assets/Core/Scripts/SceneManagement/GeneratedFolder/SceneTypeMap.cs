@@ -7,23 +7,51 @@ public static class SceneTypeMap
     {
         "",
         "TitleScene",
+        "GameStartScene",
+        "Tutorial1Scene",
+        "SlateRoomScene",
+        "Tutorial2Scene",
+        "ArenaScene",
+        "BossRoomScene",
+        "EndingScene",
     };
 
     private static readonly string[] ScenePaths =
     {
         "",
         "Assets/Core/Scenes/TitleScene.unity",
+        "Assets/Core/Scenes/Stage/GameStartScene.unity",
+        "Assets/Core/Scenes/Stage/Tutorial1Scene.unity",
+        "Assets/Core/Scenes/Stage/SlateRoomScene.unity",
+        "Assets/Core/Scenes/Stage/Tutorial2Scene.unity",
+        "Assets/Core/Scenes/Stage/ArenaScene.unity",
+        "Assets/Core/Scenes/Stage/BossRoomScene.unity",
+        "Assets/Core/Scenes/EndingScene.unity",
     };
 
     private static readonly bool[] EnabledInBuildSettings =
     {
         false,
         true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
     };
 
     private static readonly Dictionary<string, SceneType> NameToType = new(StringComparer.Ordinal)
     {
         { "TitleScene", SceneType.TitleScene },
+        { "GameStartScene", SceneType.GameStartScene },
+        { "Tutorial1Scene", SceneType.Tutorial1Scene },
+        { "SlateRoomScene", SceneType.SlateRoomScene },
+        { "Tutorial2Scene", SceneType.Tutorial2Scene },
+        { "ArenaScene", SceneType.ArenaScene },
+        { "BossRoomScene", SceneType.BossRoomScene },
+        { "EndingScene", SceneType.EndingScene },
     };
 
     public static int TotalCount => SceneNames.Length;

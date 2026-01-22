@@ -4016,7 +4016,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 30
@@ -5262,7 +5262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd5abd66a6d6d146a14df5432658f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoadButton
-  scene: 1
+  scene: 2
 --- !u!224 &6871385936682056891 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4906154223814908367, guid: 96d6da18df339bd46b74593208ddfadc, type: 3}
