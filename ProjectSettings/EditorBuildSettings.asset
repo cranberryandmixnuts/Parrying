@@ -12,14 +12,8 @@ EditorBuildSettings:
     path: Assets/Core/Scenes/Stage/GameStartScene.unity
     guid: 888456f3dae131941994ce3b2e0c7db5
   - enabled: 1
-    path: Assets/Core/Scenes/Stage/Tutorial1Scene.unity
+    path: Assets/Core/Scenes/Stage/TutorialScene.unity
     guid: 98d389090837e9f42a8116c62b48def9
-  - enabled: 1
-    path: Assets/Core/Scenes/Stage/SlateRoomScene.unity
-    guid: 71af7e66f6200464891e02f7db6dd6ff
-  - enabled: 1
-    path: Assets/Core/Scenes/Stage/Tutorial2Scene.unity
-    guid: 8a547bae91462a04494646e9c8c2b8d0
   - enabled: 1
     path: Assets/Core/Scenes/Stage/ArenaScene.unity
     guid: e4d7900a4c447d349aa9a7fb4ff63a5b
