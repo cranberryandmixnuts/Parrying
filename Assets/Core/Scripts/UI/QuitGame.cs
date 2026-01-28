@@ -13,9 +13,6 @@ public sealed class QuitGame : MonoBehaviour
     private bool isQuitting;
     private Tween fadeTween;
 
-    private float cachedTimeScale = 1f;
-    private bool timePausedByThis;
-
     private void Awake()
     {
         Color imageColor = fadeImage.color;
@@ -28,6 +25,7 @@ public sealed class QuitGame : MonoBehaviour
     public void Quit()
     {
         if (isQuitting) return;
+        InputManager.Instance.SetAllModes(InputMode.Auto);
         SoundManager.Instance.ChangeBgm(BgmId.None, fadeDuration);
         StartCoroutine(QuitSequence());
     }
@@ -35,13 +33,12 @@ public sealed class QuitGame : MonoBehaviour
     private IEnumerator QuitSequence()
     {
         isQuitting = true;
-        PauseTime();
+        Time.timeScale = 0f;
 
-        if (!fadeImage.gameObject.activeSelf)
-            fadeImage.gameObject.SetActive(true);
+        fadeImage.gameObject.SetActive(true);
 
         if (fadeTween != null && fadeTween.IsActive())
-            fadeTween.Kill(false);
+            fadeTween.Kill();
 
         fadeTween = fadeImage
             .DOFade(1f, fadeDuration)
@@ -54,29 +51,5 @@ public sealed class QuitGame : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
         Application.Quit();
-    }
-
-    private void PauseTime()
-    {
-        if (timePausedByThis) return;
-        if (Time.timeScale == 0f) return;
-
-        cachedTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
-        timePausedByThis = true;
-    }
-
-    private void ResumeTime()
-    {
-        if (!timePausedByThis) return;
-
-        Time.timeScale = cachedTimeScale;
-        timePausedByThis = false;
-    }
-
-    private void OnDisable()
-    {
-        if (timePausedByThis)
-            ResumeTime();
     }
 }

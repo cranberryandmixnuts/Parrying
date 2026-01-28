@@ -2,6 +2,7 @@ using UnityEngine;
 using DG.Tweening;
 
 // 일정 시간 오른쪽 이동 → 정지 → 점프(짧게 홀드) → 다시 수동 복구
+// 자동 입력모드 테스트 코드
 public sealed class TestAutoPilot : MonoBehaviour
 {
     [SerializeField] private float walkSeconds = 1f;
@@ -51,9 +52,6 @@ public sealed class TestAutoPilot : MonoBehaviour
 
     private void EndCutsceneAuto()
     {
-        input.SetAutoMoveAxis(0f);
-        input.SetAutoHeld(ActionKey.Jump, false);
-
         input.SetMode(ActionKey.Move, InputMode.Manual);
         input.SetMode(ActionKey.Jump, InputMode.Manual);
     }

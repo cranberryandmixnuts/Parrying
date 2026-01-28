@@ -14,7 +14,7 @@ public sealed class SettingsWindowManager : MonoBehaviour
     [SerializeField] private GameObject AudioPanel;
     [SerializeField] private GameObject ControlPanel;
 
-    [SerializeField] private bool EscToOpen = true;
+    [SerializeField] private bool EscapeToOpen = true;
 
     public SettingsTab CurrentTab { get; private set; } = SettingsTab.Root;
 
@@ -25,7 +25,7 @@ public sealed class SettingsWindowManager : MonoBehaviour
     {
         if (!InputManager.Instance.EscapeDown) return;
 
-        if (!SettingsWindow.activeSelf && EscToOpen)
+        if (!SettingsWindow.activeSelf && EscapeToOpen)
         {
             OpenSettings();
             return;

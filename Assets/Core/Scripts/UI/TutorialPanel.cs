@@ -91,8 +91,5 @@ public sealed class TutorialPanel : MonoBehaviour
         fadeTween = null;
     }
 
-    private void OnDisable()
-    {
-        KillFade();
-    }
+    private void OnDisable() => KillFade();
 }

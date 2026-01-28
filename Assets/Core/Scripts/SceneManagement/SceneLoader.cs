@@ -19,9 +19,6 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
     private Tween pendingRequestTween;
     private SceneType pendingScene = SceneType.None;
 
-    private float cachedTimeScale = 1f;
-    private bool timePausedByThis;
-
     private void Start()
     {
         CurrentSceneType = GetCurrentSceneType();
@@ -78,7 +75,6 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
     private IEnumerator LoadSceneSequence(SceneType scene)
     {
         IsTransitioning = true;
-        PauseTime();
 
         fadeImage.gameObject.SetActive(true);
 
@@ -93,7 +89,6 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
             Debug.LogError($"{sceneName}씬이 존재하지 않습니다.");
             IsTransitioning = false;
             fadeImage.gameObject.SetActive(false);
-            ResumeTime();
             yield break;
         }
 
@@ -107,8 +102,6 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
 
         IsTransitioning = false;
         fadeImage.gameObject.SetActive(false);
-
-        ResumeTime();
 
         if (pendingScene != SceneType.None)
         {
@@ -140,30 +133,6 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
         float remaining = fadeTween.Duration(false) - fadeTween.Elapsed(false);
         if (remaining < 0f) remaining = 0f;
         return remaining;
-    }
-
-    private void PauseTime()
-    {
-        if (timePausedByThis) return;
-        if (Time.timeScale == 0f) return;
-
-        cachedTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
-        timePausedByThis = true;
-    }
-
-    private void ResumeTime()
-    {
-        if (!timePausedByThis) return;
-
-        Time.timeScale = cachedTimeScale;
-        timePausedByThis = false;
-    }
-
-    private void OnDisable()
-    {
-        if (timePausedByThis)
-            ResumeTime();
     }
 
     private SceneType GetCurrentSceneType()

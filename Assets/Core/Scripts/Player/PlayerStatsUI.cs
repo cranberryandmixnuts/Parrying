@@ -1,8 +1,8 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
-using Sirenix.OdinInspector;
 
-public sealed class PlayerStatsGaugeUI : MonoBehaviour
+public sealed class PlayerStatsUI : Singleton<PlayerStatsUI, SceneScope>
 {
     [Header("Gauges")]
     [SerializeField, Required] private Image healthGauge;

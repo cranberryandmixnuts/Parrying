@@ -3,7 +3,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public sealed class GameStartInputTutorialDirector : MonoBehaviour
+public sealed class GameStartSceneDirector : MonoBehaviour
 {
     [BoxGroup("Panels"), SerializeField, Required]
     private TutorialPanel moveTutorialLeft;
@@ -31,6 +31,8 @@ public sealed class GameStartInputTutorialDirector : MonoBehaviour
         moveTutorialRight.HideImmediate();
         jumpTutorial.HideImmediate();
 
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+
         routine = StartCoroutine(Run());
     }
 
@@ -38,6 +40,8 @@ public sealed class GameStartInputTutorialDirector : MonoBehaviour
     {
         while (SceneLoader.Instance.IsTransitioning)
             yield return null;
+
+        InputManager.Instance.SetAllModes(InputMode.Manual);
 
         Tween showLeft = moveTutorialLeft.ShowFadeIn(moveFadeInSeconds);
         Tween showRight = moveTutorialRight.ShowFadeIn(moveFadeInSeconds);

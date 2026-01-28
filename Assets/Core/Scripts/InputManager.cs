@@ -76,7 +76,6 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     private InputMode escapeMode = InputMode.Manual;
 
     private float autoMoveAxis;
-
     private AutoButtonState autoJump;
     private AutoButtonState autoDash;
     private AutoButtonState autoParry;
