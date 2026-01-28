@@ -8,10 +8,6 @@ using UnityEngine.Windows;
 [RequireComponent(typeof(Animator))]
 public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 {
-    public EffectManager Effects { get; private set; }
-    public Animator Anim { get; private set; }
-    public Rigidbody2D Rigidbody { get; private set; }
-    public BoxCollider2D BoxCollider { get; private set; }
 
     public float MoveInput { get; private set; }
     public bool ParryHeld { get; private set; }
@@ -32,8 +28,21 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private EffectManager effects;
 
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
+    private Animator anim;
+
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
+    private Rigidbody2D rb;
+
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
+    private BoxCollider2D boxCol;
+
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
+    public EffectManager Effects => effects;
+    public Animator Anim => anim;
+    public Rigidbody2D Rigidbody => rb;
+    public BoxCollider2D BoxCollider => boxCol;
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Ground Check"), SerializeField]
     private LayerMask groundLayer;
@@ -98,14 +107,6 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         );
 
     private PlayerStateMachine stateMachine;
-
-    protected override void SingletonAwake()
-    {
-        Effects = EffectManager.Instance;
-        Rigidbody = GetComponent<Rigidbody2D>();
-        BoxCollider = GetComponent<BoxCollider2D>();
-        Anim = GetComponent<Animator>();
-    }
 
     private void Start()
     {

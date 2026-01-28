@@ -3,7 +3,10 @@ using Sirenix.OdinInspector;
 
 public sealed class FollowObject : MonoBehaviour
 {
-    [SerializeField, Required] private Transform target;
+    [SerializeField] private Transform target;
 
-    private void Update() => transform.position = target.position;
+    private void Update()
+    {
+        if (target != null) transform.position = target.position;
+    }
 }

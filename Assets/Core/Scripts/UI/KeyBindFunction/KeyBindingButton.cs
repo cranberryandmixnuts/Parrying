@@ -1,6 +1,5 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public sealed class KeyBindingButton : MonoBehaviour
 {
@@ -8,13 +7,13 @@ public sealed class KeyBindingButton : MonoBehaviour
     private KeyBindingVisual visual;
 
     [BoxGroup("Rebind Target"), SerializeField]
-    private string mapName = "Player";
+    private string mapName;
 
     [BoxGroup("Rebind Target"), SerializeField]
-    private string actionName = "Jump";
+    private string actionName;
 
     [BoxGroup("Rebind Target"), SerializeField, Min(0)]
-    private int bindingIndex;
+    private int bindingIndex = 0;
 
     [BoxGroup("Overlay"), SerializeField, Required]
     private RebindOverlayController overlay;
@@ -32,16 +31,5 @@ public sealed class KeyBindingButton : MonoBehaviour
         overlay.BeginRebind(this, mapName, actionName, bindingIndex);
     }
 
-    public void RefreshKeyDisplay()
-    {
-        InputAction action = InputManager.Instance.Actions.FindAction(mapName + "/" + actionName);
-
-        if (action == null)
-            return;
-
-        if (bindingIndex < 0 || bindingIndex >= action.bindings.Count)
-            return;
-
-        visual.Apply(action, bindingIndex);
-    }
+    public void RefreshKeyDisplay() => visual.Apply(InputManager.Instance.Actions.FindAction(mapName + "/" + actionName), bindingIndex);
 }
