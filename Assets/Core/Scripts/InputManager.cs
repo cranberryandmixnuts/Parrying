@@ -229,6 +229,16 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         };
     }
 
+    public bool IsAllThisMode(InputMode mode)
+    {
+        return moveMode == mode &&
+               jumpMode == mode &&
+               dashMode == mode &&
+               parryMode == mode &&
+               healMode == mode &&
+               escapeMode == mode;
+    }
+
     public void SetMode(ActionKey key, InputMode mode)
     {
         switch (key)

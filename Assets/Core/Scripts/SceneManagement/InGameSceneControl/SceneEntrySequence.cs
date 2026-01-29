@@ -7,6 +7,7 @@ public sealed class SceneEntrySequence : MonoBehaviour
     [SerializeField, Min(0f)] private float walkSeconds = 0.5f;
     [SerializeField, Min(0f)] private float postDelaySeconds = 0f;
     [SerializeField] private float moveAxis = 1f;
+    [SerializeField] private bool unlockInputAtEnd = true;
 
     private void Start()
     {
@@ -29,7 +30,8 @@ public sealed class SceneEntrySequence : MonoBehaviour
         if (postDelaySeconds > 0f)
             yield return new WaitForSeconds(postDelaySeconds);
 
-        InputManager.Instance.SetAllModes(InputMode.Manual);
+        if (unlockInputAtEnd)
+            InputManager.Instance.SetAllModes(InputMode.Manual);
 
         enabled = false;
     }

@@ -2,6 +2,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasGroup))]
 public sealed class PlayerStatsUI : Singleton<PlayerStatsUI, SceneScope>
 {
     [Header("Gauges")]
@@ -16,17 +17,25 @@ public sealed class PlayerStatsUI : Singleton<PlayerStatsUI, SceneScope>
     [SerializeField] private Sprite disableGraduationSprite;
 
     private PlayerController player;
+    private CanvasGroup canvasGroup;
     private bool lastCounterParryReady;
 
     private void Start()
     {
         player = PlayerController.Instance;
+        canvasGroup = GetComponent<CanvasGroup>();
         lastCounterParryReady = false;
         counterParryReadyImage.sprite = graduationSprite;
     }
 
     private void Update()
     {
+        if (InputManager.Instance.IsAllThisMode(InputMode.Auto))
+        {
+            canvasGroup.alpha = 0f;
+            return;
+        }
+
         healthGauge.fillAmount = Mathf.Clamp01((float)player.Vitals.Health / player.Vitals.MaxHealth);
         energyGauge.fillAmount = Mathf.Clamp01((float)player.Vitals.Energy / player.Vitals.MaxEnergy);
 
@@ -51,5 +60,7 @@ public sealed class PlayerStatsUI : Singleton<PlayerStatsUI, SceneScope>
             counterParryReadyImage.sprite = counterParryReady ? graduationSprite : disableGraduationSprite;
             lastCounterParryReady = counterParryReady;
         }
+
+        canvasGroup.alpha = 1f;
     }
 }

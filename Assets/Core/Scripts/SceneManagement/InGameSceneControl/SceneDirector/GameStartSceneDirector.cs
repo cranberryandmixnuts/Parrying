@@ -15,9 +15,6 @@ public sealed class GameStartSceneDirector : MonoBehaviour
     private TutorialPanel jumpTutorial;
 
     [BoxGroup("Timings"), SerializeField, Min(0f)]
-    private float moveFadeInSeconds = 0.5f;
-
-    [BoxGroup("Timings"), SerializeField, Min(0f)]
     private float jumpFadeOutSeconds = 0.5f;
 
     [BoxGroup("Input"), SerializeField, Min(0f)]
@@ -27,8 +24,6 @@ public sealed class GameStartSceneDirector : MonoBehaviour
 
     private void Start()
     {
-        moveTutorialLeft.HideImmediate();
-        moveTutorialRight.HideImmediate();
         jumpTutorial.HideImmediate();
 
         InputManager.Instance.SetAllModes(InputMode.Auto);
@@ -41,12 +36,8 @@ public sealed class GameStartSceneDirector : MonoBehaviour
         while (SceneLoader.Instance.IsTransitioning)
             yield return null;
 
-        InputManager.Instance.SetAllModes(InputMode.Manual);
-
-        Tween showLeft = moveTutorialLeft.ShowFadeIn(moveFadeInSeconds);
-        Tween showRight = moveTutorialRight.ShowFadeIn(moveFadeInSeconds);
-        yield return DOTween.Sequence().Join(showLeft).Join(showRight).WaitForCompletion();
-
+        InputManager.Instance.SetMode(ActionKey.Move, InputMode.Manual);
+        InputManager.Instance.SetMode(ActionKey.Jump, InputMode.Manual);
         while (Mathf.Abs(InputManager.Instance.MoveAxis) <= moveDetectThreshold)
             yield return null;
 

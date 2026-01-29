@@ -487,6 +487,7 @@ MonoBehaviour:
   walkSeconds: 0.5
   postDelaySeconds: 0
   moveAxis: 1
+  unlockInputAtEnd: 0
 --- !u!4 &1029332968
 Transform:
   m_ObjectHideFlags: 0
@@ -735,6 +736,10 @@ PrefabInstance:
       propertyPath: targetCamera
       value: 
       objectReference: {fileID: 1106441949}
+    - target: {fileID: 4837013381945367643, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: Target
+      value: 
+      objectReference: {fileID: 1843797338}
     - target: {fileID: 5548854951802147090, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: target
       value: 
@@ -742,6 +747,14 @@ PrefabInstance:
     - target: {fileID: 6066289032634522197, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: m_Name
       value: EffectManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718578162423997630, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.x
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6718578162423997630, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.y
+      value: -2.7
       objectReference: {fileID: 0}
     - target: {fileID: 7986568738284549367, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: m_LocalPosition.x
