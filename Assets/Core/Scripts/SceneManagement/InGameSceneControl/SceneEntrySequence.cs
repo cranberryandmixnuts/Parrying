@@ -9,26 +9,21 @@ public sealed class SceneEntrySequence : MonoBehaviour
     [SerializeField] private float moveAxis = 1f;
     [SerializeField] private bool unlockInputAtEnd = true;
 
-    private void Start()
-    {
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        StartCoroutine(Sequence());
-    }
+    private void Start() => StartCoroutine(Sequence());
 
     private IEnumerator Sequence()
     {
-        if (preDelaySeconds > 0f)
-            yield return new WaitForSeconds(preDelaySeconds);
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+
+        yield return new WaitForSeconds(preDelaySeconds);
 
         InputManager.Instance.SetAutoMoveAxis(moveAxis);
 
-        if (walkSeconds > 0f)
-            yield return new WaitForSeconds(walkSeconds);
+        yield return new WaitForSeconds(walkSeconds);
 
         InputManager.Instance.SetAutoMoveAxis(0f);
 
-        if (postDelaySeconds > 0f)
-            yield return new WaitForSeconds(postDelaySeconds);
+        yield return new WaitForSeconds(postDelaySeconds);
 
         if (unlockInputAtEnd)
             InputManager.Instance.SetAllModes(InputMode.Manual);

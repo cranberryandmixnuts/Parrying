@@ -11,9 +11,9 @@ public abstract class EnemyBase : MonoBehaviour
     protected Animator Anim { get; private set; }
     protected int FacingDirection { get; private set; } = 1;
 
-    protected virtual string DeathAnimName => null;
+    protected float DeathDespawnDelay = 1f;
 
-    protected virtual float DeathDespawnDelay => 1f;
+    protected virtual string DeathAnimName => null;
 
     protected virtual void Awake()
     {
@@ -45,15 +45,17 @@ public abstract class EnemyBase : MonoBehaviour
     protected void FacePlayer()
     {
         float dx = Player.transform.position.x - transform.position.x;
-        if (dx > 0f) FacingDirection = 1;
-        else if (dx < 0f) FacingDirection = -1;
-        transform.rotation = Quaternion.Euler(0f, FacingDirection == -1 ? 180f : 0f, 0f);
+
+        if (dx > 0f) ApplyFacing(1);
+        else if (dx < 0f) ApplyFacing(-1);
+        else ApplyFacing(FacingDirection);
     }
 
     protected void ApplyFacing(int dir)
     {
         if (dir > 0) FacingDirection = 1;
         else if (dir < 0) FacingDirection = -1;
+
         transform.rotation = Quaternion.Euler(0f, FacingDirection == -1 ? 180f : 0f, 0f);
     }
 
@@ -110,9 +112,12 @@ public abstract class EnemyBase : MonoBehaviour
 
         if (this is IParryReactive parry) Player.ClearParryCandidate(parry);
 
-        Anim.Play(DeathAnimName);
+        string deathAnim = DeathAnimName;
+        if (!string.IsNullOrEmpty(deathAnim)) Anim.Play(deathAnim);
 
         float delay = DeathDespawnDelay;
+        if (delay < 0f && !string.IsNullOrEmpty(deathAnim)) delay = GetAnimLength(deathAnim);
+
         if (delay > 0f) Destroy(gameObject, delay);
         else Destroy(gameObject);
     }

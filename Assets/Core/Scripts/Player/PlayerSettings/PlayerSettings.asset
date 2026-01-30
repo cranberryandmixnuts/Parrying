@@ -47,7 +47,7 @@ MonoBehaviour:
   maxJumpTime: 0.3
   maxJumpForce: 20
   coyoteTime: 0.1
-  dashDistance: 6
+  dashDistance: 5
   dashCooldown: 0.8
   extremeDashCooldown: 3
   extremeDashExtraInvincibility: 0.3
@@ -67,11 +67,11 @@ MonoBehaviour:
   counterParryDrainCost: 5
   counterParryNoDrainTime: 0.6
   counterParryExtraInvincibility: 0.5
+  hitInvincibleTime: 1
+  knockbackForce: 10
   healTickInterval: 0.1
   healEnergyPerTick: 10
   healHealthPerTick: 10
-  hitInvincibleTime: 1
-  knockbackForce: 10
   jumpBufferTime: 0.1
   parryBufferTime: 0.06
   dashBufferTime: 0.1

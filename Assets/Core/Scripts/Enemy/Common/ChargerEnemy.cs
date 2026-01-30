@@ -9,18 +9,15 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         BackWalk,
         Charge,
         Attack,
-        Stop,
-        Death
+        Stop
     }
 
-    #region Animation Names
     private const string AnimWalk = "Walk";
     private const string AnimBackWalk = "BackWalk";
     private const string AnimCharge = "Charge";
     private const string AnimAttack = "Attack";
     private const string AnimStop = "Stop";
     private const string AnimDeath = "Death";
-    #endregion
 
     [TabGroup("Charger Enemy", "Setup"), BoxGroup("Charger Enemy/Setup/Ranges"), SerializeField, Required]
     private Collider2D attackCollider;
@@ -66,7 +63,6 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private float overshootTimer;
     private float backWalkTimer;
     private float stopTimer;
-    private float deathTimer;
     private bool lethalActive;
 
     protected override string DeathAnimName => AnimDeath;
@@ -76,14 +72,15 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     protected override void Start()
     {
         base.Start();
+
+        DeathDespawnDelay = -1f;
         ResetAttackCooldown();
         EnterWalk();
     }
 
     protected override void OnUpdate()
     {
-        if (state == State.Walk || state == State.BackWalk)
-            FacePlayer();
+        if (state == State.Walk || state == State.BackWalk) FacePlayer();
 
         switch (state)
         {
@@ -101,9 +98,6 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
                 break;
             case State.Stop:
                 UpdateStop();
-                break;
-            case State.Death:
-                UpdateDeath();
                 break;
         }
     }
@@ -126,9 +120,6 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
                 break;
             case State.Stop:
                 Body.linearVelocity = new Vector2(Mathf.MoveTowards(Body.linearVelocity.x, 0f, stopFriction * Time.fixedDeltaTime), Body.linearVelocity.y);
-                break;
-            case State.Death:
-                Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
                 break;
         }
 
@@ -238,8 +229,9 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
             }
         }
 
-        bool playerIsBehind = (attackDir > 0f && Player.transform.position.x < transform.position.x) ||
-                              (attackDir < 0f && Player.transform.position.x > transform.position.x);
+        bool playerIsBehind =
+            (attackDir > 0f && Player.transform.position.x < transform.position.x) ||
+            (attackDir < 0f && Player.transform.position.x > transform.position.x);
 
         if (playerIsBehind)
         {
@@ -275,23 +267,6 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
             EnterWalk();
             return;
         }
-    }
-
-    private void EnterDeath()
-    {
-        state = State.Death;
-        lethalActive = false;
-        Body.linearVelocity = Vector2.zero;
-        Body.simulated = false;
-        Player.ClearParryCandidate(this);
-        Anim.Play(AnimDeath);
-        deathTimer = GetAnimLength(AnimDeath);
-    }
-
-    private void UpdateDeath()
-    {
-        deathTimer -= Time.deltaTime;
-        if (deathTimer <= 0f) Destroy(gameObject);
     }
 
     private bool IsPlayerTooClose()
@@ -342,9 +317,9 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         for (int i = 0; i < count; i++)
         {
             if (overlapResults[i] == null) continue;
+
             PlayerController pc = overlapResults[i].GetComponentInParent<PlayerController>();
-            if (pc == Player)
-                return true;
+            if (pc == Player) return true;
         }
 
         return false;
@@ -372,12 +347,9 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
 
     public void OnCounterParry(Vector2 hitPoint)
     {
-        if (state == State.Death) return;
-        EnterDeath();
-    }
+        if (IsDead()) return;
 
-    public void AddOrRemove(int delta)
-    {
-        if (delta < 0) EnterDeath();
+        lethalActive = false;
+        Die();
     }
 }

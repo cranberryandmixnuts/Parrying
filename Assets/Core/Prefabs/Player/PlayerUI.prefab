@@ -161,7 +161,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6147994808426082540}
   - component: {fileID: 7090341334305067458}
-  - component: {fileID: 2489192737807296286}
   m_Layer: 5
   m_Name: PlayerUI
   m_TagString: Untagged
@@ -210,18 +209,6 @@ MonoBehaviour:
   counterParryReadyImage: {fileID: 9086272128356937072}
   graduationSprite: {fileID: 21300000, guid: 1d24458298d87534c84b62c379e060dc, type: 3}
   disableGraduationSprite: {fileID: 21300000, guid: 60d5983c80019b340ae3fd3d99e6af29, type: 3}
---- !u!225 &2489192737807296286
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2546101844066403269}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 0
-  m_IgnoreParentGroups: 0
 --- !u!1 &3147976386927729938
 GameObject:
   m_ObjectHideFlags: 0

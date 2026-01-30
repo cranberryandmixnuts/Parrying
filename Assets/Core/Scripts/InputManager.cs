@@ -19,6 +19,12 @@ public enum ActionKey
     Escape
 }
 
+public enum ActionSignal
+{
+    Down,
+    Held
+}
+
 public sealed class InputManager : Singleton<InputManager, GlobalScope>
 {
     private struct AutoButtonState
@@ -69,9 +75,11 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     private bool currentRebindExcludeMouse;
 
     private InputMode moveMode = InputMode.Manual;
-    private InputMode jumpMode = InputMode.Manual;
+    private InputMode jumpDownMode = InputMode.Manual;
+    private InputMode jumpHeldMode = InputMode.Manual;
     private InputMode dashMode = InputMode.Manual;
-    private InputMode parryMode = InputMode.Manual;
+    private InputMode parryDownMode = InputMode.Manual;
+    private InputMode parryHeldMode = InputMode.Manual;
     private InputMode healMode = InputMode.Manual;
     private InputMode escapeMode = InputMode.Manual;
 
@@ -87,7 +95,6 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     public float MoveAxis { get; private set; }
 
     public bool JumpDown { get; private set; }
-    public bool JumpUp { get; private set; }
     public bool JumpHeld { get; private set; }
 
     public bool DashDown { get; private set; }
@@ -132,7 +139,6 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
             MoveAxis = 0f;
 
             JumpDown = false;
-            JumpUp = false;
             JumpHeld = false;
 
             DashDown = false;
@@ -149,28 +155,25 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         }
 
         if (moveMode == InputMode.Manual)
-        {
-            Vector2 move = moveAction.ReadValue<Vector2>();
-            MoveAxis = Mathf.Clamp(move.x, -1f, 1f);
-        }
+            MoveAxis = Mathf.Clamp(moveAction.ReadValue<Vector2>().x, -1f, 1f);
         else
-        {
             MoveAxis = Mathf.Clamp(autoMoveAxis, -1f, 1f);
+
+        bool jumpManualDown = jumpAction.WasPressedThisFrame();
+        bool jumpManualHeld = jumpAction.IsPressed();
+
+        bool jumpAutoDown = false;
+        bool jumpAutoHeld = false;
+
+        if (jumpDownMode == InputMode.Auto || jumpHeldMode == InputMode.Auto)
+        {
+            EvaluateAutoButton(ref autoJump, out bool down, out bool held);
+            jumpAutoDown = down;
+            jumpAutoHeld = held;
         }
 
-        if (jumpMode == InputMode.Manual)
-        {
-            JumpDown = jumpAction.WasPressedThisFrame();
-            JumpUp = jumpAction.WasReleasedThisFrame();
-            JumpHeld = jumpAction.IsPressed();
-        }
-        else
-        {
-            EvaluateAutoButton(ref autoJump, out bool down, out bool up, out bool held);
-            JumpDown = down;
-            JumpUp = up;
-            JumpHeld = held;
-        }
+        JumpDown = jumpDownMode == InputMode.Manual ? jumpManualDown : jumpAutoDown;
+        JumpHeld = jumpHeldMode == InputMode.Manual ? jumpManualHeld : jumpAutoHeld;
 
         if (dashMode == InputMode.Manual)
         {
@@ -178,21 +181,25 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         }
         else
         {
-            EvaluateAutoButton(ref autoDash, out bool down, out _, out _);
+            EvaluateAutoButton(ref autoDash, out bool down, out _);
             DashDown = down;
         }
 
-        if (parryMode == InputMode.Manual)
+        bool parryManualDown = parryAction.WasPressedThisFrame();
+        bool parryManualHeld = parryAction.IsPressed();
+
+        bool parryAutoDown = false;
+        bool parryAutoHeld = false;
+
+        if (parryDownMode == InputMode.Auto || parryHeldMode == InputMode.Auto)
         {
-            ParryDown = parryAction.WasPressedThisFrame();
-            ParryHeld = parryAction.IsPressed();
+            EvaluateAutoButton(ref autoParry, out bool down, out bool held);
+            parryAutoDown = down;
+            parryAutoHeld = held;
         }
-        else
-        {
-            EvaluateAutoButton(ref autoParry, out bool down, out _, out bool held);
-            ParryDown = down;
-            ParryHeld = held;
-        }
+
+        ParryDown = parryDownMode == InputMode.Manual ? parryManualDown : parryAutoDown;
+        ParryHeld = parryHeldMode == InputMode.Manual ? parryManualHeld : parryAutoHeld;
 
         if (healMode == InputMode.Manual)
         {
@@ -200,7 +207,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         }
         else
         {
-            EvaluateAutoButton(ref autoHeal, out _, out _, out bool held);
+            EvaluateAutoButton(ref autoHeal, out _, out bool held);
             HealHeld = held;
         }
 
@@ -210,33 +217,35 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         }
         else
         {
-            EvaluateAutoButton(ref autoEscape, out bool down, out _, out _);
+            EvaluateAutoButton(ref autoEscape, out bool down, out _);
             EscapeDown = down;
         }
     }
 
-    public InputMode GetMode(ActionKey key)
+    public InputMode GetMode(ActionKey key, ActionSignal signal)
     {
-        return key switch
+        switch (key)
         {
-            ActionKey.Move => moveMode,
-            ActionKey.Jump => jumpMode,
-            ActionKey.Dash => dashMode,
-            ActionKey.Parry => parryMode,
-            ActionKey.Heal => healMode,
-            ActionKey.Escape => escapeMode,
-            _ => throw new ArgumentOutOfRangeException(nameof(key), key, null)
-        };
-    }
-
-    public bool IsAllThisMode(InputMode mode)
-    {
-        return moveMode == mode &&
-               jumpMode == mode &&
-               dashMode == mode &&
-               parryMode == mode &&
-               healMode == mode &&
-               escapeMode == mode;
+            case ActionKey.Jump:
+                return signal == ActionSignal.Down ? jumpDownMode : jumpHeldMode;
+            case ActionKey.Parry:
+                return signal == ActionSignal.Down ? parryDownMode : parryHeldMode;
+            case ActionKey.Dash:
+                if (signal == ActionSignal.Down)
+                    return dashMode;
+                throw new ArgumentOutOfRangeException(nameof(signal), signal, null);
+            case ActionKey.Heal:
+                if (signal == ActionSignal.Held)
+                    return healMode;
+                throw new ArgumentOutOfRangeException(nameof(signal), signal, null);
+            case ActionKey.Escape:
+                if (signal == ActionSignal.Down)
+                    return escapeMode;
+                throw new ArgumentOutOfRangeException(nameof(signal), signal, null);
+            case ActionKey.Move:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(key), key, null);
+        }
     }
 
     public void SetMode(ActionKey key, InputMode mode)
@@ -248,7 +257,8 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
                 autoMoveAxis = 0f;
                 break;
             case ActionKey.Jump:
-                jumpMode = mode;
+                jumpDownMode = mode;
+                jumpHeldMode = mode;
                 ResetAutoButton(ref autoJump);
                 break;
             case ActionKey.Dash:
@@ -256,7 +266,8 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
                 ResetAutoButton(ref autoDash);
                 break;
             case ActionKey.Parry:
-                parryMode = mode;
+                parryDownMode = mode;
+                parryHeldMode = mode;
                 ResetAutoButton(ref autoParry);
                 break;
             case ActionKey.Heal:
@@ -267,6 +278,53 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
                 escapeMode = mode;
                 ResetAutoButton(ref autoEscape);
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(key), key, null);
+        }
+    }
+
+    public void SetMode(ActionKey key, ActionSignal signal, InputMode mode)
+    {
+        switch (key)
+        {
+            case ActionKey.Jump:
+                if (signal == ActionSignal.Down)
+                    jumpDownMode = mode;
+                else
+                    jumpHeldMode = mode;
+                ResetAutoButton(ref autoJump);
+                break;
+            case ActionKey.Parry:
+                if (signal == ActionSignal.Down)
+                    parryDownMode = mode;
+                else
+                    parryHeldMode = mode;
+                ResetAutoButton(ref autoParry);
+                break;
+            case ActionKey.Dash:
+                if (signal == ActionSignal.Down)
+                {
+                    dashMode = mode;
+                    ResetAutoButton(ref autoDash);
+                    break;
+                }
+                throw new ArgumentOutOfRangeException(nameof(signal), signal, null);
+            case ActionKey.Heal:
+                if (signal == ActionSignal.Held)
+                {
+                    healMode = mode;
+                    ResetAutoButton(ref autoHeal);
+                    break;
+                }
+                throw new ArgumentOutOfRangeException(nameof(signal), signal, null);
+            case ActionKey.Escape:
+                if (signal == ActionSignal.Down)
+                {
+                    escapeMode = mode;
+                    ResetAutoButton(ref autoEscape);
+                    break;
+                }
+                throw new ArgumentOutOfRangeException(nameof(signal), signal, null);
             default:
                 throw new ArgumentOutOfRangeException(nameof(key), key, null);
         }
@@ -294,19 +352,12 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
             case ActionKey.Jump:
                 autoJump.Held = held;
                 break;
-            case ActionKey.Dash:
-                autoDash.Held = held;
-                break;
             case ActionKey.Parry:
                 autoParry.Held = held;
                 break;
             case ActionKey.Heal:
                 autoHeal.Held = held;
                 break;
-            case ActionKey.Escape:
-                autoEscape.Held = held;
-                break;
-            case ActionKey.Move:
             default:
                 throw new ArgumentOutOfRangeException(nameof(key), key, null);
         }
@@ -328,8 +379,6 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
             case ActionKey.Escape:
                 autoEscape.PulseDown = true;
                 break;
-            case ActionKey.Heal:
-            case ActionKey.Move:
             default:
                 throw new ArgumentOutOfRangeException(nameof(key), key, null);
         }
@@ -357,11 +406,10 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         state.PreviousHeld = state.Held;
     }
 
-    private static void EvaluateAutoButton(ref AutoButtonState state, out bool down, out bool up, out bool held)
+    private static void EvaluateAutoButton(ref AutoButtonState state, out bool down, out bool held)
     {
         held = state.Held;
         down = state.PulseDown || (!state.PreviousHeld && held);
-        up = state.PreviousHeld && !held;
         state.PreviousHeld = held;
         state.PulseDown = false;
     }

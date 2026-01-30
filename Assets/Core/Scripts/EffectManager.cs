@@ -264,8 +264,6 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 
     public void DoExtremeDashImpact()
     {
-        float prevScale = Time.timeScale;
-
         Sequence seq = DOTween.Sequence();
         seq.SetUpdate(true);
 
@@ -278,7 +276,7 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 
         seq.Append
         (
-            DOTween.To(() => Time.timeScale, x => Time.timeScale = x, prevScale, extremeSlowFadeTime)
+            DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 1f, extremeSlowFadeTime)
                 .SetUpdate(true)
                 .OnComplete(() =>
                 {

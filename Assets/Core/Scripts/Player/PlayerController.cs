@@ -10,11 +10,16 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 {
 
     public float MoveInput { get; private set; }
-    public bool ParryHeld { get; private set; }
-    public bool HealHeld { get; private set; }
-    public bool ParryPressed { set { if (value) parryBufferTimer = settings.parryBufferTime; } }
-    public bool DashPressed { set { if (value) dashBufferTimer = settings.dashBufferTime; } }
+
     public bool JumpPressed { set { if (value) jumpBufferTimer = settings.jumpBufferTime; } }
+    public bool JumpHeld { get; private set; }
+
+    public bool DashPressed { set { if (value) dashBufferTimer = settings.dashBufferTime; } }
+
+    public bool ParryPressed { set { if (value) parryBufferTimer = settings.parryBufferTime; } }
+    public bool ParryHeld { get; private set; }
+
+    public bool HealHeld { get; private set; }
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
     public Vector2 CurrentVelocity => Rigidbody.linearVelocity;
@@ -63,7 +68,6 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     [HideInInspector] public bool isGround;
     [HideInInspector] public int facingDirection = 1;
     [HideInInspector] public bool isJumping;
-    [HideInInspector] public bool JumpHeld;
     [HideInInspector] public float jumpTimeCounter;
     [HideInInspector] public float jumpBufferTimer;
     [HideInInspector] public float coyoteTimer;
@@ -148,13 +152,12 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
         JumpPressed = input.JumpDown;
         JumpHeld = input.JumpHeld;
-        if (input.JumpUp) StopRising();
 
         DashPressed = input.DashDown;
 
-        ParryHeld = input.ParryHeld;
         ParryPressed = input.ParryDown;
-        if (!ParryHeld) parryHoldTimer = 0f;
+        ParryHeld = input.ParryHeld;
+
         HealHeld = input.HealHeld;
     }
 

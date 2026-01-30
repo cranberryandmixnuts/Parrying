@@ -1987,7 +1987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2024086082
 Transform:
   m_ObjectHideFlags: 0
@@ -2093,6 +2093,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EffectManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7931419417397165371, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 1106441949}
     - target: {fileID: 7986568738284549367, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

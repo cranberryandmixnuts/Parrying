@@ -3,18 +3,15 @@ using Sirenix.OdinInspector;
 
 public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
 {
-    private enum SeekerState
+    private enum State
     {
         Drift,
-        Fire,
-        Death
+        Fire
     }
 
-    #region Animation Names
     private const string AnimDrift = "Drift";
     private const string AnimFire = "Fire";
     private const string AnimDeath = "Death";
-    #endregion
 
     [TabGroup("Seeker Enemy", "Setup"), BoxGroup("Seeker Enemy/Setup/References"), SerializeField, Required]
     private EnemyProjectile projectilePrefab;
@@ -49,15 +46,14 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, MinValue(0f), SuffixLabel("imp", true)]
     private float fireRecoilForce = 2f;
 
-    [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("ÀÏ¶§", true)]
+    [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
     private float fireShootPercent = 0.6f;
 
-    private SeekerState state;
+    private State state;
     private float fireCooldown;
     private float fireTimer = -999f;
     private float fireStateLength;
     private bool fired;
-    private float deathTimer;
     private int keepSide = 1;
 
     protected override string DeathAnimName => AnimDeath;
@@ -69,8 +65,11 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     protected override void Start()
     {
         base.Start();
+
+        DeathDespawnDelay = -1f;
+
         fireCooldown = Random.Range(fireIntervalRange.x, fireIntervalRange.y);
-        state = SeekerState.Drift;
+        state = State.Drift;
         Anim.Play(AnimDrift);
     }
 
@@ -78,21 +77,18 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     {
         switch (state)
         {
-            case SeekerState.Drift:
+            case State.Drift:
                 UpdateDrift();
                 break;
-            case SeekerState.Fire:
+            case State.Fire:
                 UpdateFire();
-                break;
-            case SeekerState.Death:
-                UpdateDeath();
                 break;
         }
     }
 
     protected override void OnFixedUpdate()
     {
-        if (state == SeekerState.Drift) DriftMove();
+        if (state == State.Drift) DriftMove();
         else Body.linearVelocity = Vector2.zero;
     }
 
@@ -128,16 +124,18 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
         float t = 1f - Mathf.Clamp01(distToPlayer / maxPlayerDistForSpeed);
         float spd = Mathf.Lerp(moveSpeedFar, moveSpeedNear, t);
 
-        Vector2 v = to.normalized * spd;
-        Body.linearVelocity = v;
+        Body.linearVelocity = to.normalized * spd;
 
         FacePlayer();
     }
 
     private void EnterFire()
     {
-        state = SeekerState.Fire;
+        state = State.Fire;
+
         Body.linearVelocity = Vector2.zero;
+        FacePlayer();
+
         Anim.Play(AnimFire);
 
         fireStateLength = GetAnimLength(AnimFire);
@@ -163,7 +161,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
         if (fireTimer <= 0f)
         {
             fireCooldown = Random.Range(fireIntervalRange.x, fireIntervalRange.y);
-            state = SeekerState.Drift;
+            state = State.Drift;
             Anim.Play(AnimDrift);
         }
     }
@@ -174,21 +172,6 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
         EnemyProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
         proj.Initialize(this, Player, dir);
         Body.AddForce(-dir * fireRecoilForce, ForceMode2D.Impulse);
-    }
-
-    private void UpdateDeath()
-    {
-        deathTimer -= Time.deltaTime;
-        if (deathTimer <= 0f) Destroy(gameObject);
-    }
-
-    public override void Die()
-    {
-        if (state == SeekerState.Death) return;
-        state = SeekerState.Death;
-        Body.linearVelocity = Vector2.zero;
-        Anim.Play(AnimDeath);
-        deathTimer = GetAnimLength(AnimDeath);
     }
 
     public void OnHitByReflectedProjectile()

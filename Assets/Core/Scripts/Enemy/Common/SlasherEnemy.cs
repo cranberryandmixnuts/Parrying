@@ -3,18 +3,16 @@ using Sirenix.OdinInspector;
 
 public sealed class SlasherEnemy : EnemyBase, IParryReactive
 {
-    private enum SlasherState
+    private enum State
     {
         Idle,
         Walk,
         Chase,
         BackWalk,
         Attack,
-        Hit,
-        Death
+        Hit
     }
 
-    #region Animation Names
     private const string AnimIdle = "Idle";
     private const string AnimWalk = "Walk";
     private const string AnimChase = "Chase";
@@ -22,7 +20,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private const string AnimAttack = "Attack";
     private const string AnimHit = "Hit";
     private const string AnimDeath = "Death";
-    #endregion
 
     [TabGroup("Slasher Enemy", "Setup"), BoxGroup("Slasher Enemy/Setup/Ranges"), SerializeField, Required]
     private Collider2D walkRange;
@@ -51,10 +48,10 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Geometry"), SerializeField, MinValue(0f), SuffixLabel("u", true)]
     private float swingLength = 2f;
 
-    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("일때", true)]
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
     private float attackPrepPercent = 0.2f;
 
-    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("일때", true)]
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
     private float attackEndPercent = 0.9f;
 
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
@@ -64,7 +61,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     [SerializeField] private LineRenderer swingLine;
     [SerializeField] private float swingLineWidth = 0.05f;
 
-    private SlasherState currentState;
+    private State state;
     private float stateTimer;
     private float attackCooldownTimer;
     private int attackPhase;
@@ -80,12 +77,16 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     protected override void Awake()
     {
         base.Awake();
-        currentState = SlasherState.Chase;
+
+        DeathDespawnDelay = -1f;
+
+        state = State.Chase;
         stateTimer = 0f;
         attackCooldownTimer = 0f;
         attackPhase = 0;
         attackPhaseTimer = 0f;
         attackResolved = false;
+
         Anim.Play(AnimChase);
 
         swingLine.useWorldSpace = true;
@@ -94,52 +95,53 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         swingLine.endWidth = swingLineWidth;
     }
 
+    public override void Die()
+    {
+        if (IsDead()) return;
+        ClearSwingLine();
+        base.Die();
+    }
+
     protected override void OnUpdate()
     {
         if (attackCooldownTimer > 0f) attackCooldownTimer -= Time.deltaTime;
 
-        if (currentState != SlasherState.Attack &&
-            currentState != SlasherState.Hit &&
-            currentState != SlasherState.Death)
-            FacePlayer();
+        if (state != State.Attack && state != State.Hit) FacePlayer();
 
-        switch (currentState)
+        switch (state)
         {
-            case SlasherState.Idle:
+            case State.Idle:
                 UpdateIdle();
                 break;
-            case SlasherState.Walk:
+            case State.Walk:
                 UpdateWalk();
                 break;
-            case SlasherState.Chase:
+            case State.Chase:
                 UpdateChase();
                 break;
-            case SlasherState.BackWalk:
+            case State.BackWalk:
                 UpdateBackWalk();
                 break;
-            case SlasherState.Attack:
+            case State.Attack:
                 UpdateAttack();
                 break;
-            case SlasherState.Hit:
+            case State.Hit:
                 UpdateHit();
-                break;
-            case SlasherState.Death:
-                UpdateDeath();
                 break;
         }
     }
 
     protected override void OnFixedUpdate()
     {
-        switch (currentState)
+        switch (state)
         {
-            case SlasherState.Walk:
+            case State.Walk:
                 MoveTowardsPlayer(walkSpeed);
                 break;
-            case SlasherState.Chase:
+            case State.Chase:
                 MoveTowardsPlayer(chaseSpeed);
                 break;
-            case SlasherState.BackWalk:
+            case State.BackWalk:
                 MoveAwayFromPlayer(walkSpeed);
                 break;
             default:
@@ -167,7 +169,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         if (attackCooldownTimer <= 0f && IsPlayerInSwingCone())
         {
-            EnterState(SlasherState.Attack);
+            EnterState(State.Attack);
             return;
         }
 
@@ -226,8 +228,9 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private void RegisterDashAssistRay()
     {
         Vector2 originPos = attackOrigin != null ? (Vector2)attackOrigin.position : (Vector2)transform.position;
+
         float angleDeg = swingStartAngleDeg;
-        if (FacingDirection < 0f) angleDeg = -angleDeg;
+        if (FacingDirection < 0) angleDeg = -angleDeg;
 
         Vector2 dir = DirFromAngle(angleDeg);
         Vector2 segEnd = originPos + dir * swingLength;
@@ -242,64 +245,52 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         if (stateTimer <= 0f) ChooseMovementState();
     }
 
-    private void UpdateDeath()
+    private void EnterState(State newState)
     {
-        stateTimer -= Time.deltaTime;
-        if (stateTimer <= 0f) Destroy(gameObject);
-    }
+        if (state == newState) return;
 
-    private void EnterState(SlasherState newState)
-    {
-        if (currentState == newState) return;
+        state = newState;
 
-        currentState = newState;
-
-        switch (currentState)
+        switch (state)
         {
-            case SlasherState.Idle:
+            case State.Idle:
                 Anim.Play(AnimIdle);
                 break;
-            case SlasherState.Walk:
+            case State.Walk:
                 Anim.Play(AnimWalk);
                 break;
-            case SlasherState.Chase:
+            case State.Chase:
                 Anim.Play(AnimChase);
                 break;
-            case SlasherState.BackWalk:
+            case State.BackWalk:
                 Anim.Play(AnimBackWalk);
                 break;
-            case SlasherState.Attack:
+            case State.Attack:
+                Anim.Play(AnimAttack);
+
+                float clipLen = GetAnimLength(AnimAttack);
+
+                if (attackPrepPercent >= attackEndPercent)
                 {
-                    Anim.Play(AnimAttack);
-                    float clipLen = GetAnimLength(AnimAttack);
-
-                    if (attackPrepPercent >= attackEndPercent)
-                    {
-                        Debug.LogError("SlasherEnemy: attackPrepPercent must be < attackEndPercent. Resetting to 0.25 / 0.75.");
-                        attackPrepPercent = 0.25f;
-                        attackEndPercent = 0.75f;
-                    }
-
-                    attackWindupRuntime = clipLen * attackPrepPercent;
-                    swingDurationRuntime = clipLen * (attackEndPercent - attackPrepPercent);
-                    attackRecoverRuntime = clipLen - (attackWindupRuntime + swingDurationRuntime);
-                    if (attackRecoverRuntime < 0.01f) attackRecoverRuntime = 0.01f;
-
-                    attackPhase = 0;
-                    attackPhaseTimer = attackWindupRuntime;
-                    attackResolved = false;
-                    ClearSwingLine();
-                    break;
+                    Debug.LogError("SlasherEnemy: attackPrepPercent must be < attackEndPercent. Resetting to 0.25 / 0.75.");
+                    attackPrepPercent = 0.25f;
+                    attackEndPercent = 0.75f;
                 }
 
-            case SlasherState.Hit:
-                Anim.Play(AnimHit);
-                stateTimer = GetAnimLength(AnimHit);
+                attackWindupRuntime = clipLen * attackPrepPercent;
+                swingDurationRuntime = clipLen * (attackEndPercent - attackPrepPercent);
+                attackRecoverRuntime = clipLen - (attackWindupRuntime + swingDurationRuntime);
+                if (attackRecoverRuntime < 0.01f) attackRecoverRuntime = 0.01f;
+
+                attackPhase = 0;
+                attackPhaseTimer = attackWindupRuntime;
+                attackResolved = false;
                 ClearSwingLine();
                 break;
-            case SlasherState.Death:
-                Anim.Play(AnimDeath);
-                stateTimer = GetAnimLength(AnimDeath);
+
+            case State.Hit:
+                Anim.Play(AnimHit);
+                stateTimer = GetAnimLength(AnimHit);
                 ClearSwingLine();
                 break;
         }
@@ -307,34 +298,28 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     private void ChooseMovementState()
     {
-        if (currentState == SlasherState.Death) return;
-
         bool inCone = IsPlayerInSwingCone();
         bool inWalk = InWalkRange();
         bool inBack = InBackOffRange();
 
-        SlasherState nextState;
+        State nextState;
 
         if (inCone)
         {
             if (attackCooldownTimer <= 0f)
             {
-                nextState = SlasherState.Attack;
+                nextState = State.Attack;
             }
             else
             {
-                if (inBack)
-                    nextState = SlasherState.BackWalk;
-                else
-                    nextState = SlasherState.Idle;
+                if (inBack) nextState = State.BackWalk;
+                else nextState = State.Idle;
             }
         }
         else
         {
-            if (inWalk)
-                nextState = SlasherState.Walk;
-            else
-                nextState = SlasherState.Chase;
+            if (inWalk) nextState = State.Walk;
+            else nextState = State.Chase;
         }
 
         EnterState(nextState);
@@ -351,18 +336,18 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         if (norm > 1f) norm = 1f;
 
         float angleDeg = Mathf.Lerp(swingStartAngleDeg, swingEndAngleDeg, norm);
-        if (FacingDirection < 0f) angleDeg = -angleDeg;
+        if (FacingDirection < 0) angleDeg = -angleDeg;
 
         Vector2 dir = DirFromAngle(angleDeg);
         Vector2 segEnd = originPos + dir * swingLength;
 
         Player.GetParryDetectCircle(out Vector2 parryCenter, out float parryRadius);
-        bool parryZoneHit = SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius);
-        if (parryZoneHit) Player.RegisterParryCandidate(this, segEnd, attackDamage);
+        if (SegmentIntersectsCircle(originPos, segEnd, parryCenter, parryRadius))
+            Player.RegisterParryCandidate(this, segEnd, attackDamage);
 
         Player.GetDashDetectCircle(out Vector2 dashCenter, out float dashRadius);
-        bool dashZoneHit = SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius);
-        if (dashZoneHit) Player.RegisterDashCandidate(segEnd);
+        if (SegmentIntersectsCircle(originPos, segEnd, dashCenter, dashRadius))
+            Player.RegisterDashCandidate(segEnd);
 
         RaycastHit2D hit = Physics2D.Raycast(originPos, dir, swingLength, playerHitMask);
         if (hit.collider != null)
@@ -385,12 +370,14 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Vector2 ab = b - a;
         float abLenSq = ab.sqrMagnitude;
         float t = Vector2.Dot(c - a, ab) / abLenSq;
+
         if (t < 0f) t = 0f;
         else if (t > 1f) t = 1f;
 
         Vector2 closest = a + ab * t;
         float distSq = (c - closest).sqrMagnitude;
         float rSq = r * r;
+
         if (distSq <= rSq) return true;
         return false;
     }
@@ -406,13 +393,12 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Vector2 b = Player.transform.position;
 
         float dx = b.x - a.x;
+
         float dirSign = 0f;
         if (dx > 0f) dirSign = 1f;
         else if (dx < 0f) dirSign = -1f;
 
-        Vector2 v = Body.linearVelocity;
-        v.x = dirSign * speed;
-        Body.linearVelocity = new Vector2(v.x, Body.linearVelocity.y);
+        Body.linearVelocity = new Vector2(dirSign * speed, Body.linearVelocity.y);
     }
 
     private void MoveAwayFromPlayer(float speed)
@@ -421,20 +407,17 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Vector2 b = Player.transform.position;
 
         float dx = b.x - a.x;
+
         float dirSign = 0f;
         if (dx > 0f) dirSign = 1f;
         else if (dx < 0f) dirSign = -1f;
 
-        Vector2 v = Body.linearVelocity;
-        v.x = -dirSign * speed;
-        Body.linearVelocity = new Vector2(v.x, Body.linearVelocity.y);
+        Body.linearVelocity = new Vector2(-dirSign * speed, Body.linearVelocity.y);
     }
 
     private void StopHorizontal()
     {
-        Vector2 v = Body.linearVelocity;
-        v.x = 0f;
-        Body.linearVelocity = new Vector2(v.x, Body.linearVelocity.y);
+        Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
     }
 
     private bool InWalkRange()
@@ -461,7 +444,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         float minAng;
         float maxAng;
 
-        if (FacingDirection >= 0f)
+        if (FacingDirection >= 0)
         {
             minAng = Mathf.Min(swingStartAngleDeg, swingEndAngleDeg);
             maxAng = Mathf.Max(swingStartAngleDeg, swingEndAngleDeg);
@@ -488,9 +471,9 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     public void OnPerfectParry(Vector2 hitPoint)
     {
-        if (currentState == SlasherState.Attack)
+        if (state == State.Attack)
         {
-            EnterState(SlasherState.Hit);
+            EnterState(State.Hit);
             StartAttackCooldown();
             attackResolved = true;
             attackPhase = 2;
@@ -502,7 +485,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     public void OnImperfectParry(Vector2 hitPoint)
     {
-        if (currentState == SlasherState.Attack)
+        if (state == State.Attack)
         {
             attackResolved = true;
             StartAttackCooldown();
@@ -513,13 +496,9 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
     public void OnCounterParry(Vector2 hitPoint)
     {
-        EnterState(SlasherState.Death);
-        attackResolved = true;
-        Player.ClearParryCandidate(this);
-        ClearSwingLine();
+        Die();
     }
 
-    //
     private void OnDrawGizmosSelected()
     {
         Vector3 originPos = attackOrigin.position;
@@ -567,5 +546,4 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         swingLine.positionCount = 0;
     }
-    //
 }
