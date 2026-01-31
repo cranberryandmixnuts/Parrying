@@ -38,8 +38,9 @@ public sealed class SceneExitSequence : MonoBehaviour
 
     private void OnDisable()
     {
-        if (SceneLoader.Instance.IsTransitioning && triggered)
+        if (triggered && SceneLoader.Instance.IsTransitioning)
             InputManager.Instance.SetAllModes(InputMode.Manual);
+
         if (routine != null) StopCoroutine(routine);
     }
 }

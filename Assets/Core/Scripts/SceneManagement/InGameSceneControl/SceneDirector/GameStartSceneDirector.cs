@@ -38,6 +38,8 @@ public sealed class GameStartSceneDirector : MonoBehaviour
 
         InputManager.Instance.SetMode(ActionKey.Move, InputMode.Manual);
         InputManager.Instance.SetMode(ActionKey.Jump, InputMode.Manual);
+        InputManager.Instance.SetMode(ActionKey.Escape, InputMode.Manual);
+
         while (Mathf.Abs(InputManager.Instance.MoveAxis) <= moveDetectThreshold)
             yield return null;
 

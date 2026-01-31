@@ -18,10 +18,10 @@ public static class SceneTypeMap
     {
         "",
         "Assets/Core/Scenes/TitleScene.unity",
-        "Assets/Core/Scenes/Stage/GameStartScene.unity",
-        "Assets/Core/Scenes/Stage/TutorialScene.unity",
-        "Assets/Core/Scenes/Stage/ArenaScene.unity",
-        "Assets/Core/Scenes/Stage/BossRoomScene.unity",
+        "Assets/Core/Scenes/InGame/GameStartScene.unity",
+        "Assets/Core/Scenes/InGame/TutorialScene.unity",
+        "Assets/Core/Scenes/InGame/ArenaScene.unity",
+        "Assets/Core/Scenes/InGame/BossRoomScene.unity",
         "Assets/Core/Scenes/EndingScene.unity",
     };
 

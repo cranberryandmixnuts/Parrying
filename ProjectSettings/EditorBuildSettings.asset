@@ -9,17 +9,17 @@ EditorBuildSettings:
     path: Assets/Core/Scenes/TitleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Core/Scenes/Stage/GameStartScene.unity
-    guid: 888456f3dae131941994ce3b2e0c7db5
+    path: Assets/Core/Scenes/InGame/GameStartScene.unity
+    guid: 7d408e14c992b4544bd73633c878425e
   - enabled: 1
-    path: Assets/Core/Scenes/Stage/TutorialScene.unity
-    guid: 98d389090837e9f42a8116c62b48def9
+    path: Assets/Core/Scenes/InGame/TutorialScene.unity
+    guid: d82aa68a635cfe946b956a3a33f13cad
   - enabled: 1
-    path: Assets/Core/Scenes/Stage/ArenaScene.unity
-    guid: e4d7900a4c447d349aa9a7fb4ff63a5b
+    path: Assets/Core/Scenes/InGame/ArenaScene.unity
+    guid: fc907384d9f59e149b67345bbda4bd5a
   - enabled: 1
-    path: Assets/Core/Scenes/Stage/BossRoomScene.unity
-    guid: 3206ac43a07b09c4ab3554cd6974f45b
+    path: Assets/Core/Scenes/InGame/BossRoomScene.unity
+    guid: 4947fcf7ad705504087cbd7306d96baa
   - enabled: 1
     path: Assets/Core/Scenes/EndingScene.unity
     guid: 50da8e9bd518fac4cb8fc53f59eb06ed
