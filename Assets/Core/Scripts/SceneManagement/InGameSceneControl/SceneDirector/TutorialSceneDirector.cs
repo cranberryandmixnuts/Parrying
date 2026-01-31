@@ -1,7 +1,8 @@
-using System.Collections;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class TutorialSceneDirector : MonoBehaviour
 {
@@ -99,6 +100,8 @@ public sealed class TutorialSceneDirector : MonoBehaviour
     private bool followPlayer;
     private float camZ;
 
+    private Coroutine routine;
+
     private Tween timeScaleTween;
     private Tween overlayTween;
     private Tween cameraTween;
@@ -117,7 +120,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         worldCamera.orthographicSize = entryOrthoSize;
         followPlayer = true;
 
-        StartCoroutine(Run());
+        routine = StartCoroutine(Run());
     }
 
     private void LateUpdate()
@@ -203,7 +206,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         healPanel.HideImmediate();
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
-        enabled = false;
+        gameObject.SetActive(false);
     }
 
     private IEnumerator RunTimeStopInputStep(
@@ -327,5 +330,6 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         ResumeTimeImmediate();
         HideOverlayImmediate();
         HideAllPanelsImmediate();
+        if (routine != null) StopCoroutine(routine);
     }
 }

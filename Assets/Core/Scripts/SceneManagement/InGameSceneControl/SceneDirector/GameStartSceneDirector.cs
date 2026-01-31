@@ -53,6 +53,8 @@ public sealed class GameStartSceneDirector : MonoBehaviour
         yield return t.WaitForCompletion();
 
         jumpTutorial.HideImmediate();
+
+        gameObject.SetActive(false);
     }
 
     private void OnDisable()
