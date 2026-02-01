@@ -18,8 +18,15 @@ public sealed class SettingsWindowManager : MonoBehaviour
 
     public SettingsTab CurrentTab { get; private set; } = SettingsTab.Root;
 
-    private float cachedTimeScale = 1f;
-    private bool timePausedByThis;
+    private bool timePausedByThis = false;
+    private float cachedTimeScale;
+    private InputModeState cachedInputState;
+
+    private void Start()
+    {
+        cachedTimeScale = Time.timeScale;
+        cachedInputState = InputManager.Instance.GetModes();
+    }
 
     private void Update()
     {
@@ -75,6 +82,7 @@ public sealed class SettingsWindowManager : MonoBehaviour
     {
         if (timePausedByThis) return;
 
+        cachedInputState = InputManager.Instance.GetModes();
         cachedTimeScale = Time.timeScale;
         Time.timeScale = 0f;
         timePausedByThis = true;
@@ -84,6 +92,7 @@ public sealed class SettingsWindowManager : MonoBehaviour
     {
         if (!timePausedByThis) return;
 
+        InputManager.Instance.SetModes(cachedInputState);
         Time.timeScale = cachedTimeScale;
         timePausedByThis = false;
     }

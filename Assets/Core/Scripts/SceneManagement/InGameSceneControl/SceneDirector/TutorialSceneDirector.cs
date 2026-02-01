@@ -2,7 +2,6 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public sealed class TutorialSceneDirector : MonoBehaviour
 {
@@ -134,6 +133,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
     private IEnumerator Run()
     {
         InputManager.Instance.SetAllModes(InputMode.Auto);
+        InputModeState newState = InputManager.Instance.GetModes();
 
         yield return new WaitForSecondsRealtime(firstFireDelaySeconds);
         seeker.FireAtPlayer();
@@ -145,10 +145,14 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         yield return TweenCameraToDefault().WaitForCompletion();
 
         yield return new WaitForSecondsRealtime(parryFireDelaySeconds);
+
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+        newState = InputManager.Instance.GetModes();
+        newState.ParryDown = InputMode.Manual;
+
         yield return RunTimeStopInputStep(
             parryPanel,
-            ActionKey.Parry,
-            ActionSignal.Down,
+            newState,
             parryPreSlowDelaySeconds,
             parrySlowSeconds,
             () => InputManager.Instance.ParryDown
@@ -157,10 +161,14 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         yield return new WaitForSecondsRealtime(afterParryDelaySeconds);
 
         yield return new WaitForSecondsRealtime(dodgeFireDelaySeconds);
+
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+        newState = InputManager.Instance.GetModes();
+        newState.DashDown = InputMode.Manual;
+
         yield return RunTimeStopInputStep(
             dodgePanel,
-            ActionKey.Dash,
-            ActionSignal.Down,
+            newState,
             dodgePreSlowDelaySeconds,
             dodgeSlowSeconds,
             () => InputManager.Instance.DashDown
@@ -171,22 +179,28 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         yield return new WaitForSecondsRealtime(counterChargePanelDelaySeconds);
         yield return ShowPanel(counterChargePanel);
 
-        InputManager.Instance.SetMode(ActionKey.Parry, ActionSignal.Held, InputMode.Manual);
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+        newState = InputManager.Instance.GetModes();
+        newState.ParryHeld = InputMode.Manual;
+        InputManager.Instance.SetModes(newState);
 
         while (!PlayerController.Instance.inCounterParryPrep)
             yield return null;
 
-        InputManager.Instance.SetMode(ActionKey.Parry, ActionSignal.Held, InputMode.Auto);
+        InputManager.Instance.SetAllModes(InputMode.Auto);
         InputManager.Instance.SetAutoHeld(ActionKey.Parry, true);
         counterChargePanel.HideImmediate();
 
         yield return new WaitForSecondsRealtime(afterCounterChargeDelaySeconds);
 
         yield return new WaitForSecondsRealtime(counterParryFireDelaySeconds);
+
+        newState = InputManager.Instance.GetModes();
+        newState.ParryHeld = InputMode.Manual;
+
         yield return RunTimeStopInputStep(
             counterParryPanel,
-            ActionKey.Parry,
-            ActionSignal.Held,
+            newState,
             counterParryPreSlowDelaySeconds,
             counterParrySlowSeconds,
             () => !InputManager.Instance.ParryHeld
@@ -197,7 +211,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         yield return new WaitForSecondsRealtime(healPanelDelaySeconds);
         yield return ShowPanel(healPanel);
 
-        InputManager.Instance.SetMode(ActionKey.Heal, ActionSignal.Held, InputMode.Manual);
+        InputManager.Instance.SetMode(ActionKey.Heal, InputMode.Manual);
 
         PlayerVitals vitals = PlayerController.Instance.Vitals;
         while (vitals.Health < vitals.MaxHealth)
@@ -211,8 +225,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
 
     private IEnumerator RunTimeStopInputStep(
         TutorialPanel panel,
-        ActionKey key,
-        ActionSignal signal,
+        InputModeState state,
         float preSlowDelaySeconds,
         float slowSeconds,
         System.Func<bool> triggerCondition
@@ -225,12 +238,12 @@ public sealed class TutorialSceneDirector : MonoBehaviour
 
         yield return ShowPanel(panel);
 
-        InputManager.Instance.SetMode(key, signal, InputMode.Manual);
+        InputManager.Instance.SetModes(state);
 
         while (!triggerCondition())
             yield return null;
 
-        InputManager.Instance.SetMode(key, signal, InputMode.Auto);
+        InputManager.Instance.SetAllModes(InputMode.Auto);
 
         ResumeTimeImmediate();
 
@@ -307,9 +320,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
 
     private void HideOverlayImmediate()
     {
-        if (blackOverlay.gameObject.activeSelf)
-            blackOverlay.gameObject.SetActive(false);
-
+        blackOverlay.gameObject.SetActive(false);
         blackOverlay.alpha = 0f;
     }
 
