@@ -756,7 +756,7 @@ VisualEffect:
       - m_Value: {x: -0, y: 0, z: 0}
         m_Name: Target_angles
         m_Overridden: 1
-      - m_Value: {x: -3.94, y: 0.15, z: 0}
+      - m_Value: {x: 3, y: 2, z: 0}
         m_Name: Target_position
         m_Overridden: 1
       - m_Value: {x: 1, y: 1, z: 1}
@@ -822,8 +822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Runtime::UnityEngine.VFX.Utility.VFXPropertyBinder
   m_ExecuteInEditor: 1
-  m_Bindings:
-  - {fileID: 650765020}
+  m_Bindings: []
   m_VisualEffect: {fileID: 650765018}
 --- !u!114 &650765022
 MonoBehaviour:
