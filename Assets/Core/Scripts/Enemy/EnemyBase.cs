@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using Sirenix.OdinInspector;
+
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
 public abstract class EnemyBase : MonoBehaviour
@@ -21,10 +23,7 @@ public abstract class EnemyBase : MonoBehaviour
         Anim = GetComponent<Animator>();
     }
 
-    protected virtual void Start()
-    {
-        Player = PlayerController.Instance;
-    }
+    protected virtual void Start() => Player = PlayerController.Instance;
 
     private void Update()
     {
