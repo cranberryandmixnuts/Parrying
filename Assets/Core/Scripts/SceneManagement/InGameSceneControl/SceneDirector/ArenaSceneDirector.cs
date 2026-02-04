@@ -84,7 +84,7 @@ public sealed class ArenaSceneDirector : MonoBehaviour
         }
 
         SetDoorsActive(false);
-        enabled = false;
+        gameObject.SetActive(false);
     }
 
     private void SpawnWave(WaveDefinition wave)
@@ -136,8 +136,7 @@ public sealed class ArenaSceneDirector : MonoBehaviour
 
     private void SetDoorsActive(bool active)
     {
-        int count = lockDoors.Length;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < lockDoors.Length; i++)
             lockDoors[i].SetActive(active);
     }
 }

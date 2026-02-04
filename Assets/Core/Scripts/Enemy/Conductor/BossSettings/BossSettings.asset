@@ -26,7 +26,7 @@ MonoBehaviour:
   swordDamage: 10
   swordStartAngle: 90
   swordEndAngle: 0
-  swordBladeLength: 9
+  swordBladeLength: 7
   swordBladeThickness: 0.5
   plungeFallDelay: 0.5
   plungeFallSpeed: 16

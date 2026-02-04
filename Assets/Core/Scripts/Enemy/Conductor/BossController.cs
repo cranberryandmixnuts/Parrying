@@ -14,7 +14,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         LaserP2
     }
 
-    #region Animation Names
     public const string AnimGroundIdle = "Ground Idle";
     public const string AnimAirIdle = "Air Idle";
     public const string AnimGroggy = "Groggy";
@@ -24,7 +23,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public const string AnimFire = "Fire";
     public const string AnimCrackLaser = "Crack Laser";
     public const string AnimDeath = "Death";
-    #endregion
 
     [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Stacks"), ReadOnly, SerializeField]
     private int p1Stacks;
@@ -94,6 +92,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         p2Stacks = settings.p2Stacks;
         stateMachine = new BossStateMachine();
         stateMachine.Initialize(new BossIdleState(this, stateMachine, true));
+        FacePlayer();
     }
 
     protected override void OnUpdate() => stateMachine.Update();
@@ -122,21 +121,15 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public Collider2D ProjectileHitbox => projectileHitbox;
     #endregion
 
-    public void OnHitByReflectedProjectile() => OnMissileReflectedHit();
-
+    #region ChangeStateMethods
     public void ChangeToIdle(bool grounded) => stateMachine.ChangeState(new BossIdleState(this, stateMachine, grounded));
-
     public void ChangeToGroggy(float duration) => stateMachine.ChangeState(new BossGroggyState(this, stateMachine, duration));
-
     public void ChangeToSwordDrop() => stateMachine.ChangeState(new BossSwordDropState(this, stateMachine));
-
     public void ChangeToPlungeRush() => stateMachine.ChangeState(new BossPlungeRushState(this, stateMachine));
-
     public void ChangeToVolleyLaser() => stateMachine.ChangeState(new BossVolleyLaserState(this, stateMachine));
-
     public void ChangeToRadialLaser() => stateMachine.ChangeState(new BossRadialLaserState(this, stateMachine));
-
     public void ChangeToDeath() => stateMachine.ChangeState(new BossDeathState(this, stateMachine));
+    #endregion
 
     public void OnPerfectParry(Vector2 hitPoint)
     {
@@ -163,7 +156,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         ChangeToDeath();
     }
 
-    public void OnMissileReflectedHit()
+    public void OnHitByReflectedProjectile()
     {
         if (HasP1Stacks)
         {
@@ -292,60 +285,27 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
     }
 
-    public void Play(string anim)
-    {
-        Anim.Play(anim);
-    }
+    public void Play(string anim) => Anim.Play(anim);
 
-    public float AnimLen(string anim)
-    {
-        return GetAnimLength(anim);
-    }
+    public float AnimLen(string anim) => GetAnimLength(anim);
 
-    public void FaceToPlayer()
-    {
-        FacePlayer();
-    }
+    public void FaceToPlayer() => FacePlayer();
 
-    public void FaceTo(int dir)
-    {
-        ApplyFacing(dir < 0 ? -1 : 1);
-    }
+    public void FaceTo(int dir) => ApplyFacing(dir < 0 ? -1 : 1);
 
-    public void Teleport(Vector3 p)
-    {
-        transform.position = p;
-    }
+    public void Teleport(Vector3 p) => transform.position = p;
 
-    public void SetGravityScale(float v)
-    {
-        Body.gravityScale = v;
-    }
+    public void SetGravityScale(float v) => Body.gravityScale = v;
 
-    public float GetGravityScale()
-    {
-        return Body.gravityScale;
-    }
+    public float GetGravityScale() => Body.gravityScale;
 
-    public void SetVelocityX(float v)
-    {
-        Body.linearVelocity = new Vector2(v, Body.linearVelocity.y);
-    }
+    public void SetVelocityX(float v) => Body.linearVelocity = new Vector2(v, Body.linearVelocity.y);
 
-    public void SetVelocityY(float y)
-    {
-        Body.linearVelocity = new Vector2(Body.linearVelocity.x, y);
-    }
+    public void SetVelocityY(float y) => Body.linearVelocity = new Vector2(Body.linearVelocity.x, y);
 
-    public float GetVelocityY()
-    {
-        return Body.linearVelocity.y;
-    }
+    public float GetVelocityY() => Body.linearVelocity.y;
 
-    public bool IsTouchingGround()
-    {
-        return Body.IsTouchingLayers(settings.groundLayer);
-    }
+    public bool IsTouchingGround() => Body.IsTouchingLayers(settings.groundLayer);
 
     public void StopHorizontal()
     {

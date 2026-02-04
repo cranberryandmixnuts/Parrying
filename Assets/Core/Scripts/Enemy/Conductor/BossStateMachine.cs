@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public sealed class BossStateMachine
 {
     private BossState currentState;

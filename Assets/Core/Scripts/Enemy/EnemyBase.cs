@@ -1,7 +1,5 @@
 using UnityEngine;
 
-using Sirenix.OdinInspector;
-
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
 public abstract class EnemyBase : MonoBehaviour

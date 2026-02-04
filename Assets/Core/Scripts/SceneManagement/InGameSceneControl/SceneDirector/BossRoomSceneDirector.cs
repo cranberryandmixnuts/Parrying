@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BossRoomSceneDirector : MonoBehaviour
+public sealed class BossRoomSceneDirector : MonoBehaviour
 {
 
 }
