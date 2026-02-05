@@ -21,6 +21,7 @@ public sealed class SceneExitSequence : MonoBehaviour
         triggered = true;
 
         InputManager.Instance.SetAllModes(InputMode.Auto);
+        InputManager.Instance.SetMode(ActionKey.Escape, InputMode.Manual);
 
         routine = StartCoroutine(Sequence());
     }
