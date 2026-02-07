@@ -26,6 +26,12 @@ public sealed class SettingsWindowManager : MonoBehaviour
     {
         cachedTimeScale = Time.timeScale;
         cachedInputState = InputManager.Instance.GetModes();
+
+        if (EscapeToOpen)
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     private void Update()
@@ -49,12 +55,26 @@ public sealed class SettingsWindowManager : MonoBehaviour
 
     public void OpenSettings()
     {
-        PauseTime();
+        if (!timePausedByThis)
+        {
+            Time.timeScale = 0f;
+            timePausedByThis = true;
+        }
+
+        cachedInputState = InputManager.Instance.GetModes();
+        cachedTimeScale = Time.timeScale;
 
         SettingsWindow.SetActive(true);
         RootPanel.SetActive(true);
         AudioPanel.SetActive(false);
         ControlPanel.SetActive(false);
+
+        if (EscapeToOpen)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+
         CurrentTab = SettingsTab.Root;
     }
 
@@ -67,7 +87,19 @@ public sealed class SettingsWindowManager : MonoBehaviour
         ControlPanel.SetActive(false);
         SettingsWindow.SetActive(false);
 
-        ResumeTime();
+        if (EscapeToOpen)
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        InputManager.Instance.SetModes(cachedInputState);
+
+        if (timePausedByThis)
+        {
+            Time.timeScale = cachedTimeScale;
+            timePausedByThis = false;
+        }
     }
 
     public void ChangeTab(SettingsTab tab)
@@ -78,27 +110,5 @@ public sealed class SettingsWindowManager : MonoBehaviour
         ControlPanel.SetActive(tab == SettingsTab.Control);
     }
 
-    private void PauseTime()
-    {
-        if (timePausedByThis) return;
-
-        cachedInputState = InputManager.Instance.GetModes();
-        cachedTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
-        timePausedByThis = true;
-    }
-
-    private void ResumeTime()
-    {
-        if (!timePausedByThis) return;
-
-        InputManager.Instance.SetModes(cachedInputState);
-        Time.timeScale = cachedTimeScale;
-        timePausedByThis = false;
-    }
-
-    private void OnDisable()
-    {
-        if (timePausedByThis) ResumeTime();
-    }
+    private void OnDisable() => CloseSettings();
 }
