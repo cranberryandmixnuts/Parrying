@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public sealed class ArenaSceneDirector : MonoBehaviour
+public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScope>
 {
     [Serializable]
     public sealed class SpawnDefinition
@@ -84,7 +84,8 @@ public sealed class ArenaSceneDirector : MonoBehaviour
         }
 
         SetDoorsActive(false);
-        gameObject.SetActive(false);
+
+        Debug.Log("Scene End");
     }
 
     private void SpawnWave(WaveDefinition wave)

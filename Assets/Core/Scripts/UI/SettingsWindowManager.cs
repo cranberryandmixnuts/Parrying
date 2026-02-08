@@ -7,7 +7,7 @@ public enum SettingsTab
     Control,
 }
 
-public sealed class SettingsWindowManager : MonoBehaviour
+public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, SceneScope>
 {
     [SerializeField] private GameObject SettingsWindow;
     [SerializeField] private GameObject RootPanel;

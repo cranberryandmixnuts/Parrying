@@ -3,7 +3,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public sealed class GameStartSceneDirector : MonoBehaviour
+public sealed class GameStartSceneDirector : Singleton<GameStartSceneDirector, SceneScope>
 {
     [BoxGroup("Panels"), SerializeField, Required]
     private TutorialPanel moveTutorialLeft;
@@ -56,7 +56,7 @@ public sealed class GameStartSceneDirector : MonoBehaviour
 
         jumpTutorial.HideImmediate();
 
-        gameObject.SetActive(false);
+        Debug.Log("Scene End");
     }
 
     private void OnDisable()

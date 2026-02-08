@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine;
 
-public sealed class TutorialSceneDirector : MonoBehaviour
+public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, SceneScope>
 {
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Scene"), SerializeField, Required]
     private TutorialSeeker seeker;
@@ -220,7 +220,7 @@ public sealed class TutorialSceneDirector : MonoBehaviour
         healPanel.HideImmediate();
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
-        gameObject.SetActive(false);
+        Debug.Log("Scene End");
     }
 
     private IEnumerator RunTimeStopInputStep(

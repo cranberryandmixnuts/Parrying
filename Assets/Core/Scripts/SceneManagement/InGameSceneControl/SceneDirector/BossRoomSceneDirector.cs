@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 
-public sealed class BossRoomSceneDirector : MonoBehaviour
+public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, SceneScope>
 {
     [Serializable]
     public sealed class DialogueLine
@@ -78,7 +78,8 @@ public sealed class BossRoomSceneDirector : MonoBehaviour
         bossController.enabled = true;
 
         InputManager.Instance.SetAllModes(InputMode.Manual);
-        gameObject.SetActive(false);
+
+        Debug.Log("Scene End");
     }
 
     private IEnumerator PlayLine(string text)
