@@ -27,6 +27,7 @@ public sealed class GameStartSceneDirector : Singleton<GameStartSceneDirector, S
         jumpTutorial.HideImmediate();
 
         InputManager.Instance.SetAllModes(InputMode.Auto);
+        PlayerController.Instance.Vitals.InitializePlayerStatus();
 
         routine = StartCoroutine(Run());
     }

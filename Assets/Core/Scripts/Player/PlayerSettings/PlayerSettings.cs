@@ -10,6 +10,12 @@ public sealed class PlayerSettings : ScriptableObject
     [TabGroup("PlayerSettings", "기본"), FoldoutGroup("PlayerSettings/기본/Stats", Expanded = true), SuffixLabel("EN", true), MinValue(0), MaxValue(99999)]
     public int maxEnergy = 500;
 
+    [TabGroup("PlayerSettings", "기본"), FoldoutGroup("PlayerSettings/기본/Stats", Expanded = true), SuffixLabel("HP", true), MinValue(0), MaxValue("@maxHealth")]
+    public int currentHealth = 1000;
+
+    [TabGroup("PlayerSettings", "기본"), FoldoutGroup("PlayerSettings/기본/Stats", Expanded = true), SuffixLabel("EN", true), MinValue(0), MaxValue("@maxEnergy")]
+    public int currentEnergy = 500;
+
     [TabGroup("PlayerSettings", "이동"), FoldoutGroup("PlayerSettings/이동/Movement", Expanded = true), SuffixLabel("u/s", true), MinValue(0f), MaxValue(1000f)]
     public float moveSpeed = 10f;
 

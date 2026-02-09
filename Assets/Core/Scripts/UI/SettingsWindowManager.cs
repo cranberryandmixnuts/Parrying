@@ -27,11 +27,8 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         cachedTimeScale = Time.timeScale;
         cachedInputState = InputManager.Instance.GetModes();
 
-        if (EscapeToOpen)
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+        if (EscapeToOpen) SetCusorMode(false);
+        else SetCusorMode(true);
     }
 
     private void Update()
@@ -55,25 +52,21 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
 
     public void OpenSettings()
     {
+        cachedInputState = InputManager.Instance.GetModes();
+        cachedTimeScale = Time.timeScale;
+
         if (!timePausedByThis)
         {
             Time.timeScale = 0f;
             timePausedByThis = true;
         }
 
-        cachedInputState = InputManager.Instance.GetModes();
-        cachedTimeScale = Time.timeScale;
-
         SettingsWindow.SetActive(true);
         RootPanel.SetActive(true);
         AudioPanel.SetActive(false);
         ControlPanel.SetActive(false);
 
-        if (EscapeToOpen)
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
+        if (EscapeToOpen) SetCusorMode(true);
 
         CurrentTab = SettingsTab.Root;
     }
@@ -87,13 +80,10 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         ControlPanel.SetActive(false);
         SettingsWindow.SetActive(false);
 
-        if (EscapeToOpen)
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+        if (EscapeToOpen) SetCusorMode(false);
 
-        InputManager.Instance.SetModes(cachedInputState);
+        if (InputManager.Instance != null)
+            InputManager.Instance.SetModes(cachedInputState);
 
         if (timePausedByThis)
         {
@@ -108,6 +98,14 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         RootPanel.SetActive(tab == SettingsTab.Root);
         AudioPanel.SetActive(tab == SettingsTab.Audio);
         ControlPanel.SetActive(tab == SettingsTab.Control);
+    }
+
+    private void SetCusorMode(bool mode)
+    {
+        if (mode) Cursor.lockState = CursorLockMode.None;
+        else Cursor.lockState = CursorLockMode.Locked;
+
+        Cursor.visible = mode;
     }
 
     private void OnDisable() => CloseSettings();

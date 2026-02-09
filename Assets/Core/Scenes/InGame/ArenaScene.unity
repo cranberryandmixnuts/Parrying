@@ -1567,7 +1567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneEntrySequence
   preDelaySeconds: 0.2
   walkSeconds: 1.2
-  postDelaySeconds: 1
+  postDelaySeconds: 0.1
   moveAxis: 1
   unlockInputAtEnd: 1
 --- !u!4 &1551751360

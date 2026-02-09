@@ -25,7 +25,7 @@ public sealed class VolumeController : MonoBehaviour
     [SerializeField] private float defaultBgmDb = 0.0f;
     [SerializeField] private float defaultSfxDb = 0.0f;
 
-    public void Awake()
+    public void Start()
     {
         LoadOrInitialize();
         ApplyAll();

@@ -3,12 +3,6 @@ using Sirenix.OdinInspector;
 
 public sealed class PlayerVitals : MonoBehaviour
 {
-    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ReadOnly, SerializeField]
-    private int playerHealth;
-
-    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ReadOnly, SerializeField]
-    private int playerEnergy;
-
     [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), ReadOnly, SerializeField]
     private bool IsInvincible = false;
 
@@ -21,30 +15,32 @@ public sealed class PlayerVitals : MonoBehaviour
     [TabGroup("Player Vitals", "Setup"), BoxGroup("Player Vitals/Setup/Scene References"), SerializeField, Required]
     private PlayerController player;
 
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ShowInInspector, ReadOnly]
     public int Health
     {
-        get => playerHealth;
+        get => settings.currentHealth;
         private set
         {
             Debug.Log($"Setting player health: {value}");
-            playerHealth = Mathf.Clamp(value, 0, settings.maxHealth);
+            settings.currentHealth = Mathf.Clamp(value, 0, settings.maxHealth);
         }
     }
 
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ShowInInspector, ReadOnly]
     public int Energy
     {
-        get => playerEnergy;
+        get => settings.currentEnergy;
         private set
         {
             Debug.Log($"Setting player energy: {value}");
-            playerEnergy = Mathf.Clamp(value, 0, settings.maxEnergy);
+            settings.currentEnergy = Mathf.Clamp(value, 0, settings.maxEnergy);
         }
     }
 
     public int MaxHealth => settings.maxHealth;
     public int MaxEnergy => settings.maxEnergy;
 
-    private void Awake()
+    public void InitializePlayerStatus()
     {
         Health = settings.maxHealth;
         Energy = settings.maxEnergy;

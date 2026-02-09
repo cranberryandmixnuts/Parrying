@@ -14,7 +14,6 @@ public sealed class SceneEntrySequence : MonoBehaviour
     private IEnumerator Sequence()
     {
         InputManager.Instance.SetAllModes(InputMode.Auto);
-        InputManager.Instance.SetMode(ActionKey.Escape, InputMode.Manual);
 
         yield return new WaitForSeconds(preDelaySeconds);
 

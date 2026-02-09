@@ -119,6 +119,8 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         worldCamera.orthographicSize = entryOrthoSize;
         followPlayer = true;
 
+        PlayerController.Instance.Vitals.InitializePlayerStatus();
+
         routine = StartCoroutine(Run());
     }
 

@@ -56,13 +56,15 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
 
     private readonly List<SpawnedEnemy> spawned = new(64);
 
+    private Coroutine routine;
+
     private void Start()
     {
         Time.timeScale = 1f;
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
         SetDoorsActive(false);
-        StartCoroutine(RunSequence());
+        routine = StartCoroutine(RunSequence());
     }
 
     private IEnumerator RunSequence()
@@ -139,5 +141,10 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
     {
         for (int i = 0; i < lockDoors.Length; i++)
             lockDoors[i].SetActive(active);
+    }
+
+    private void OnDisable()
+    {
+        if (routine != null) StopCoroutine(routine);
     }
 }

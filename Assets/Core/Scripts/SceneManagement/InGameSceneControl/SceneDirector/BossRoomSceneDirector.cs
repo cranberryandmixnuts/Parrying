@@ -42,6 +42,8 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
     [TabGroup("Boss Room", "Dialogue"), SerializeField]
     private List<DialogueLine> lines = new();
 
+    private Coroutine routine;
+
     private Tween typingTween;
 
     private void Start()
@@ -49,7 +51,7 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         SetDoorsActive(false);
         dialogueRoot.SetActive(false);
 
-        StartCoroutine(RunSequence());
+        routine = StartCoroutine(RunSequence());
     }
 
     private IEnumerator RunSequence()
@@ -92,8 +94,7 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
 
         typingTween = dialogueText
             .DOText(text, duration, true, ScrambleMode.None, null)
-            .SetEase(Ease.Linear)
-            .SetUpdate(true);
+            .SetEase(Ease.Linear);
 
         yield return typingTween.WaitForCompletion();
     }
@@ -115,6 +116,7 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
 
     private void OnDisable()
     {
+        if (routine != null) StopCoroutine(routine);
         KillTypingTween();
     }
 }
