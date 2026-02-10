@@ -822,7 +822,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Runtime::UnityEngine.VFX.Utility.VFXPropertyBinder
   m_ExecuteInEditor: 1
-  m_Bindings: []
+  m_Bindings:
+  - {fileID: 650765020}
   m_VisualEffect: {fileID: 650765018}
 --- !u!114 &650765022
 MonoBehaviour:

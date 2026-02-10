@@ -322,8 +322,8 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     private void HideOverlayImmediate()
     {
-        blackOverlay.gameObject.SetActive(false);
         blackOverlay.alpha = 0f;
+        blackOverlay.gameObject.SetActive(false);
     }
 
     private void KillTimeTweens()
@@ -340,9 +340,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     private void OnDisable()
     {
-        ResumeTimeImmediate();
-        HideOverlayImmediate();
-        HideAllPanelsImmediate();
         if (routine != null) StopCoroutine(routine);
     }
 }

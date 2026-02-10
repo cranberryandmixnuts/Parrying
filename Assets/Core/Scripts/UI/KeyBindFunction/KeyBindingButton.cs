@@ -20,8 +20,11 @@ public sealed class KeyBindingButton : MonoBehaviour
 
     private void OnEnable()
     {
+        InputManager.Instance.OnRebindCompleted += RefreshKeyDisplay;
         RefreshKeyDisplay();
     }
+
+    private void OnDisable() => InputManager.Instance.OnRebindCompleted -= RefreshKeyDisplay;
 
     public void OnClick_StartRebind()
     {

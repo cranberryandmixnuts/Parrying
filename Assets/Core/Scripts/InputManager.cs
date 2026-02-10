@@ -80,6 +80,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     private InputAction currentRebindAction;
     private int currentRebindBindingIndex;
     private bool currentRebindExcludeMouse;
+    private string currentRebindPreviousPath;
 
     private InputModeState currentModes;
 
@@ -433,6 +434,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         currentRebindAction = action;
         currentRebindBindingIndex = bindingIndex;
         currentRebindExcludeMouse = false;
+        currentRebindPreviousPath = action.bindings[bindingIndex].effectivePath;
 
         action.Disable();
 
@@ -482,10 +484,16 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     {
         action.Enable();
 
+        string newPath = action.bindings[currentRebindBindingIndex].effectivePath;
+
+        if (!string.IsNullOrEmpty(newPath) && newPath != currentRebindPreviousPath)
+            SwapDuplicateBindingIfAny(action, currentRebindBindingIndex, newPath, currentRebindPreviousPath);
+
         currentRebind.Dispose();
         currentRebind = null;
 
         currentRebindAction = null;
+        currentRebindPreviousPath = null;
 
         IsRebinding = false;
 
@@ -501,9 +509,80 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         currentRebind = null;
 
         currentRebindAction = null;
+        currentRebindPreviousPath = null;
 
         IsRebinding = false;
 
         OnRebindCanceled?.Invoke();
+    }
+
+    private void SwapDuplicateBindingIfAny(InputAction targetAction, int targetBindingIndex, string newPath, string previousPath)
+    {
+        if (string.IsNullOrEmpty(previousPath))
+            return;
+
+        string targetGroups = targetAction.bindings[targetBindingIndex].groups;
+
+        if (TrySwapInAction(targetAction, targetBindingIndex, newPath, previousPath, targetGroups))
+            return;
+
+        foreach (InputActionMap map in actions.actionMaps)
+        {
+            foreach (InputAction action in map.actions)
+            {
+                if (action == targetAction)
+                    continue;
+
+                if (TrySwapInAction(action, -1, newPath, previousPath, targetGroups))
+                    return;
+            }
+        }
+    }
+
+    private static bool TrySwapInAction(InputAction action, int skipBindingIndex, string newPath, string previousPath, string targetGroups)
+    {
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            if (i == skipBindingIndex)
+                continue;
+
+            string otherPath = action.bindings[i].effectivePath;
+
+            if (string.IsNullOrEmpty(otherPath))
+                continue;
+
+            if (otherPath != newPath)
+                continue;
+
+            if (!AreBindingGroupsCompatible(targetGroups, action.bindings[i].groups))
+                continue;
+
+            action.ApplyBindingOverride(i, previousPath);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool AreBindingGroupsCompatible(string a, string b)
+    {
+        if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b))
+            return true;
+
+        string[] aParts = a.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        string[] bParts = b.Split(';', StringSplitOptions.RemoveEmptyEntries);
+
+        for (int i = 0; i < aParts.Length; i++)
+        {
+            string left = aParts[i].Trim();
+
+            for (int j = 0; j < bParts.Length; j++)
+            {
+                if (left == bParts[j].Trim())
+                    return true;
+            }
+        }
+
+        return false;
     }
 }
