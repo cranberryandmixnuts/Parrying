@@ -371,7 +371,7 @@ MonoBehaviour:
   swingLength: 2
   attackPrepPercent: 0.2
   attackEndPercent: 0.9
-  attackDamage: 10
+  attackDamage: 100
   swingLine: {fileID: 2672969294325422341}
   swingLineWidth: 0.05
 --- !u!120 &2672969294325422341

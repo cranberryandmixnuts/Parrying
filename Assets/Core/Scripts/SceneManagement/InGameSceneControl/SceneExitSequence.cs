@@ -29,8 +29,7 @@ public sealed class SceneExitSequence : MonoBehaviour
     {
         PlayerController.Instance.Rigidbody.linearVelocity = Vector2.zero;
 
-        while (!PlayerController.Instance.isGround)
-            yield return null;
+        yield return new WaitUntil(() => PlayerController.Instance.isGround);
 
         InputManager.Instance.SetAutoMoveAxis(moveAxis);
         SceneLoader.Instance.LoadScene(nextScene);

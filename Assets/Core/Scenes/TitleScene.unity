@@ -941,6 +941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0e95b90b45c7db459bcc21d6b7af93b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameResetter
+  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
 --- !u!4 &329017050
 Transform:
   m_ObjectHideFlags: 0
@@ -4550,7 +4551,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 511
 --- !u!114 &1786593709
 MonoBehaviour:
   m_ObjectHideFlags: 0

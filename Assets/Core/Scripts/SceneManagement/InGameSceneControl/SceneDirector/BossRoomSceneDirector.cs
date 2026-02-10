@@ -75,11 +75,12 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         SetDoorsActive(true);
         dialogueRoot.SetActive(false);
 
-        yield return new WaitForSecondsRealtime(betweenLinesDelaySeconds);
+        yield return new WaitForSecondsRealtime(betweenLinesDelaySeconds / 2);
 
         bossController.enabled = true;
-
         InputManager.Instance.SetAllModes(InputMode.Manual);
+
+        yield return new WaitUntil(() => bossController.IsDead());
 
         Debug.Log("Scene End");
     }

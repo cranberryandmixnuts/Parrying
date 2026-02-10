@@ -87,6 +87,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     protected override void Start()
     {
         base.Start();
+
         gravityOriginal = Body.gravityScale;
         p1Stacks = settings.p1Stacks;
         p2Stacks = settings.p2Stacks;

@@ -49,6 +49,9 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
     private float fireShootPercent = 0.6f;
 
+    [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
+    private int projectileDamage = 50;
+
     private State state;
     private float fireCooldown;
     private float fireTimer = -999f;
@@ -170,7 +173,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     {
         Vector2 dir = transform.right;
         EnemyProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
-        proj.Initialize(this, Player, dir);
+        proj.Initialize(this, Player, dir, projectileDamage);
         Body.AddForce(-dir * fireRecoilForce, ForceMode2D.Impulse);
     }
 

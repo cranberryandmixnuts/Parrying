@@ -26,7 +26,7 @@ public sealed class BossSettings : ScriptableObject
     public float repeatPenalty = 0.5f;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Damage"), MinValue(0)]
-    public int swordDamage = 10;
+    public int swordDamage = 200;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Geometry"), SuffixLabel("deg", true)]
     public float swordStartAngle = 90f;
@@ -35,7 +35,7 @@ public sealed class BossSettings : ScriptableObject
     public float swordEndAngle = 0f;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Geometry"), SuffixLabel("u", true), MinValue(0f)]
-    public float swordBladeLength = 9f;
+    public float swordBladeLength = 7f;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Geometry"), SuffixLabel("u", true), MinValue(0f)]
     public float swordBladeThickness = 0.5f;
@@ -47,7 +47,7 @@ public sealed class BossSettings : ScriptableObject
     public float plungeFallSpeed = 16f;
 
     [TabGroup("BossSettings", "Plunge"), BoxGroup("BossSettings/Plunge/Damage"), MinValue(0)]
-    public int plungeDamage = 10;
+    public int plungeDamage = 100;
 
     [TabGroup("BossSettings", "Plunge"), BoxGroup("BossSettings/Plunge/Movement"), SuffixLabel("u/s", true), MinValue(0f)]
     public float plungeBounceUpSpeed = 12f;
@@ -65,13 +65,16 @@ public sealed class BossSettings : ScriptableObject
     public float missBehindTime = 0.6f;
 
     [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Damage"), MinValue(0)]
-    public int rushDamage = 10;
+    public int rushDamage = 150;
 
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), MinValue(0)]
     public int missileVolleys = 3;
 
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), SuffixLabel("s", true), MinValue(0f)]
     public float missileVolleyInterval = 0.5f;
+
+    [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), SuffixLabel("HP", true), MinValue(0f)]
+    public int projectileDamage = 50;
 
     [SuffixLabel("s", true), MinValue(0f)]
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Laser Shared")]
@@ -95,7 +98,7 @@ public sealed class BossSettings : ScriptableObject
     public float laserTurnSpeedDegPerSec = 240f;
 
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Damage"), MinValue(0)]
-    public int laserDamage = 10;
+    public int laserDamage = 300;
 
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Geometry"), SuffixLabel("u", true), MinValue(0f)]
     public float volleySideOffset = 6f;
@@ -111,7 +114,7 @@ public sealed class BossSettings : ScriptableObject
     public float laserThickness = 0.25f;
 
     [TabGroup("BossSettings", "Radial"), BoxGroup("BossSettings/Radial/Damage"), MinValue(0)]
-    public int radialDamage = 10;
+    public int radialDamage = 300;
 
     [TabGroup("BossSettings", "Radial"), BoxGroup("BossSettings/Radial/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float radialBeat = 0.3f;

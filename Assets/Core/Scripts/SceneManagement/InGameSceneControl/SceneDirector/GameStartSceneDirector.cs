@@ -27,30 +27,27 @@ public sealed class GameStartSceneDirector : Singleton<GameStartSceneDirector, S
         jumpTutorial.HideImmediate();
 
         InputManager.Instance.SetAllModes(InputMode.Auto);
-        PlayerController.Instance.Vitals.InitializePlayerStatus();
+        PlayerController.Instance.Settings.InitializePlayerStatus();
 
         routine = StartCoroutine(Run());
     }
 
     private IEnumerator Run()
     {
-        while (SceneLoader.Instance.IsTransitioning)
-            yield return null;
+        yield return new WaitUntil(() => !SceneLoader.Instance.IsTransitioning);
 
         InputManager.Instance.SetMode(ActionKey.Move, InputMode.Manual);
         InputManager.Instance.SetMode(ActionKey.Jump, InputMode.Manual);
         InputManager.Instance.SetMode(ActionKey.Escape, InputMode.Manual);
 
-        while (Mathf.Abs(InputManager.Instance.MoveAxis) <= moveDetectThreshold)
-            yield return null;
+        yield return new WaitUntil(() => Mathf.Abs(InputManager.Instance.MoveAxis) > moveDetectThreshold);
 
         moveTutorialLeft.HideImmediate();
         moveTutorialRight.HideImmediate();
 
         jumpTutorial.ShowImmediate();
 
-        while (!InputManager.Instance.JumpDown)
-            yield return null;
+        yield return new WaitUntil(() => InputManager.Instance.JumpDown);
 
         Tween t = jumpTutorial.HideFadeOut(jumpFadeOutSeconds);
         yield return t.WaitForCompletion();

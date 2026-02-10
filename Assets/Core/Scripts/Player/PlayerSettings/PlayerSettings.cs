@@ -129,4 +129,11 @@ public sealed class PlayerSettings : ScriptableObject
 
     [TabGroup("PlayerSettings", "기본"), FoldoutGroup("PlayerSettings/기본/Buffer Time"), SuffixLabel("s", true), MinValue(0f), MaxValue(5f)]
     public float dashBufferTime = 0.1f;
+
+    [Button]
+    public void InitializePlayerStatus()
+    {
+        currentHealth = maxHealth;
+        currentEnergy = maxEnergy;
+    }
 }

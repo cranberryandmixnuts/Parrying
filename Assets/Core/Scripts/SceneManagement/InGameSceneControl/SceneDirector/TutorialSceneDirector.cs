@@ -95,6 +95,9 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     [TabGroup("Tutorial", "UI"), SerializeField, Min(0f)]
     private float panelFadeInSeconds = 0.5f;
 
+    private PlayerController player;
+    private InputManager input;
+
     private float baseFixedDeltaTime;
     private bool followPlayer;
     private float camZ;
@@ -107,6 +110,9 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     private void Start()
     {
+        player = PlayerController.Instance;
+        input = InputManager.Instance;
+
         baseFixedDeltaTime = Time.fixedDeltaTime;
         camZ = worldCamera.transform.position.z;
 
@@ -119,7 +125,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         worldCamera.orthographicSize = entryOrthoSize;
         followPlayer = true;
 
-        PlayerController.Instance.Vitals.InitializePlayerStatus();
+        player.Settings.InitializePlayerStatus();
 
         routine = StartCoroutine(Run());
     }
@@ -128,14 +134,14 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     {
         if (!followPlayer) return;
 
-        Transform p = PlayerController.Instance.transform;
+        Transform p = player.transform;
         worldCamera.transform.position = new Vector3(p.position.x, p.position.y, camZ);
     }
 
     private IEnumerator Run()
     {
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        InputModeState newState = InputManager.Instance.GetModes();
+        input.SetAllModes(InputMode.Auto);
+        InputModeState newState = input.GetModes();
 
         yield return new WaitForSecondsRealtime(firstFireDelaySeconds);
         seeker.FireAtPlayer();
@@ -148,8 +154,8 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitForSecondsRealtime(parryFireDelaySeconds);
 
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        newState = InputManager.Instance.GetModes();
+        input.SetAllModes(InputMode.Auto);
+        newState = input.GetModes();
         newState.ParryDown = InputMode.Manual;
 
         yield return RunTimeStopInputStep(
@@ -157,15 +163,15 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
             newState,
             parryPreSlowDelaySeconds,
             parrySlowSeconds,
-            () => InputManager.Instance.ParryDown
+            () => input.ParryDown
         );
 
         yield return new WaitForSecondsRealtime(afterParryDelaySeconds);
 
         yield return new WaitForSecondsRealtime(dodgeFireDelaySeconds);
 
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        newState = InputManager.Instance.GetModes();
+        input.SetAllModes(InputMode.Auto);
+        newState = input.GetModes();
         newState.DashDown = InputMode.Manual;
 
         yield return RunTimeStopInputStep(
@@ -173,7 +179,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
             newState,
             dodgePreSlowDelaySeconds,
             dodgeSlowSeconds,
-            () => InputManager.Instance.DashDown
+            () => input.DashDown
         );
 
         yield return new WaitForSecondsRealtime(afterDodgeDelaySeconds);
@@ -181,23 +187,22 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         yield return new WaitForSecondsRealtime(counterChargePanelDelaySeconds);
         yield return ShowPanel(counterChargePanel);
 
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        newState = InputManager.Instance.GetModes();
+        input.SetAllModes(InputMode.Auto);
+        newState = input.GetModes();
         newState.ParryHeld = InputMode.Manual;
-        InputManager.Instance.SetModes(newState);
+        input.SetModes(newState);
 
-        while (!PlayerController.Instance.inCounterParryPrep)
-            yield return null;
+        yield return new WaitUntil(() => player.inCounterParryPrep);
 
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        InputManager.Instance.SetAutoHeld(ActionKey.Parry, true);
+        input.SetAllModes(InputMode.Auto);
+        input.SetAutoHeld(ActionKey.Parry, true);
         counterChargePanel.HideImmediate();
 
         yield return new WaitForSecondsRealtime(afterCounterChargeDelaySeconds);
 
         yield return new WaitForSecondsRealtime(counterParryFireDelaySeconds);
 
-        newState = InputManager.Instance.GetModes();
+        newState = input.GetModes();
         newState.ParryHeld = InputMode.Manual;
 
         yield return RunTimeStopInputStep(
@@ -205,7 +210,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
             newState,
             counterParryPreSlowDelaySeconds,
             counterParrySlowSeconds,
-            () => !InputManager.Instance.ParryHeld
+            () => !input.ParryHeld
         );
 
         yield return new WaitForSecondsRealtime(afterCounterParryDelaySeconds);
@@ -213,14 +218,12 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         yield return new WaitForSecondsRealtime(healPanelDelaySeconds);
         yield return ShowPanel(healPanel);
 
-        InputManager.Instance.SetMode(ActionKey.Heal, InputMode.Manual);
+        input.SetMode(ActionKey.Heal, InputMode.Manual);
 
-        PlayerVitals vitals = PlayerController.Instance.Vitals;
-        while (vitals.Health < vitals.MaxHealth)
-            yield return null;
+        yield return new WaitUntil(() => player.Vitals.Health >= player.Vitals.MaxHealth);
 
         healPanel.HideImmediate();
-        InputManager.Instance.SetAllModes(InputMode.Manual);
+        input.SetAllModes(InputMode.Manual);
 
         Debug.Log("Scene End");
     }
@@ -240,12 +243,11 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return ShowPanel(panel);
 
-        InputManager.Instance.SetModes(state);
+        input.SetModes(state);
 
-        while (!triggerCondition())
-            yield return null;
+        yield return new WaitUntil(triggerCondition);
 
-        InputManager.Instance.SetAllModes(InputMode.Auto);
+        input.SetAllModes(InputMode.Auto);
 
         ResumeTimeImmediate();
 

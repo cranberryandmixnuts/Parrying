@@ -27,9 +27,6 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Lifetime"), SerializeField, MinValue(0.01f), SuffixLabel("s", true)]
     private float maxLifetime = 6f;
 
-    [TabGroup("Enemy Projectile", "Tuning"), BoxGroup("Enemy Projectile/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
-    private int damage = 10;
-
     private IEnemyProjectileOwner owner;
     private PlayerController player;
     private Transform target;
@@ -38,15 +35,17 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
     private bool consumed;
     private Vector2 moveDir;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
+    private int projectileDamage;
 
-    public void Initialize(IEnemyProjectileOwner shooter, PlayerController p, Vector2 initialDir)
+    public void Initialize(IEnemyProjectileOwner shooter, PlayerController player, Vector2 initialDir, int damage)
     {
         owner = shooter;
-        player = p;
-        target = p.transform;
+        this.player = player;
+        target = player.transform;
         reflected = false;
         lifeTimer = maxLifetime;
         consumed = false;
+        projectileDamage = damage;
 
         moveDir = initialDir.normalized;
         if (moveDir.sqrMagnitude < 0.0001f) moveDir = Vector2.right;
@@ -83,7 +82,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
         player.GetParryDetectCircle(out Vector2 center, out float radius);
         if (IsColliderWithinCircle(hitCollider, center, radius))
-            player.RegisterParryCandidate(this, transform.position, damage);
+            player.RegisterParryCandidate(this, transform.position, projectileDamage);
 
         player.GetDashDetectCircle(out Vector2 dcenter, out float dradius);
         if (IsColliderWithinCircle(hitCollider, dcenter, dradius))
@@ -97,7 +96,7 @@ public sealed class EnemyProjectile : MonoBehaviour, IParryReactive
 
         if (OverlapsPlayerBody())
         {
-            if (player.TryHit(damage, transform.position))
+            if (player.TryHit(projectileDamage, transform.position))
             {
                 Destroy(gameObject);
                 return;

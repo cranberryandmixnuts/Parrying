@@ -14,11 +14,18 @@ public sealed class DeathState : PlayerState
         player.Anim.Play("Death");
         timer = player.GetAnimLength("Death");
         player.Rigidbody.linearVelocity = Vector2.zero;
+        player.Rigidbody.simulated = false;
+
+        player.OnPlayerDie?.Invoke();
+        player.Effects.DoGameOverEffect();
     }
 
     public override void Update()
     {
         timer -= Time.deltaTime;
-        if (timer <= 0f) player.Die();
+        if (timer <= 0f)
+        {
+            Debug.Log("Player Die");
+        }
     }
 }

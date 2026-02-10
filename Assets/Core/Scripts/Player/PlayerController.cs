@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows;
@@ -8,7 +9,6 @@ using UnityEngine.Windows;
 [RequireComponent(typeof(Animator))]
 public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 {
-
     public float MoveInput { get; private set; }
 
     public bool JumpPressed { set { if (value) jumpBufferTimer = settings.jumpBufferTime; } }
@@ -42,12 +42,16 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private BoxCollider2D boxCol;
 
+    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
+    private SpriteRenderer sprite;
+
     public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
     public EffectManager Effects => effects;
     public Animator Anim => anim;
     public Rigidbody2D Rigidbody => rb;
     public BoxCollider2D BoxCollider => boxCol;
+    public SpriteRenderer Sprite => sprite;
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Ground Check"), SerializeField]
     private LayerMask groundLayer;
@@ -92,6 +96,8 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     [HideInInspector] public bool counterParryFirstResolved;
     [HideInInspector] public float healDelayGauge;
     #endregion
+
+    public Action OnPlayerDie;
 
     public bool HasParryBuffer => parryBufferTimer > 0f;
     public void ConsumeParryBuffer() => parryBufferTimer = 0f;
@@ -316,11 +322,6 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
         radius = dashDetectCollider.radius * scale;
         center = dashDetectCollider.bounds.center;
-    }
-
-    public void Die()
-    {
-        //Destroy(gameObject);
     }
 
     public void NotifyParryWindowBegin(float duration)

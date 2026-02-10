@@ -3,10 +3,14 @@ using UnityEngine;
 
 public sealed class GameResetter : Singleton<GameResetter, SceneScope>
 {
+    [SerializeField] private PlayerSettings settings;
+
     private const string VolumeMasterKey = "Volume_Master_Db";
     private const string VolumeBgmKey = "Volume_BGM_Db";
     private const string VolumeSfxKey = "Volume_SFX_Db";
     private const string RebindsKey = "InputService_Rebinds";
+
+    private void Start() => settings.InitializePlayerStatus();
 
     [Button]
     private void ResetGame()
@@ -16,6 +20,7 @@ public sealed class GameResetter : Singleton<GameResetter, SceneScope>
         PlayerPrefs.DeleteKey(VolumeSfxKey);
         PlayerPrefs.DeleteKey(RebindsKey);
         PlayerPrefs.Save();
+        settings.InitializePlayerStatus();
 
         Debug.Log("GameReset");
     }

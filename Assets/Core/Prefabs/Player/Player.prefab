@@ -178,8 +178,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f586b224db60df74386ce170200d9f33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerVitals
-  playerHealth: 0
-  playerEnergy: 0
   IsInvincible: 0
   invincibleTimer: 0
   settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
@@ -202,6 +200,7 @@ MonoBehaviour:
   anim: {fileID: 3711363477815692405}
   rb: {fileID: 5050880883378003568}
   boxCol: {fileID: 4121648880309150103}
+  sprite: {fileID: 1898020689533259951}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -211,7 +210,6 @@ MonoBehaviour:
   isGround: 0
   facingDirection: 1
   isJumping: 0
-  JumpHeld: 0
   jumpTimeCounter: 0
   jumpBufferTimer: 0
   coyoteTimer: 0

@@ -55,7 +55,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private float attackEndPercent = 0.9f;
 
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
-    private int attackDamage = 10;
+    private int attackDamage = 100;
 
     [Header("Debug")]
     [SerializeField] private LineRenderer swingLine;

@@ -40,12 +40,6 @@ public sealed class PlayerVitals : MonoBehaviour
     public int MaxHealth => settings.maxHealth;
     public int MaxEnergy => settings.maxEnergy;
 
-    public void InitializePlayerStatus()
-    {
-        Health = settings.maxHealth;
-        Energy = settings.maxEnergy;
-    }
-
     private void Update()
     {
         if (invincibleTimer > 0f)
@@ -80,7 +74,10 @@ public sealed class PlayerVitals : MonoBehaviour
             return false;
         }
 
-        Health -= damage;
+        if (ignoreInvincible && Health <= damage)
+            Health = 1;
+        else
+            Health -= damage;
 
         return true;
     }

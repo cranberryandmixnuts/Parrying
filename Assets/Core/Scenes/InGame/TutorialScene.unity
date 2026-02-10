@@ -2680,7 +2680,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 511
 --- !u!114 &1328119672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4652,6 +4652,7 @@ MonoBehaviour:
   firePoint: {fileID: 4303098155764623937}
   hitbox: {fileID: 6999664537151953534}
   fireShootPercent: 0.6
+  projectileDamage: 80
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

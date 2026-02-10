@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSettings
   maxHealth: 1000
   maxEnergy: 500
+  currentHealth: 1000
+  currentEnergy: 500
   moveSpeed: 10
   groundAccelTime: 0.25
   airAccelTime: 0.3

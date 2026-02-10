@@ -25,6 +25,9 @@ public sealed class TutorialSeeker : EnemyBase, IEnemyProjectileOwner
     [TabGroup("Tutorial Seeker", "Tuning"), BoxGroup("Tutorial Seeker/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
     private float fireShootPercent = 0.6f;
 
+    [TabGroup("Tutorial Seeker", "Tuning"), BoxGroup("Tutorial Seeker/Tuning/Fire"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
+    private int projectileDamage = 80;
+
     private State state;
     private float fireTimer = -999f;
     private float fireStateLength;
@@ -100,7 +103,7 @@ public sealed class TutorialSeeker : EnemyBase, IEnemyProjectileOwner
         Vector2 dir = transform.right;
 
         EnemyProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
-        proj.Initialize(this, Player, dir);
+        proj.Initialize(this, Player, dir, projectileDamage);
     }
 
     public void OnHitByReflectedProjectile()

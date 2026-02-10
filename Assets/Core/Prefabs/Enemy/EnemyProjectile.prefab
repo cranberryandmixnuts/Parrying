@@ -86,12 +86,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eadb0f2a9cc1fa42974c0fd74c6e3a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeekerProjectile
-  speed: 10
-  turnSpeed: 160
-  reflectSpeed: 50
-  reflectTurnSpeed: 600
-  maxLifetime: 6
-  damage: 10
   groundMask:
     serializedVersion: 2
     m_Bits: 64
@@ -99,6 +93,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   hitCollider: {fileID: 2570853164659680277}
+  speed: 10
+  turnSpeed: 160
+  reflectSpeed: 50
+  reflectTurnSpeed: 600
+  maxLifetime: 6
+  damage: 50
 --- !u!58 &2570853164659680277
 CircleCollider2D:
   m_ObjectHideFlags: 0

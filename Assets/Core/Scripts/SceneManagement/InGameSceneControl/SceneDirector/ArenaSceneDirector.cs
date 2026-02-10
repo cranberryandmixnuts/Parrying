@@ -114,8 +114,7 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
 
     private IEnumerator WaitForWaveCleared()
     {
-        while (HasAliveEnemy())
-            yield return null;
+        yield return new WaitUntil(() => !HasAliveEnemy());
     }
 
     private bool HasAliveEnemy()

@@ -35,6 +35,9 @@ public abstract class EnemyBase : MonoBehaviour
         OnFixedUpdate();
     }
 
+    private void OnEnable() => PlayerController.Instance.OnPlayerDie += StopActivity;
+    private void OnDisable() => PlayerController.Instance.OnPlayerDie -= StopActivity;
+
     protected virtual void OnUpdate() { }
 
     protected virtual void OnFixedUpdate() { }
@@ -120,4 +123,11 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     public bool IsDead() => dead;
+
+    protected void StopActivity()
+    {
+        Body.linearVelocity = Vector2.zero;
+        Body.simulated = false;
+        enabled = false;
+    }
 }

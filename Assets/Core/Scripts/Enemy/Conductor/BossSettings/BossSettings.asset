@@ -23,32 +23,33 @@ MonoBehaviour:
   idleDelay: 1
   groggyDuration: 3
   repeatPenalty: 0.5
-  swordDamage: 10
+  swordDamage: 200
   swordStartAngle: 90
   swordEndAngle: 0
   swordBladeLength: 7
   swordBladeThickness: 0.5
   plungeFallDelay: 0.5
   plungeFallSpeed: 16
-  plungeDamage: 10
+  plungeDamage: 100
   plungeBounceUpSpeed: 12
   rushStartDelay: 0.5
   rushSpeed: 12
   rushMaxTime: 2
   missBehindTime: 0.6
-  rushDamage: 10
+  rushDamage: 150
   missileVolleys: 3
   missileVolleyInterval: 0.5
+  projectileDamage: 50
   laserWindupTime: 0.6
   extraWarningTail: 0.2
   laserActiveTime: 0.6
   missileToLaserExtraDelay: 0.5
   laserTurnSpeedDegPerSec: 300
-  laserDamage: 10
+  laserDamage: 300
   volleySideOffset: 6
   laserLength: 30
   laserThickness: 0.3
-  radialDamage: 10
+  radialDamage: 300
   radialBeat: 0.3
   radialBeamCountRange: {x: 8, y: 12}
   radialMinAngleSeparationDeg: 30

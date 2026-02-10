@@ -182,7 +182,7 @@ public sealed class BossVolleyLaserState : BossState
         dir.Normalize();
 
         EnemyProjectile proj = Object.Instantiate(boss.MissilePrefab, origin, Quaternion.identity);
-        proj.Initialize(boss, boss.PlayerTarget, dir);
+        proj.Initialize(boss, boss.PlayerTarget, dir, boss.Settings.projectileDamage);
     }
 
     private void StartLaser()

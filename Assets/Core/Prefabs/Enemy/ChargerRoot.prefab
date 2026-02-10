@@ -409,7 +409,7 @@ MonoBehaviour:
   overshootAfterParryDuration: 0.5
   backWalkDurationMin: 1
   backWalkDurationMax: 3
-  contactDamage: 10
+  contactDamage: 100
 --- !u!50 &8691103499594126072
 Rigidbody2D:
   serializedVersion: 5

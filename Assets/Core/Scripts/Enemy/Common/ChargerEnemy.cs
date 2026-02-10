@@ -53,7 +53,7 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private float backWalkDurationMax = 3f;
 
     [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Attack"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
-    private int contactDamage = 10;
+    private int contactDamage = 100;
 
     private State state;
     private float cooldownTimer;

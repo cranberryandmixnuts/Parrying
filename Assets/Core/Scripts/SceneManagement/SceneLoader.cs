@@ -93,8 +93,7 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
         }
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        while (!asyncLoad.isDone)
-            yield return null;
+        yield return new WaitUntil(() => asyncLoad.isDone);
 
         CurrentSceneType = GetCurrentSceneType();
 

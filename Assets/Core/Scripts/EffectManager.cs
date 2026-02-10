@@ -10,6 +10,9 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/References"), SerializeField, Required]
     private Camera targetCamera;
 
+    [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/References"), SerializeField, Required]
+    private GameObject GameOverOptionButtons;
+
     [TabGroup("Effect Manager", "Setup"), BoxGroup("Effect Manager/Setup/Scene Roots"), SerializeField, Required]
     private Transform followPlayerRoot;
 
@@ -31,9 +34,6 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     [TabGroup("Effect Manager", "Counter Parry"), BoxGroup("Effect Manager/Counter Parry/Shake"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
     private float counterShakeDuration = 0.2f;
 
-    [TabGroup("Effect Manager", "Overlays"), BoxGroup("Effect Manager/Overlays/References"), SerializeField, Required]
-    private GameObject counterFlashOverlay;
-
     [TabGroup("Effect Manager", "Dash"), BoxGroup("Effect Manager/Dash/Slowmo"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
     private float extremeSlowFadeTime = 0.1f;
 
@@ -41,7 +41,13 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     private float extremeSlowScale = 0.3f;
 
     [TabGroup("Effect Manager", "Overlays"), BoxGroup("Effect Manager/Overlays/References"), SerializeField, Required]
+    private GameObject counterFlashOverlay;
+
+    [TabGroup("Effect Manager", "Overlays"), BoxGroup("Effect Manager/Overlays/References"), SerializeField, Required]
     private GameObject slowmoOverlay;
+
+    [TabGroup("Effect Manager", "Overlays"), BoxGroup("Effect Manager/Overlays/References"), SerializeField, Required]
+    private GameObject gameOverOverlay;
 
     [TabGroup("Effect Manager", "VFX - World"), BoxGroup("Effect Manager/VFX - World/References"), SerializeField, Required]
     private VisualEffect dash;
@@ -232,12 +238,18 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
         laserActive.Clear();
     }
 
+    public void StopAllEffects()
+    {
+        StopAllParry();
+        StopAllLaser();
+        dash.Stop();
+        healing.Stop();
+        healLine.Stop();
+        healingUI.Stop();
+    }
     #endregion
 
-    public void DoPerfectParryImpact()
-    {
-        Shake(perfectShakeDuration, perfectShakeAmplitude);
-    }
+    public void DoPerfectParryImpact() => Shake(perfectShakeDuration, perfectShakeAmplitude);
 
     public void DoCounterParryImpact()
     {
@@ -283,6 +295,68 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
                     slowmoOverlay.SetActive(false);
                 })
         );
+    }
+
+    public void DoGameOverEffect()
+    {
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+        StopAllEffects();
+        PlayerController.Instance.Sprite.sortingOrder = 10;
+        gameOverOverlay.GetComponentInParent<Canvas>().sortingOrder = 9;
+
+        StartCoroutine(CoGameOverEffect());
+    }
+
+    private IEnumerator CoGameOverEffect()
+    {
+        PlayHit();
+        yield return null;
+
+        Transform camTr = targetCamera.transform;
+        camTr.DOKill(true);
+
+        CanvasGroup overlayGroup = gameOverOverlay.GetComponent<CanvasGroup>();
+        CanvasGroup buttonsGroup = GameOverOptionButtons.GetComponent<CanvasGroup>();
+
+        gameOverOverlay.SetActive(true);
+        overlayGroup.alpha = 0f;
+
+        GameOverOptionButtons.SetActive(false);
+        buttonsGroup.alpha = 0f;
+
+        Vector3 camPos = camTr.position;
+        Vector3 playerPos = PlayerController.Instance.transform.position;
+        Vector3 targetPos = new(playerPos.x, playerPos.y - 0.65f, camPos.z);
+
+        Sequence seq = DOTween.Sequence();
+        seq.SetUpdate(true);
+
+        seq.AppendCallback(() =>
+        {
+            Time.timeScale = 0f;
+        });
+
+        seq.AppendInterval(0.5f);
+
+        seq.AppendCallback(() =>
+        {
+            Time.timeScale = 1f;
+        });
+
+        seq.Append(overlayGroup.DOFade(1f, 1f).SetEase(Ease.Linear).SetUpdate(true));
+        seq.Join(camTr.DOMove(targetPos, 1f).SetEase(Ease.OutQuad).SetUpdate(true));
+        seq.Join(targetCamera.DOOrthoSize(2f, 1f).SetEase(Ease.OutQuad).SetUpdate(true));
+
+        seq.AppendCallback(() =>
+        {
+            GameOverOptionButtons.SetActive(true);
+            buttonsGroup.alpha = 0f;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        });
+
+        seq.Append(buttonsGroup.DOFade(1f, 0.5f).SetEase(Ease.Linear).SetUpdate(true));
     }
 
     private void Restart(VisualEffect vfx)
