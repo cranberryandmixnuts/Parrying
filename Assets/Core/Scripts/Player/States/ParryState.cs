@@ -85,10 +85,7 @@ public sealed class ParryState : PlayerState
                     }
                     else
                     {
-                        int chip = c.ImperfectParryDamage > 0 ? Mathf.CeilToInt(c.ImperfectParryDamage) : 0;
-                        if (chip > 0)
-                            player.Vitals.ApplyDamage(chip, true);
-
+                        player.Vitals.ApplyDamage(c.ImperfectParryDamage, true);
                         player.Vitals.GainEnergy(player.Settings.imperfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnImperfectParry(c.hitPoint);
