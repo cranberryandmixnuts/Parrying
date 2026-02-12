@@ -41,8 +41,8 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         public bool PulseDown;
     }
 
-    [TabGroup("Input Service", "Setup"), SerializeField, Required]
-    private InputActionAsset actions;
+    [TabGroup("Input Service", "Setup"), Required]
+    public InputActionAsset Actions { get; private set; }
 
     [TabGroup("Input Service", "Setup"), SerializeField]
     private string playerMapName = "Player";
@@ -109,11 +109,12 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     public bool IsRebinding { get; private set; }
 
-    public InputActionAsset Actions { get { return actions; } }
-
     public event Action OnRebindStarted;
     public event Action OnRebindCompleted;
     public event Action OnRebindCanceled;
+
+    private InputAction FindAction(string mapName, string actionName) =>
+        Actions.FindAction(mapName + "/" + actionName);
 
     protected override void SingletonAwake()
     {
@@ -378,17 +379,15 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         escapeAction = FindAction(UIMapName, escapeActionName);
     }
 
-    private InputAction FindAction(string mapName, string actionName) => actions.FindAction(mapName + "/" + actionName);
-
     private void EnableActions(bool enable)
     {
-        if (enable) actions.Enable();
-        else actions.Disable();
+        if (enable) Actions.Enable();
+        else Actions.Disable();
     }
 
     public void SaveBindingOverrides()
     {
-        string json = actions.SaveBindingOverridesAsJson();
+        string json = Actions.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString(RebindsKey, json);
         PlayerPrefs.Save();
     }
@@ -400,12 +399,12 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
             return;
 
         string json = PlayerPrefs.GetString(RebindsKey);
-        actions.LoadBindingOverridesFromJson(json);
+        Actions.LoadBindingOverridesFromJson(json);
     }
 
     public void ClearBindingOverrides()
     {
-        actions.RemoveAllBindingOverrides();
+        Actions.RemoveAllBindingOverrides();
         PlayerPrefs.DeleteKey(RebindsKey);
     }
 
@@ -526,7 +525,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         if (TrySwapInAction(targetAction, targetBindingIndex, newPath, previousPath, targetGroups))
             return;
 
-        foreach (InputActionMap map in actions.actionMaps)
+        foreach (InputActionMap map in Actions.actionMaps)
         {
             foreach (InputAction action in map.actions)
             {
