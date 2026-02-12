@@ -41,31 +41,31 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         public bool PulseDown;
     }
 
-    [TabGroup("Input Service", "Setup"), Required]
-    public InputActionAsset Actions { get; private set; }
+    [TabGroup("InputManager", "Setup"), Required, SerializeField]
+    private InputActionAsset actions;
 
-    [TabGroup("Input Service", "Setup"), SerializeField]
+    [TabGroup("InputManager", "Setup"), SerializeField]
     private string playerMapName = "Player";
 
-    [TabGroup("Input Service", "Setup"), SerializeField]
+    [TabGroup("InputManager", "Setup"), SerializeField]
     private string UIMapName = "UI";
 
-    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/Player"), SerializeField]
     private string moveActionName = "Move";
 
-    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/Player"), SerializeField]
     private string jumpActionName = "Jump";
 
-    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/Player"), SerializeField]
     private string dashActionName = "Dash";
 
-    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/Player"), SerializeField]
     private string parryActionName = "Parry";
 
-    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/Player"), SerializeField]
+    [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/Player"), SerializeField]
     private string healActionName = "Heal";
 
-    [TabGroup("Input Service", "Action Names"), BoxGroup("Input Service/Action Names/UI"), SerializeField]
+    [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/UI"), SerializeField]
     private string escapeActionName = "Escape";
 
     private InputAction moveAction;
@@ -113,8 +113,10 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     public event Action OnRebindCompleted;
     public event Action OnRebindCanceled;
 
-    private InputAction FindAction(string mapName, string actionName) =>
-        Actions.FindAction(mapName + "/" + actionName);
+    public InputActionAsset Actions => actions;
+
+    public InputAction FindAction(string mapName, string actionName) =>
+        actions.FindAction(mapName + "/" + actionName);
 
     protected override void SingletonAwake()
     {
@@ -381,13 +383,13 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     private void EnableActions(bool enable)
     {
-        if (enable) Actions.Enable();
-        else Actions.Disable();
+        if (enable) actions.Enable();
+        else actions.Disable();
     }
 
     public void SaveBindingOverrides()
     {
-        string json = Actions.SaveBindingOverridesAsJson();
+        string json = actions.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString(RebindsKey, json);
         PlayerPrefs.Save();
     }
@@ -399,12 +401,12 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
             return;
 
         string json = PlayerPrefs.GetString(RebindsKey);
-        Actions.LoadBindingOverridesFromJson(json);
+        actions.LoadBindingOverridesFromJson(json);
     }
 
     public void ClearBindingOverrides()
     {
-        Actions.RemoveAllBindingOverrides();
+        actions.RemoveAllBindingOverrides();
         PlayerPrefs.DeleteKey(RebindsKey);
     }
 
@@ -525,7 +527,7 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         if (TrySwapInAction(targetAction, targetBindingIndex, newPath, previousPath, targetGroups))
             return;
 
-        foreach (InputActionMap map in Actions.actionMaps)
+        foreach (InputActionMap map in actions.actionMaps)
         {
             foreach (InputAction action in map.actions)
             {
