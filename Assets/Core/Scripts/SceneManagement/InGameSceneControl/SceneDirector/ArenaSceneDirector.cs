@@ -51,6 +51,9 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
     [TabGroup("Arena", "Refs"), SerializeField]
     private GameObject[] lockDoors;
 
+    [TabGroup("Arena", "Refs"), SerializeField]
+    private GameObject ExitBox;
+
     [TabGroup("Arena", "Waves"), SerializeField, ListDrawerSettings(ShowFoldout = true, DefaultExpandedState = true)]
     private List<WaveDefinition> waves = new();
 
@@ -64,6 +67,7 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
         SetDoorsActive(false);
+        ExitBox.SetActive(false);
         routine = StartCoroutine(RunSequence());
     }
 
@@ -86,6 +90,7 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
         }
 
         SetDoorsActive(false);
+        ExitBox.SetActive(true);
 
         Debug.Log("Scene End");
     }

@@ -9,9 +9,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     private TutorialSeeker seeker;
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Scene"), SerializeField, Required]
-    private Camera worldCamera;
-
-    [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Scene"), SerializeField, Required]
     private CanvasGroup blackOverlay;
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Panels"), SerializeField, Required]
@@ -28,18 +25,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Panels"), SerializeField, Required]
     private TutorialPanel healPanel;
-
-    [TabGroup("Tutorial", "Camera"), SerializeField, Min(0f)]
-    private float entryOrthoSize = 2f;
-
-    [TabGroup("Tutorial", "Camera"), SerializeField, Min(0f)]
-    private float defaultOrthoSize = 5f;
-
-    [TabGroup("Tutorial", "Camera"), SerializeField]
-    private Vector2 defaultCameraXY = Vector2.zero;
-
-    [TabGroup("Tutorial", "Camera"), SerializeField, Min(0f)]
-    private float cameraResetSeconds = 0.6f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Entry"), SerializeField, Min(0f)]
     private float firstFireDelaySeconds = 0.4f;
@@ -99,14 +84,11 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     private InputManager input;
 
     private float baseFixedDeltaTime;
-    private bool followPlayer;
-    private float camZ;
 
     private Coroutine routine;
 
     private Tween timeScaleTween;
     private Tween overlayTween;
-    private Tween cameraTween;
 
     private void Start()
     {
@@ -114,7 +96,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         input = InputManager.Instance;
 
         baseFixedDeltaTime = Time.fixedDeltaTime;
-        camZ = worldCamera.transform.position.z;
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = baseFixedDeltaTime;
@@ -122,20 +103,9 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         HideOverlayImmediate();
         HideAllPanelsImmediate();
 
-        worldCamera.orthographicSize = entryOrthoSize;
-        followPlayer = true;
-
         player.Settings.InitializePlayerStatus();
 
         routine = StartCoroutine(Run());
-    }
-
-    private void LateUpdate()
-    {
-        if (!followPlayer) return;
-
-        Transform p = player.transform;
-        worldCamera.transform.position = new Vector3(p.position.x, p.position.y, camZ);
     }
 
     private IEnumerator Run()
@@ -147,10 +117,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         seeker.FireAtPlayer();
 
         yield return new WaitForSecondsRealtime(firstHitRecoverDelaySeconds);
-
-        followPlayer = false;
-
-        yield return TweenCameraToDefault().WaitForCompletion();
 
         yield return new WaitForSecondsRealtime(parryFireDelaySeconds);
 
@@ -290,21 +256,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     {
         Time.timeScale = Mathf.Clamp01(value);
         Time.fixedDeltaTime = baseFixedDeltaTime * Time.timeScale;
-    }
-
-    private Tween TweenCameraToDefault()
-    {
-        if (cameraTween != null && cameraTween.IsActive())
-            cameraTween.Kill(false);
-
-        Vector3 targetPos = new(defaultCameraXY.x, defaultCameraXY.y, camZ);
-
-        cameraTween = DOTween.Sequence()
-            .SetUpdate(true)
-            .Join(worldCamera.DOOrthoSize(defaultOrthoSize, cameraResetSeconds).SetEase(Ease.OutQuad).SetUpdate(true))
-            .Join(worldCamera.transform.DOMove(targetPos, cameraResetSeconds).SetEase(Ease.OutQuad).SetUpdate(true));
-
-        return cameraTween;
     }
 
     private IEnumerator ShowPanel(TutorialPanel panel)
