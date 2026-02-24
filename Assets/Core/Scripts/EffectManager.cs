@@ -157,9 +157,11 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
         parryActive.Clear();
     }
 
-    public void PlayDash() => DashRenderer.enabled = true;
+    public void PlayDash() => Restart(dash);
+    //public void PlayDash() => DashRenderer.enabled = true;
 
-    public void StopDash() => DashRenderer.enabled = false;
+    public void StopDash() => dash.Stop();
+    //public void StopDash() => DashRenderer.enabled = false;
 
     public void PlayHeal()
     {

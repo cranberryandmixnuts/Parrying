@@ -1546,6 +1546,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: EffectManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7795387447020521663, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795387447020521663, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795387447020521663, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795387447020521663, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7795387447020521663, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7931419417397165371, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: m_Camera
       value: 
@@ -1590,8 +1610,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8961630315974135317, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
+      propertyPath: m_InitialEventNameOverriden
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7356924078551872086, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
