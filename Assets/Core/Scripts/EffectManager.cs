@@ -105,6 +105,8 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     private readonly List<VisualEffect> laserActive = new();
     private readonly Dictionary<VisualEffect, Coroutine> laserReleaseCoroutines = new();
 
+    private VFXRenderer DashRenderer;
+
     protected override void SingletonAwake()
     {
         parryTemplate.gameObject.SetActive(false);
@@ -122,6 +124,9 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
             VisualEffect vfx = CreateLaserInstance();
             ReturnLaserInstance(vfx);
         }
+
+        DashRenderer = dash.GetComponent<VFXRenderer>();
+        StopDash();
     }
 
     #region VFX Controls
@@ -152,9 +157,9 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
         parryActive.Clear();
     }
 
-    public void PlayDash() => Restart(dash);
+    public void PlayDash() => DashRenderer.enabled = true;
 
-    public void StopDash() => dash.Stop();
+    public void StopDash() => DashRenderer.enabled = false;
 
     public void PlayHeal()
     {

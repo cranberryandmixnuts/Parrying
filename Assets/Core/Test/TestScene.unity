@@ -1534,10 +1534,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 8716441742125073611}
-    - target: {fileID: 4753797986312052108, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
-      propertyPath: targetCamera
-      value: 
-      objectReference: {fileID: 1106441949}
     - target: {fileID: 4837013381945367643, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: Target
       value: 
@@ -1923,6 +1919,10 @@ PrefabInstance:
     - target: {fileID: 8952552094277220523, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
       propertyPath: m_Name
       value: BossRoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 8952552094277220523, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
