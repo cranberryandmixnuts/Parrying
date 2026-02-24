@@ -33,6 +33,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Settings"), SerializeField, Required]
     private BossSettings settings;
 
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/TeleportEffect"), SerializeField, Required]
+    private BossTeleportEffectManager teleportEffectManager;
+
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform leftTop;
 
@@ -286,6 +289,12 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
     }
 
+    public void Teleport(Vector3 p)
+    {
+        teleportEffectManager.Play(transform.position, p);
+        transform.position = p;
+    }
+
     public void Play(string anim) => Anim.Play(anim);
 
     public float AnimLen(string anim) => GetAnimLength(anim);
@@ -293,8 +302,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public void FaceToPlayer() => FacePlayer();
 
     public void FaceTo(int dir) => ApplyFacing(dir < 0 ? -1 : 1);
-
-    public void Teleport(Vector3 p) => transform.position = p;
 
     public void SetGravityScale(float v) => Body.gravityScale = v;
 
@@ -308,10 +315,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public bool IsTouchingGround() => Body.IsTouchingLayers(settings.groundLayer);
 
-    public void StopHorizontal()
-    {
-        Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
-    }
+    public void StopHorizontal() => Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
 
     public int HandleHitbox(Collider2D hitCol, int damage)
     {
