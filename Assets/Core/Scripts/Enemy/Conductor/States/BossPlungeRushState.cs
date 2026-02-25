@@ -18,6 +18,8 @@ public sealed class BossPlungeRushState : BossState
     private float rushStopX;
     private float rushTime;
     private float rushDisable;
+    private bool teleported;
+    private Coroutine teleportRoutine;
 
     public override BossStateType StateType => BossStateType.PlungeRush;
 
@@ -26,24 +28,29 @@ public sealed class BossPlungeRushState : BossState
 
     public override void Enter()
     {
-        Vector3 p = boss.PlayerTarget.transform.position;
-        Vector3 c = boss.CeilingPoint.position;
-        boss.Teleport(new Vector3(p.x, c.y, boss.transform.position.z));
-        boss.FaceTo(p.x >= boss.transform.position.x ? 1 : -1);
-
-        phase = Phase.Tele;
-        timer = boss.Settings.plungeFallDelay;
-        boss.SetLethal(BossController.AttackContext.Plunge, true);
+        teleported = false;
+        phase = Phase.End;
+        timer = 0f;
         rushTime = 0f;
         rushDisable = 0f;
 
+        boss.SetLethal(BossController.AttackContext.None, false);
         boss.SetGravityScale(0f);
         boss.SetVelocityX(0f);
         boss.SetVelocityY(0f);
+        boss.StopHorizontal();
+
+        Vector3 p = boss.PlayerTarget.transform.position;
+        Vector3 c = boss.CeilingPoint.position;
+        Vector3 target = new(p.x, c.y, boss.transform.position.z);
+
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(target, OnTeleported));
     }
 
     public override void Update()
     {
+        if (!teleported) return;
+
         if (phase == Phase.Tele)
         {
             TryRegisterCounterParry();
@@ -162,6 +169,13 @@ public sealed class BossPlungeRushState : BossState
 
     public override void FixedUpdate()
     {
+        if (!teleported)
+        {
+            boss.SetVelocityX(0f);
+            boss.SetVelocityY(0f);
+            return;
+        }
+
         if (phase == Phase.Tele)
         {
             boss.SetVelocityX(0f);
@@ -183,10 +197,30 @@ public sealed class BossPlungeRushState : BossState
 
     public override void Exit()
     {
+        if (teleportRoutine != null) boss.StopCoroutine(teleportRoutine);
+        teleportRoutine = null;
+        boss.CancelTeleportEffects();
+
+        teleported = false;
         boss.SetLethal(BossController.AttackContext.Plunge, false);
         boss.SetLethal(BossController.AttackContext.Rush, false);
         boss.StopHorizontal();
         boss.SetGravityScale(boss.OriginalGravityScale);
+    }
+
+    private void OnTeleported()
+    {
+        teleportRoutine = null;
+        teleported = true;
+
+        float playerX = boss.PlayerTarget.transform.position.x;
+        boss.FaceTo(playerX >= boss.transform.position.x ? 1 : -1);
+
+        phase = Phase.Tele;
+        timer = boss.Settings.plungeFallDelay;
+        boss.SetLethal(BossController.AttackContext.Plunge, true);
+        rushTime = 0f;
+        rushDisable = 0f;
     }
 
     private void TryRegisterCounterParry()
@@ -197,10 +231,7 @@ public sealed class BossPlungeRushState : BossState
         if (d.sqrMagnitude <= pr * pr) boss.PlayerTarget.RegisterParryCandidate(boss, hp, 0);
     }
 
-    private bool GroundHit()
-    {
-        return boss.IsTouchingGround();
-    }
+    private bool GroundHit() => boss.IsTouchingGround();
 
     private bool ReachedRushStop()
     {

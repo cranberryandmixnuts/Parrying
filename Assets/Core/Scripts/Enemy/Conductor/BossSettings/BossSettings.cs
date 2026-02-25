@@ -17,13 +17,13 @@ public sealed class BossSettings : ScriptableObject
     public int p2Stacks = 1;
 
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Timing"), SuffixLabel("s", true), MinValue(0f)]
-    public float idleDelay = 1f;
+    public float idleDelay = 0.6f;
 
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float groggyDuration = 2f;
 
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Misc"), PropertyRange(0f, 1f), SuffixLabel("น่", true)]
-    public float repeatPenalty = 0.5f;
+    public float repeatPenalty = 0.6f;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Damage"), MinValue(0)]
     public int swordDamage = 200;

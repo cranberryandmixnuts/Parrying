@@ -36,6 +36,9 @@ public sealed class BossVolleyLaserState : BossState
     private float laserThickness;
     private float laserAngleDeg;
 
+    private bool stateStarted;
+    private Coroutine teleportRoutine;
+
     private VisualEffect laserVfx;
 
     public override BossStateType StateType => BossStateType.VolleyLaser;
@@ -45,51 +48,21 @@ public sealed class BossVolleyLaserState : BossState
 
     public override void Enter()
     {
-        TeleportToVolleyPosition();
-
+        stateStarted = false;
+        laserVfx = null;
+        boss.SetLethal(BossController.AttackContext.LaserP1, false);
         boss.SetGravityScale(0f);
         boss.SetVelocityX(0f);
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
 
-        boss.Play(BossController.AnimFire);
-        fireDuration = boss.AnimLen(BossController.AnimFire);
-        stateTimer = fireDuration;
-        elapsed = 0f;
-
-        missileCount = Mathf.Max(0, boss.Settings.missileVolleys);
-        missileInterval = boss.Settings.missileVolleyInterval;
-        missilesFired = 0;
-
-        float lastShotTime = (missileCount - 1) * missileInterval;
-        missilePhaseEndTime = lastShotTime + missileInterval + boss.Settings.missileToLaserExtraDelay;
-
-        laserTrackDuration = boss.Settings.laserWindupTime;
-        laserWarningDuration = laserTrackDuration + boss.Settings.extraWarningTail;
-        laserActiveDuration = boss.Settings.laserActiveTime;
-        laserStartTime = missilePhaseEndTime;
-
-        laserStarted = false;
-        laserInteractionDisabled = false;
-        laserDirectionLocked = false;
-        laserTime = 0f;
-
-        laserLength = boss.Settings.laserLength;
-        laserThickness = boss.Settings.laserThickness;
-
-        laserOrigin = Vector2.zero;
-        laserDir = Vector2.right;
-        laserAngleDeg = 0f;
-
-        laserVfx = null;
-
-        phase = Phase.Missiles;
-
-        boss.SetLethal(BossController.AttackContext.LaserP1, false);
+        BeginTeleportToVolleyPosition();
     }
 
     public override void Update()
     {
+        if (!stateStarted) return;
+
         float dt = Time.deltaTime;
 
         stateTimer -= dt;
@@ -125,6 +98,11 @@ public sealed class BossVolleyLaserState : BossState
 
     public override void Exit()
     {
+        if(teleportRoutine != null) boss.StopCoroutine(teleportRoutine);
+        teleportRoutine = null;
+        boss.CancelTeleportEffects();
+
+        stateStarted = false;
         boss.SetGravityScale(boss.OriginalGravityScale);
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
@@ -138,7 +116,7 @@ public sealed class BossVolleyLaserState : BossState
         boss.SetLethal(BossController.AttackContext.None, false);
     }
 
-    private void TeleportToVolleyPosition()
+    private void BeginTeleportToVolleyPosition()
     {
         float playerX = boss.PlayerTarget.transform.position.x;
         float centerX = boss.VolleyCenter.position.x;
@@ -152,8 +130,52 @@ public sealed class BossVolleyLaserState : BossState
 
         float targetY = boss.VolleyHeight.position.y;
         Vector3 p = new(targetX, targetY, boss.transform.position.z);
-        boss.Teleport(p);
+
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(p, OnTeleported));
+    }
+
+    private void OnTeleported()
+    {
+        teleportRoutine = null;
         boss.FaceToPlayer();
+        EnterAfterTeleport();
+    }
+
+    private void EnterAfterTeleport()
+    {
+        boss.Play(BossController.AnimFire);
+        fireDuration = boss.AnimLen(BossController.AnimFire);
+        stateTimer = fireDuration;
+        elapsed = 0f;
+
+        missileCount = Mathf.Max(0, boss.Settings.missileVolleys);
+        missileInterval = boss.Settings.missileVolleyInterval;
+        missilesFired = 0;
+
+        float lastShotTime = (missileCount - 1) * missileInterval;
+        missilePhaseEndTime = lastShotTime + missileInterval + boss.Settings.missileToLaserExtraDelay;
+
+        laserTrackDuration = boss.Settings.laserWindupTime;
+        laserWarningDuration = laserTrackDuration + boss.Settings.extraWarningTail;
+        laserActiveDuration = boss.Settings.laserActiveTime;
+        laserStartTime = missilePhaseEndTime;
+
+        laserStarted = false;
+        laserInteractionDisabled = false;
+        laserDirectionLocked = false;
+        laserTime = 0f;
+
+        laserLength = boss.Settings.laserLength;
+        laserThickness = boss.Settings.laserThickness;
+
+        laserOrigin = Vector2.zero;
+        laserDir = Vector2.right;
+        laserAngleDeg = 0f;
+
+        phase = Phase.Missiles;
+        stateStarted = true;
+
+        boss.SetLethal(BossController.AttackContext.LaserP1, false);
     }
 
     private void UpdateMissiles()

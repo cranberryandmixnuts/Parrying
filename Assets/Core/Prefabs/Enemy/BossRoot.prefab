@@ -143,7 +143,7 @@ MonoBehaviour:
   p1Stacks: 0
   p2Stacks: 0
   settings: {fileID: 11400000, guid: 2870cb9b992bb8546b04be23cfb6b0cf, type: 2}
-  teleportEffectManager: {fileID: 3361217608674401182}
+  teleportManager: {fileID: 3361217608674401182}
   leftTop: {fileID: 6466427956574511806}
   rightTop: {fileID: 4678971370129052570}
   ceilingPoint: {fileID: 3993595406944785321}
@@ -422,6 +422,9 @@ MonoBehaviour:
   lineRenderer: {fileID: 3652370348044847144}
   silhouetteSpriteRenderer: {fileID: 6557855129592652331}
   resetTransform: {fileID: 1089315220805584373}
+  preEffectDuration: 0.5
+  prePointAlphaMultiplier: 0.1
+  bossSilhouetteTargetAlpha: 1
   fadeDuration: 0.5
   startPointOffset: {x: 0, y: 0, z: 0}
   startPointActiveScale: {x: 0.1, y: 0.1, z: 0.1}

@@ -13,6 +13,7 @@ public sealed class BossSwordDropState : BossState
     private float curAngle;
     private Vector2 boxSize;
     private bool resolved;
+    private Coroutine teleportRoutine;
 
     public override BossStateType StateType => BossStateType.SwordDrop;
 
@@ -22,33 +23,20 @@ public sealed class BossSwordDropState : BossState
     public override void Enter()
     {
         Transform t = ChooseSideTop();
-        boss.Teleport(t.position);
         bool choseLeft = t == boss.LeftTop;
         faceDir = choseLeft ? 1 : -1;
-        boss.FaceTo(faceDir);
-        boss.Play(BossController.AnimSideSword);
 
-        phase = 1;
-        boss.SetLethal(BossController.AttackContext.Sword, true);
-
-        float startAngle = boss.Settings.swordStartAngle;
-        float endAngle = boss.Settings.swordEndAngle;
-        float bladeLen = boss.Settings.swordBladeLength;
-        float bladeThick = boss.Settings.swordBladeThickness;
-
-        baseAngle = faceDir > 0 ? 0f : 180f;
-        startLocal = faceDir > 0 ? startAngle : -startAngle;
-        endLocal = faceDir > 0 ? endAngle : -endAngle;
-
-        elapsed = 0f;
-        duration = boss.AnimLen(BossController.AnimSideSword);
-
-        curAngle = baseAngle + startLocal;
-        prevAngle = curAngle;
-        boxSize = new Vector2(bladeLen, bladeThick);
+        phase = 0;
         resolved = false;
-
+        boss.SetLethal(BossController.AttackContext.Sword, false);
+        boss.StopHorizontal();
         boss.DebugClearSwingLine();
+
+        boss.SetGravityScale(0f);
+        boss.SetVelocityX(0f);
+        boss.SetVelocityY(0f);
+
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(t.position, OnTeleported));
     }
 
     public override void Update()
@@ -115,11 +103,53 @@ public sealed class BossSwordDropState : BossState
 
     public override void FixedUpdate()
     {
+        if (phase == 0)
+        {
+            boss.SetVelocityX(0f);
+            boss.SetVelocityY(0f);
+            return;
+        }
+
         boss.StopHorizontal();
     }
 
     public override void Exit()
     {
+        if (teleportRoutine != null) boss.StopCoroutine(teleportRoutine);
+        teleportRoutine = null;
+        boss.CancelTeleportEffects();
+        boss.SetGravityScale(boss.OriginalGravityScale);
+        boss.DebugClearSwingLine();
+    }
+
+    private void OnTeleported()
+    {
+        teleportRoutine = null;
+        boss.SetGravityScale(boss.OriginalGravityScale);
+
+        boss.FaceTo(faceDir);
+        boss.Play(BossController.AnimSideSword);
+
+        phase = 1;
+        boss.SetLethal(BossController.AttackContext.Sword, true);
+
+        float startAngle = boss.Settings.swordStartAngle;
+        float endAngle = boss.Settings.swordEndAngle;
+        float bladeLen = boss.Settings.swordBladeLength;
+        float bladeThick = boss.Settings.swordBladeThickness;
+
+        baseAngle = faceDir > 0 ? 0f : 180f;
+        startLocal = faceDir > 0 ? startAngle : -startAngle;
+        endLocal = faceDir > 0 ? endAngle : -endAngle;
+
+        elapsed = 0f;
+        duration = boss.AnimLen(BossController.AnimSideSword);
+
+        curAngle = baseAngle + startLocal;
+        prevAngle = curAngle;
+        boxSize = new Vector2(bladeLen, bladeThick);
+        resolved = false;
+
         boss.DebugClearSwingLine();
     }
 

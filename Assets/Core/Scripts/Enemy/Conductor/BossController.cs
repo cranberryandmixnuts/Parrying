@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Collections;
 
 public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectileOwner
 {
@@ -33,8 +34,8 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Settings"), SerializeField, Required]
     private BossSettings settings;
 
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/TeleportEffect"), SerializeField, Required]
-    private BossTeleportManager teleportEffectManager;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/TeleportManager"), SerializeField, Required]
+    private BossTeleportManager teleportManager;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform leftTop;
@@ -289,11 +290,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
     }
 
-    public void Teleport(Vector3 p)
-    {
-        teleportEffectManager.Play(transform.position, p);
-        transform.position = p;
-    }
+    public IEnumerator TeleportRoutine(Vector3 p, Action onTeleported = null) => teleportManager.PlayTeleportSequence(transform, p, onTeleported);
+
+    public void CancelTeleportEffects() => teleportManager.ForceReset();
 
     public void Play(string anim) => Anim.Play(anim);
 

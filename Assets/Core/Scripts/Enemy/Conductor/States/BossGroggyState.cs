@@ -11,6 +11,7 @@ public sealed class BossGroggyState : BossState
 
     public override void Enter()
     {
+        boss.CancelTeleportEffects();
         boss.Play(BossController.AnimGroggy);
     }
 
@@ -23,8 +24,5 @@ public sealed class BossGroggyState : BossState
         else boss.ChangeToDeath();
     }
 
-    public override void FixedUpdate()
-    {
-        boss.StopHorizontal();
-    }
+    public override void FixedUpdate() => boss.StopHorizontal();
 }
