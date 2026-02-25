@@ -23,7 +23,7 @@ public sealed class BossSettings : ScriptableObject
     public float groggyDuration = 2f;
 
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Misc"), PropertyRange(0f, 1f), SuffixLabel("น่", true)]
-    public float repeatPenalty = 0.6f;
+    public float repeatPenalty = 0.7f;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Damage"), MinValue(0)]
     public int swordDamage = 200;

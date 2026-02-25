@@ -431,8 +431,8 @@ MonoBehaviour:
   endPointOffset: {x: 0, y: 0, z: 0}
   endPointActiveScale: {x: 0.1, y: 0.1, z: 0.1}
   lineOffset: {x: 0, y: 0, z: 0}
-  lineActiveScale: {x: 0.5, y: 0.5, z: 0.5}
-  lineLengthMultiplier: 0.2
+  lineActiveScale: {x: 0.1, y: 0.1, z: 0.1}
+  lineLengthMultiplier: 1
   silhouetteOffset: {x: 0, y: 0, z: 0}
   silhouetteScaleMultiplier: {x: 1, y: 1, z: 1}
 --- !u!1 &2440772674170785242
@@ -492,7 +492,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 0f8db81ad3189914fbee6c42edb75587, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

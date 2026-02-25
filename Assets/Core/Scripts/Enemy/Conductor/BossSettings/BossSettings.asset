@@ -22,7 +22,7 @@ MonoBehaviour:
   p2Stacks: 1
   idleDelay: 0.6
   groggyDuration: 3
-  repeatPenalty: 0.6
+  repeatPenalty: 0.7
   swordDamage: 200
   swordStartAngle: 90
   swordEndAngle: 0
