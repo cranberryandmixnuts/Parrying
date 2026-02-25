@@ -34,7 +34,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     private BossSettings settings;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/TeleportEffect"), SerializeField, Required]
-    private BossTeleportEffectManager teleportEffectManager;
+    private BossTeleportManager teleportEffectManager;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform leftTop;

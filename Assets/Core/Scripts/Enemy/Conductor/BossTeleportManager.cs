@@ -3,7 +3,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public sealed class BossTeleportEffectManager : MonoBehaviour
+public sealed class BossTeleportManager : MonoBehaviour
 {
     [Header("Boss")]
     [SerializeField, Required] private SpriteRenderer bossSpriteRenderer;
