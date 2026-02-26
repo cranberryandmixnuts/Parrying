@@ -1,10 +1,12 @@
 using UnityEngine;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 
 // 일정 시간 오른쪽 이동 → 정지 → 점프(짧게 홀드) → 다시 수동 복구
 // 자동 입력모드 테스트 코드
 public sealed class TestAutoPilot : MonoBehaviour
 {
+    [Header("Auto Pilot Settings")]
     [SerializeField] private float walkSeconds = 1f;
     [SerializeField] private float pauseSeconds = 1f;
     [SerializeField] private float jumpHoldSeconds = 0.3f;
@@ -12,14 +14,13 @@ public sealed class TestAutoPilot : MonoBehaviour
     private InputManager input;
     private Sequence sequence;
 
-    private void Start()
-    {
-        input = InputManager.Instance;
-        BeginCutsceneAuto();
-    }
+    private void Start() => input = InputManager.Instance;
 
-    private void BeginCutsceneAuto()
+    [Button, DisableInEditorMode]
+    public void StartAutoPilot()
     {
+        if (input == null) return;
+
         input.SetMode(ActionKey.Move, InputMode.Auto);
         input.SetMode(ActionKey.Jump, InputMode.Auto);
 

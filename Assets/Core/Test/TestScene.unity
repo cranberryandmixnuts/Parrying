@@ -805,6 +805,70 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &829659250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 829659252}
+  - component: {fileID: 829659251}
+  - component: {fileID: 829659253}
+  m_Layer: 0
+  m_Name: TestSceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &829659251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829659250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d164b9362a07c524d8bb73b1a938854f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TestSceneManager
+  DoInitializePlayerStatus: 1
+  StartToPlayTestAutoPilot: 0
+  playerSettings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
+  testAutoPilot: {fileID: 829659253}
+--- !u!4 &829659252
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829659250}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &829659253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829659250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c505cb1646ae384e8b77d49ccbb3715, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TestAutoPilot
+  walkSeconds: 1
+  pauseSeconds: 1
+  jumpHoldSeconds: 0.3
 --- !u!20 &1106441949
 Camera:
   m_ObjectHideFlags: 0
@@ -1440,53 +1504,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1948705684
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1948705686}
-  - component: {fileID: 1948705685}
-  m_Layer: 0
-  m_Name: TestAutoPilot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1948705685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1948705684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c505cb1646ae384e8b77d49ccbb3715, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CutsceneAutoPilot
-  walkSeconds: 1
-  pauseSeconds: 1
-  jumpHoldSeconds: 0.3
---- !u!4 &1948705686
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1948705684}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1969371739 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8251505396069226598, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
@@ -1986,4 +2003,4 @@ SceneRoots:
   - {fileID: 1606497450}
   - {fileID: 674710720109569258}
   - {fileID: 499860205}
-  - {fileID: 1948705686}
+  - {fileID: 829659252}
