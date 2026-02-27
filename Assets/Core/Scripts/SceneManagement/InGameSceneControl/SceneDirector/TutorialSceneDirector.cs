@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, SceneScope>
 {
     [System.Serializable]
-    private sealed class OkInfoStep
+    private sealed class UIInfoStep
     {
         [SerializeField, Required]
         public GameObject Root;
@@ -55,13 +55,13 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     private TutorialPanel healPanel;
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Info Steps"), SerializeField, Required]
-    private OkInfoStep imperfectParryEffectStep;
+    private UIInfoStep imperfectParryEffectStep;
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Info Steps"), SerializeField, Required]
-    private OkInfoStep energySystemStep;
+    private UIInfoStep energySystemStep;
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Info Steps"), SerializeField, Required]
-    private OkInfoStep hpSystemStep;
+    private UIInfoStep hpSystemStep;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Entry"), SerializeField, Min(0f)]
     private float firstFireDelaySeconds = 0.4f;
@@ -212,7 +212,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitForSecondsRealtime(afterImperfectParryDelaySeconds);
 
-        yield return RunOkInfoStep(imperfectParryEffectStep);
+        yield return RunUIInfoStep(imperfectParryEffectStep);
 
         yield return new WaitForSecondsRealtime(dodgeFireDelaySeconds);
 
@@ -230,7 +230,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitForSecondsRealtime(afterDodgeDelaySeconds);
 
-        yield return RunOkInfoStep(energySystemStep);
+        yield return RunUIInfoStep(energySystemStep);
 
         yield return new WaitForSecondsRealtime(counterChargePanelDelaySeconds);
         yield return ShowPanel(counterChargePanel);
@@ -263,7 +263,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitForSecondsRealtime(afterCounterParryDelaySeconds);
 
-        yield return RunOkInfoStep(hpSystemStep);
+        yield return RunUIInfoStep(hpSystemStep);
 
         yield return new WaitForSecondsRealtime(healPanelDelaySeconds);
         yield return ShowPanel(healPanel);
@@ -278,7 +278,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         Debug.Log("Scene End");
     }
 
-    private IEnumerator RunOkInfoStep(OkInfoStep step)
+    private IEnumerator RunUIInfoStep(UIInfoStep step)
     {
         input.SetCusorMode(true);
         input.SetAllModes(InputMode.Auto);
@@ -423,7 +423,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         ResetInfoStepImmediate(hpSystemStep);
     }
 
-    private void ResetInfoStepImmediate(OkInfoStep step)
+    private void ResetInfoStepImmediate(UIInfoStep step)
     {
         step.Root.SetActive(false);
 
