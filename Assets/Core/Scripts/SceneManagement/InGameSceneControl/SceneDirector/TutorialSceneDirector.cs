@@ -1,10 +1,35 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, SceneScope>
 {
+    [System.Serializable]
+    private sealed class OkInfoStep
+    {
+        [SerializeField, Required]
+        public GameObject Root;
+
+        [SerializeField, Required]
+        public Transform Highlight;
+
+        [SerializeField, Required]
+        public TMP_Text Text;
+
+        [SerializeField, Required]
+        public Button OkButton;
+
+        [SerializeField, Required]
+        public CanvasGroup OkButtonCanvasGroup;
+
+        [SerializeField, Min(0f)]
+        public float HighlightDefaultScale = 18f;
+    }
+
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Scene"), SerializeField, Required]
     private TutorialSeeker seeker;
 
@@ -13,6 +38,9 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Panels"), SerializeField, Required]
     private TutorialPanel parryPanel;
+
+    [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Panels"), SerializeField, Required]
+    private TutorialPanel imperfectParryPanel;
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Panels"), SerializeField, Required]
     private TutorialPanel dodgePanel;
@@ -25,6 +53,15 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Panels"), SerializeField, Required]
     private TutorialPanel healPanel;
+
+    [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Info Steps"), SerializeField, Required]
+    private OkInfoStep imperfectParryEffectStep;
+
+    [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Info Steps"), SerializeField, Required]
+    private OkInfoStep energySystemStep;
+
+    [TabGroup("Tutorial", "Refs"), BoxGroup("Tutorial/Refs/Info Steps"), SerializeField, Required]
+    private OkInfoStep hpSystemStep;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Entry"), SerializeField, Min(0f)]
     private float firstFireDelaySeconds = 0.4f;
@@ -43,6 +80,18 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Parry"), SerializeField, Min(0f)]
     private float afterParryDelaySeconds = 0.25f;
+
+    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
+    private float imperfectParryFireDelaySeconds = 0.3f;
+
+    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
+    private float imperfectParryPreSlowDelaySeconds = 0.35f;
+
+    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
+    private float imperfectParrySlowSeconds = 1f;
+
+    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
+    private float afterImperfectParryDelaySeconds = 0.25f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Dodge"), SerializeField, Min(0f)]
     private float dodgeFireDelaySeconds = 0.3f;
@@ -80,6 +129,15 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     [TabGroup("Tutorial", "UI"), SerializeField, Min(0f)]
     private float panelFadeInSeconds = 0.5f;
 
+    [TabGroup("Tutorial", "UI"), BoxGroup("Tutorial/UI/Info Steps"), SerializeField, Min(0f)]
+    private float infoHighlightScaleSeconds = 0.3f;
+
+    [TabGroup("Tutorial", "UI"), BoxGroup("Tutorial/UI/Info Steps"), SerializeField, Min(0f)]
+    private float infoTextFadeInSeconds = 0.5f;
+
+    [TabGroup("Tutorial", "UI"), BoxGroup("Tutorial/UI/Info Steps"), SerializeField, Min(0f)]
+    private float infoOkButtonFadeInSeconds = 0.5f;
+
     private PlayerController player;
     private InputManager input;
 
@@ -89,6 +147,9 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     private Tween timeScaleTween;
     private Tween overlayTween;
+
+    private Button currentOkButton;
+    private UnityAction currentOkListener;
 
     private void Start()
     {
@@ -102,6 +163,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         HideOverlayImmediate();
         HideAllPanelsImmediate();
+        HideAllInfoStepsImmediate();
 
         player.Settings.InitializePlayerStatus();
 
@@ -134,6 +196,24 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitForSecondsRealtime(afterParryDelaySeconds);
 
+        yield return new WaitForSecondsRealtime(imperfectParryFireDelaySeconds);
+
+        input.SetAllModes(InputMode.Auto);
+        newState = input.GetModes();
+        newState.ParryDown = InputMode.Manual;
+
+        yield return RunTimeStopInputStep(
+            imperfectParryPanel,
+            newState,
+            imperfectParryPreSlowDelaySeconds,
+            imperfectParrySlowSeconds,
+            () => input.ParryDown
+        );
+
+        yield return new WaitForSecondsRealtime(afterImperfectParryDelaySeconds);
+
+        yield return RunOkInfoStep(imperfectParryEffectStep);
+
         yield return new WaitForSecondsRealtime(dodgeFireDelaySeconds);
 
         input.SetAllModes(InputMode.Auto);
@@ -149,6 +229,8 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         );
 
         yield return new WaitForSecondsRealtime(afterDodgeDelaySeconds);
+
+        yield return RunOkInfoStep(energySystemStep);
 
         yield return new WaitForSecondsRealtime(counterChargePanelDelaySeconds);
         yield return ShowPanel(counterChargePanel);
@@ -181,6 +263,8 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitForSecondsRealtime(afterCounterParryDelaySeconds);
 
+        yield return RunOkInfoStep(hpSystemStep);
+
         yield return new WaitForSecondsRealtime(healPanelDelaySeconds);
         yield return ShowPanel(healPanel);
 
@@ -192,6 +276,64 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         input.SetAllModes(InputMode.Manual);
 
         Debug.Log("Scene End");
+    }
+
+    private IEnumerator RunOkInfoStep(OkInfoStep step)
+    {
+        input.SetCusorMode(true);
+        input.SetAllModes(InputMode.Auto);
+
+        step.Root.SetActive(true);
+
+        step.Highlight.localScale = Vector3.one * step.HighlightDefaultScale;
+
+        step.Text.alpha = 0f;
+
+        step.OkButtonCanvasGroup.alpha = 0f;
+        step.OkButtonCanvasGroup.interactable = false;
+        step.OkButtonCanvasGroup.blocksRaycasts = false;
+        step.OkButton.interactable = false;
+        step.OkButton.gameObject.SetActive(false);
+
+        Tween highlightTween = step.Highlight
+            .DOScale(Vector3.one, infoHighlightScaleSeconds)
+            .SetEase(Ease.OutQuad)
+            .SetUpdate(true);
+
+        yield return highlightTween.WaitForCompletion();
+
+        Tween textTween = step.Text
+            .DOFade(1f, infoTextFadeInSeconds)
+            .SetEase(Ease.Linear)
+            .SetUpdate(true);
+
+        yield return textTween.WaitForCompletion();
+
+        step.OkButton.gameObject.SetActive(true);
+
+        Tween buttonTween = step.OkButtonCanvasGroup
+            .DOFade(1f, infoOkButtonFadeInSeconds)
+            .SetEase(Ease.Linear)
+            .SetUpdate(true);
+
+        yield return buttonTween.WaitForCompletion();
+
+        step.OkButtonCanvasGroup.interactable = true;
+        step.OkButtonCanvasGroup.blocksRaycasts = true;
+        step.OkButton.interactable = true;
+
+        bool pressed = false;
+
+        ClearCurrentOkListener();
+        currentOkButton = step.OkButton;
+        currentOkListener = () => pressed = true;
+        currentOkButton.onClick.AddListener(currentOkListener);
+
+        yield return new WaitUntil(() => pressed);
+
+        input.SetCusorMode(false);
+        ClearCurrentOkListener();
+        ResetInfoStepImmediate(step);
     }
 
     private IEnumerator RunTimeStopInputStep(
@@ -267,10 +409,32 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     private void HideAllPanelsImmediate()
     {
         parryPanel.HideImmediate();
+        imperfectParryPanel.HideImmediate();
         dodgePanel.HideImmediate();
         counterChargePanel.HideImmediate();
         counterParryPanel.HideImmediate();
         healPanel.HideImmediate();
+    }
+
+    private void HideAllInfoStepsImmediate()
+    {
+        ResetInfoStepImmediate(imperfectParryEffectStep);
+        ResetInfoStepImmediate(energySystemStep);
+        ResetInfoStepImmediate(hpSystemStep);
+    }
+
+    private void ResetInfoStepImmediate(OkInfoStep step)
+    {
+        step.Root.SetActive(false);
+
+        step.Highlight.localScale = Vector3.one * step.HighlightDefaultScale;
+        step.Text.alpha = 0f;
+
+        step.OkButtonCanvasGroup.alpha = 0f;
+        step.OkButtonCanvasGroup.interactable = false;
+        step.OkButtonCanvasGroup.blocksRaycasts = false;
+        step.OkButton.interactable = false;
+        step.OkButton.gameObject.SetActive(false);
     }
 
     private void HideOverlayImmediate()
@@ -291,8 +455,20 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         overlayTween = null;
     }
 
+    private void ClearCurrentOkListener()
+    {
+        if (currentOkButton == null || currentOkListener == null)
+            return;
+
+        currentOkButton.onClick.RemoveListener(currentOkListener);
+        currentOkButton = null;
+        currentOkListener = null;
+    }
+
     private void OnDisable()
     {
         if (routine != null) StopCoroutine(routine);
+
+        ClearCurrentOkListener();
     }
 }

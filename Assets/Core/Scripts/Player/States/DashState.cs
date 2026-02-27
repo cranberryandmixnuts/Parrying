@@ -53,12 +53,7 @@ public sealed class DashState : PlayerState
             extremeDashSuccess = true;
             player.lastExtremeDash = Time.time;
 
-            int gain = 0;
-            if (detected >= 1) gain += 50;
-            if (detected >= 2) gain += 30;
-            if (detected >= 3) gain += 10;
-
-            player.Vitals.GainEnergy(gain);
+            player.Vitals.GainEnergy(detected * player.Settings.extremeDashEnergyGainPerDetect);
             player.Effects.DoExtremeDashImpact();
             dashDistance += player.Settings.extremeDashExtraDistance;
         }

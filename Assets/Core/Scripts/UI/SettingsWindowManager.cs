@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Windows;
 
 public enum SettingsTab
 {
@@ -18,22 +19,25 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
 
     public SettingsTab CurrentTab { get; private set; } = SettingsTab.Root;
 
+    private InputManager input;
     private bool timePausedByThis = false;
     private float cachedTimeScale;
     private InputModeState cachedInputState;
 
     private void Start()
     {
-        cachedTimeScale = Time.timeScale;
-        cachedInputState = InputManager.Instance.GetModes();
+        input = InputManager.Instance;
 
-        if (EscapeToOpen) SetCusorMode(false);
-        else SetCusorMode(true);
+        cachedTimeScale = Time.timeScale;
+        cachedInputState = input.GetModes();
+
+        if (EscapeToOpen) input.SetCusorMode(false);
+        else input.SetCusorMode(true);
     }
 
     private void Update()
     {
-        if (!InputManager.Instance.EscapeDown) return;
+        if (!input.EscapeDown) return;
 
         if (!SettingsWindow.activeSelf && EscapeToOpen)
         {
@@ -52,7 +56,7 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
 
     public void OpenSettings()
     {
-        cachedInputState = InputManager.Instance.GetModes();
+        cachedInputState = input.GetModes();
         cachedTimeScale = Time.timeScale;
 
         if (!timePausedByThis)
@@ -66,7 +70,7 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         AudioPanel.SetActive(false);
         ControlPanel.SetActive(false);
 
-        if (EscapeToOpen) SetCusorMode(true);
+        if (EscapeToOpen) input.SetCusorMode(true);
 
         CurrentTab = SettingsTab.Root;
     }
@@ -80,10 +84,10 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         ControlPanel.SetActive(false);
         SettingsWindow.SetActive(false);
 
-        if (EscapeToOpen) SetCusorMode(false);
+        if (EscapeToOpen) input.SetCusorMode(false);
 
-        if (InputManager.Instance != null)
-            InputManager.Instance.SetModes(cachedInputState);
+        if (input != null)
+            input.SetModes(cachedInputState);
 
         if (timePausedByThis)
         {
@@ -98,14 +102,6 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         RootPanel.SetActive(tab == SettingsTab.Root);
         AudioPanel.SetActive(tab == SettingsTab.Audio);
         ControlPanel.SetActive(tab == SettingsTab.Control);
-    }
-
-    private void SetCusorMode(bool mode)
-    {
-        if (mode) Cursor.lockState = CursorLockMode.None;
-        else Cursor.lockState = CursorLockMode.Locked;
-
-        Cursor.visible = mode;
     }
 
     private void OnDisable() => CloseSettings();

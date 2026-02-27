@@ -54,6 +54,7 @@ MonoBehaviour:
   extremeDashCooldown: 3
   extremeDashExtraInvincibility: 0.3
   extremeDashExtraDistance: 1
+  extremeDashEnergyGainPerDetect: 50
   fadePower: 5
   minLinearBlend: 0.1
   perfectParryEnergyGain: 100

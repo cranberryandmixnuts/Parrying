@@ -61,6 +61,9 @@ public sealed class PlayerSettings : ScriptableObject
     [TabGroup("PlayerSettings", "이동"), FoldoutGroup("PlayerSettings/이동/Dash"), SuffixLabel("u", true), MinValue(0f), MaxValue(1000f)]
     public float extremeDashExtraDistance = 1f;
 
+    [TabGroup("PlayerSettings", "이동"), FoldoutGroup("PlayerSettings/이동/Dash"), SuffixLabel("EN", true), MinValue(0f), MaxValue(1000f)]
+    public int extremeDashEnergyGainPerDetect = 50;
+
     [TabGroup("PlayerSettings", "이동"), FoldoutGroup("PlayerSettings/이동/Dash"), SuffixLabel("x", true), MinValue(0f), MaxValue(1000f)]
     public float fadePower = 5f;
 

@@ -296,10 +296,15 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         SetMode(ActionKey.Escape, mode);
     }
 
-    public void SetAutoMoveAxis(float axis)
+    public void SetCusorMode(bool mode)
     {
-        autoMoveAxis = Mathf.Clamp(axis, -1f, 1f);
+        if (mode) Cursor.lockState = CursorLockMode.None;
+        else Cursor.lockState = CursorLockMode.Locked;
+
+        Cursor.visible = mode;
     }
+
+    public void SetAutoMoveAxis(float axis) => autoMoveAxis = Mathf.Clamp(axis, -1f, 1f);
 
     public void SetAutoHeld(ActionKey key, bool held)
     {
