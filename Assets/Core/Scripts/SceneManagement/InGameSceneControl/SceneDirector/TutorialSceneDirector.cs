@@ -165,8 +165,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         HideAllPanelsImmediate();
         HideAllInfoStepsImmediate();
 
-        player.Settings.InitializePlayerStatus();
-
         routine = StartCoroutine(Run());
     }
 

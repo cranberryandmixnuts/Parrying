@@ -21,13 +21,23 @@ public sealed class GameStartSceneDirector : Singleton<GameStartSceneDirector, S
     private float moveDetectThreshold = 0.01f;
 
     private Coroutine routine;
+    private InputManager input;
+    private PlayerController player;
 
     private void Start()
     {
+        input = InputManager.Instance;
+        player = PlayerController.Instance;
+
         jumpTutorial.HideImmediate();
 
-        InputManager.Instance.SetAllModes(InputMode.Auto);
-        PlayerController.Instance.Settings.InitializePlayerStatus();
+        input.SetAllModes(InputMode.Auto);
+        player.Settings.InitializePlayerStatus();
+        int startEnergy = 
+            player.Settings.perfectParryEnergyGain + 
+            player.Settings.imperfectParryEnergyGain + 
+            player.Settings.extremeDashEnergyGainPerDetect;
+        player.Vitals.TryConsumeEnergy(startEnergy);
 
         routine = StartCoroutine(Run());
     }
@@ -36,18 +46,18 @@ public sealed class GameStartSceneDirector : Singleton<GameStartSceneDirector, S
     {
         yield return new WaitUntil(() => !SceneLoader.Instance.IsTransitioning);
 
-        InputManager.Instance.SetMode(ActionKey.Move, InputMode.Manual);
-        InputManager.Instance.SetMode(ActionKey.Jump, InputMode.Manual);
-        InputManager.Instance.SetMode(ActionKey.Escape, InputMode.Manual);
+        input.SetMode(ActionKey.Move, InputMode.Manual);
+        input.SetMode(ActionKey.Jump, InputMode.Manual);
+        input.SetMode(ActionKey.Escape, InputMode.Manual);
 
-        yield return new WaitUntil(() => Mathf.Abs(InputManager.Instance.MoveAxis) > moveDetectThreshold);
+        yield return new WaitUntil(() => Mathf.Abs(input.MoveAxis) > moveDetectThreshold);
 
         moveTutorialLeft.HideImmediate();
         moveTutorialRight.HideImmediate();
 
         jumpTutorial.ShowImmediate();
 
-        yield return new WaitUntil(() => InputManager.Instance.JumpDown);
+        yield return new WaitUntil(() => input.JumpDown);
 
         Tween t = jumpTutorial.HideFadeOut(jumpFadeOutSeconds);
         yield return t.WaitForCompletion();

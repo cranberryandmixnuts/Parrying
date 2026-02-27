@@ -736,7 +736,7 @@ Transform:
   m_GameObject: {fileID: 141728477}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -19440}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 216, y: 216, z: 216}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -6191,7 +6191,7 @@ MonoBehaviour:
   counterParryFireDelaySeconds: 0.2
   counterParryPreSlowDelaySeconds: 0.3
   counterParrySlowSeconds: 1
-  afterCounterParryDelaySeconds: 0.9
+  afterCounterParryDelaySeconds: 1.2
   healPanelDelaySeconds: 0.2
   panelFadeInSeconds: 0.5
   infoHighlightScaleSeconds: 0.3
