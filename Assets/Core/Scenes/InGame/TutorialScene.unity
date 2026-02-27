@@ -6185,7 +6185,7 @@ MonoBehaviour:
   dodgeFireDelaySeconds: 0.6
   dodgePreSlowDelaySeconds: 0.83
   dodgeSlowSeconds: 1
-  afterDodgeDelaySeconds: 0.9
+  afterDodgeDelaySeconds: 1.2
   counterChargePanelDelaySeconds: 0.2
   afterCounterChargeDelaySeconds: 0.2
   counterParryFireDelaySeconds: 0.2
