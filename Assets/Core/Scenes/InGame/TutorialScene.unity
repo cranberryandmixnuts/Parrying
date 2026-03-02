@@ -5763,14 +5763,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 3276980002485182093}
-    - target: {fileID: 1003298482226328101, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3847090691324416462, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4753797986312052108, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: targetCamera
       value: 
@@ -5794,10 +5786,6 @@ PrefabInstance:
     - target: {fileID: 6718578162423997630, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.y
       value: -3.73
-      objectReference: {fileID: 0}
-    - target: {fileID: 7896365785417695348, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7931419417397165371, guid: 464a0cf4bec9d344089467f9336c20e2, type: 3}
       propertyPath: m_Camera
