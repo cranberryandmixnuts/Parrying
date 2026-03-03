@@ -412,6 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c53ba5d9dec13447b219c325fce87f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossTeleportEffectManager
+  bossTransform: {fileID: 114862157779615747}
   bossSpriteRenderer: {fileID: 5097534627867843270}
   startPointRoot: {fileID: 8393391273530620510}
   endPointRoot: {fileID: 3356304901845234641}
@@ -1336,8 +1337,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 114862157779615747}
-  - {fileID: 1228675093817166672}
   - {fileID: 788134132349406167}
+  - {fileID: 1228675093817166672}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9049259275327863877

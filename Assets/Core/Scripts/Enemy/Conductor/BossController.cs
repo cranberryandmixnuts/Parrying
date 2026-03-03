@@ -290,7 +290,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
     }
 
-    public IEnumerator TeleportRoutine(Vector3 p, Action onTeleported = null) => teleportManager.PlayTeleportSequence(transform, p, onTeleported);
+    public IEnumerator TeleportRoutine(Vector3 p, Action onTeleported = null) => teleportManager.PlayTeleportSequence(p, onTeleported);
 
     public void CancelTeleportEffects() => teleportManager.ForceReset();
 

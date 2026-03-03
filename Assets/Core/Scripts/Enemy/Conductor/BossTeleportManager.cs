@@ -8,6 +8,7 @@ using UnityEngine;
 public sealed class BossTeleportManager : MonoBehaviour
 {
     [Header("Boss")]
+    [SerializeField, Required] private Transform bossTransform;
     [SerializeField, Required] private SpriteRenderer bossSpriteRenderer;
 
     [Header("Effect Roots")]
@@ -68,7 +69,7 @@ public sealed class BossTeleportManager : MonoBehaviour
 
     private void OnDisable() => ForceReset();
 
-    public void TeleportImmediate(Transform bossTransform, Vector3 toPosition, Action onTeleported = null)
+    public void TeleportImmediate(Vector3 toPosition, Action onTeleported = null)
     {
         KillSequences();
         ResetToStandbyImmediate();
@@ -78,7 +79,7 @@ public sealed class BossTeleportManager : MonoBehaviour
         onTeleported?.Invoke();
     }
 
-    public IEnumerator PlayTeleportSequence(Transform bossTransform, Vector3 toPosition, Action onTeleported = null)
+    public IEnumerator PlayTeleportSequence(Vector3 toPosition, Action onTeleported = null)
     {
         KillSequences();
         ResetToStandbyImmediate();
