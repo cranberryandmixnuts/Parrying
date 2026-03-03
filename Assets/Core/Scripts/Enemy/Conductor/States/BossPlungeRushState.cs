@@ -40,11 +40,11 @@ public sealed class BossPlungeRushState : BossState
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
 
-        Vector3 p = boss.PlayerTarget.transform.position;
-        Vector3 c = boss.CeilingPoint.position;
-        Vector3 target = new(p.x, c.y, boss.transform.position.z);
+        Vector3 player = boss.PlayerTarget.transform.position;
+        Vector3 ceiling = boss.CeilingPoint.position;
+        Vector3 point = new(player.x, ceiling.y, boss.transform.position.z);
 
-        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(target, OnTeleported));
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
     }
 
     public override void Update()

@@ -2,7 +2,6 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class BossTeleportManager : MonoBehaviour
@@ -28,7 +27,7 @@ public sealed class BossTeleportManager : MonoBehaviour
 
     [Header("Pre Teleport")]
     [SerializeField, MinValue(0f)] private float preEffectDuration = 0.5f;
-    [SerializeField, Range(0f, 1f)] private float prePointAlphaMultiplier = 0.1f;
+    [SerializeField, Range(0f, 1f)] private float prePointTargetAlpha = 0.1f;
     [SerializeField, Range(0f, 1f)] private float bossSilhouetteTargetAlpha = 1f;
 
     [Header("Post Teleport Fade")]
@@ -45,14 +44,17 @@ public sealed class BossTeleportManager : MonoBehaviour
     [Header("Line")]
     [SerializeField] private Vector3 lineOffset = Vector3.zero;
     [SerializeField] private Vector3 lineActiveScale = Vector3.one;
-    [SerializeField, MinValue(0f)] private float lineLengthMultiplier = 1f;
+    [SerializeField] private float lineLengthAdd = 0f;
 
     [Header("Silhouette")]
     [SerializeField] private Vector3 silhouetteOffset = Vector3.zero;
-    [SerializeField] private Vector3 silhouetteScaleMultiplier = Vector3.one;
+    [SerializeField] private Vector3 silhouetteScaleAdd = Vector3.zero;
 
-    private readonly List<SpriteRenderer> fadeRenderers = new();
-    private readonly List<Color> baseColors = new();
+    private Color startPointBaseColor;
+    private Color endPointBaseColor;
+    private Color lineBaseColor;
+    private Color silhouetteBaseColor;
+
     private Sequence activePreSequence;
     private Sequence activePostSequence;
     private Material bossMaterial;
@@ -62,21 +64,27 @@ public sealed class BossTeleportManager : MonoBehaviour
 
     private void Awake()
     {
-        CacheFadeRenderers();
-        CacheBossMaterial();
+        startPointBaseColor = startPointRenderer.color;
+        endPointBaseColor = endPointRenderer.color;
+        lineBaseColor = lineRenderer.color;
+        silhouetteBaseColor = silhouetteSpriteRenderer.color;
+
+        bossMaterial = bossSpriteRenderer.material;
+        bossBaseMaterialColor = bossMaterial.GetColor(ColorId);
+
         ResetToStandbyImmediate();
     }
 
     private void OnDisable() => ForceReset();
 
-    public void TeleportImmediate(Vector3 toPosition, Action onTeleported = null)
+    public void TeleportImmediate(Vector3 toPosition)
     {
         KillSequences();
         ResetToStandbyImmediate();
         RestoreBossBaseMaterialColor();
 
         bossTransform.position = toPosition;
-        onTeleported?.Invoke();
+        Debug.Log("Boss teleported immediately to: " + toPosition);
     }
 
     public IEnumerator PlayTeleportSequence(Vector3 toPosition, Action onTeleported = null)
@@ -86,13 +94,12 @@ public sealed class BossTeleportManager : MonoBehaviour
 
         Vector3 fromPosition = bossTransform.position;
 
-        ApplyStartPoint(fromPosition);
-        ApplyEndPoint(toPosition);
-        SetPrePointAlphaMultiplier(0f);
+        ApplyPoints(fromPosition, toPosition);
+        SetPrePointAlpha(0f);
 
         activePreSequence = DOTween.Sequence().SetLink(gameObject);
-        activePreSequence.Join(DOVirtual.Float(0f, prePointAlphaMultiplier, preEffectDuration, SetPrePointAlphaMultiplier).SetEase(Ease.Linear));
-        activePreSequence.Join(DOVirtual.Float(GetBossSilhouetteAlpha(), bossSilhouetteTargetAlpha, preEffectDuration, SetBossSilhouetteAlpha).SetEase(Ease.Linear));
+        activePreSequence.Join(DOVirtual.Float(0f, prePointTargetAlpha, preEffectDuration, SetPrePointAlpha).SetEase(Ease.Linear));
+        activePreSequence.Join(DOVirtual.Float(bossMaterial.GetColor(ColorId).a, bossSilhouetteTargetAlpha, preEffectDuration, SetBossSilhouetteAlpha).SetEase(Ease.Linear));
 
         yield return activePreSequence.WaitForCompletion();
 
@@ -101,11 +108,11 @@ public sealed class BossTeleportManager : MonoBehaviour
         bossTransform.position = toPosition;
         RestoreBossBaseMaterialColor();
         onTeleported?.Invoke();
+        Debug.Log("Boss teleported with a effect to: " + toPosition);
 
         PlayPostEffect(fromPosition, toPosition);
     }
 
-    [Button]
     public void ForceReset()
     {
         KillSequences();
@@ -124,53 +131,27 @@ public sealed class BossTeleportManager : MonoBehaviour
         activePostSequence = null;
     }
 
-    private void CacheFadeRenderers()
-    {
-        fadeRenderers.Clear();
-        baseColors.Clear();
-
-        RegisterRenderer(startPointRenderer);
-        RegisterRenderer(endPointRenderer);
-        RegisterRenderer(lineRenderer);
-        RegisterRenderer(silhouetteSpriteRenderer);
-    }
-
-    private void CacheBossMaterial()
-    {
-        bossMaterial = bossSpriteRenderer.material;
-        bossBaseMaterialColor = bossMaterial.GetColor(ColorId);
-    }
-
-    private void RegisterRenderer(SpriteRenderer renderer)
-    {
-        fadeRenderers.Add(renderer);
-        baseColors.Add(renderer.color);
-    }
-
     private void PlayPostEffect(Vector3 fromPosition, Vector3 toPosition)
     {
-        ApplyStartPoint(fromPosition);
-        ApplyEndPoint(toPosition);
         ApplyLine(fromPosition, toPosition);
         ApplySilhouette(fromPosition);
         RestoreBaseColors();
 
         activePostSequence = DOTween.Sequence().SetLink(gameObject);
 
-        for (int i = 0; i < fadeRenderers.Count; i++)
-            activePostSequence.Join(fadeRenderers[i].DOFade(0f, fadeDuration).SetEase(Ease.Linear));
+        activePostSequence.Join(startPointRenderer.DOFade(0f, fadeDuration).SetEase(Ease.Linear));
+        activePostSequence.Join(endPointRenderer.DOFade(0f, fadeDuration).SetEase(Ease.Linear));
+        activePostSequence.Join(lineRenderer.DOFade(0f, fadeDuration).SetEase(Ease.Linear));
+        activePostSequence.Join(silhouetteSpriteRenderer.DOFade(0f, fadeDuration).SetEase(Ease.Linear));
 
         activePostSequence.OnComplete(ResetToStandbyImmediate);
     }
 
-    private void ApplyStartPoint(Vector3 fromPosition)
+    private void ApplyPoints(Vector3 fromPosition, Vector3 toPosition)
     {
         startPointRoot.SetPositionAndRotation(fromPosition + startPointOffset, Quaternion.identity);
         startPointRoot.localScale = startPointActiveScale;
-    }
 
-    private void ApplyEndPoint(Vector3 toPosition)
-    {
         endPointRoot.SetPositionAndRotation(toPosition + endPointOffset, Quaternion.identity);
         endPointRoot.localScale = endPointActiveScale;
     }
@@ -186,7 +167,7 @@ public sealed class BossTeleportManager : MonoBehaviour
         lineRoot.localScale = new Vector3
         (
             lineActiveScale.x,
-            lineActiveScale.y * distance * lineLengthMultiplier,
+            lineActiveScale.y * distance + lineLengthAdd,
             lineActiveScale.z
         );
     }
@@ -200,13 +181,15 @@ public sealed class BossTeleportManager : MonoBehaviour
         silhouetteSpriteRenderer.sortingOrder = bossSpriteRenderer.sortingOrder;
 
         silhouetteRoot.SetPositionAndRotation(fromPosition + silhouetteOffset, bossSpriteRenderer.transform.rotation);
-        silhouetteRoot.localScale = Vector3.Scale(bossSpriteRenderer.transform.lossyScale, silhouetteScaleMultiplier);
+        silhouetteRoot.localScale = bossSpriteRenderer.transform.lossyScale + silhouetteScaleAdd;
     }
 
     private void RestoreBaseColors()
     {
-        for (int i = 0; i < fadeRenderers.Count; i++)
-            fadeRenderers[i].color = baseColors[i];
+        startPointRenderer.color = startPointBaseColor;
+        endPointRenderer.color = endPointBaseColor;
+        lineRenderer.color = lineBaseColor;
+        silhouetteSpriteRenderer.color = silhouetteBaseColor;
     }
 
     private void ResetToStandbyImmediate()
@@ -221,35 +204,21 @@ public sealed class BossTeleportManager : MonoBehaviour
         lineRoot.localScale = Vector3.one;
         silhouetteRoot.localScale = Vector3.one;
 
-        SetAlphaMultiplier(0f);
+        RestoreBaseColors();
         RestoreBossBaseMaterialColor();
     }
 
-    private void SetAlphaMultiplier(float multiplier)
+    private void SetPrePointAlpha(float alpha)
     {
-        for (int i = 0; i < fadeRenderers.Count; i++)
-        {
-            Color color = baseColors[i];
-            color.a *= multiplier;
-            fadeRenderers[i].color = color;
-        }
+        SetRendererAlpha(startPointRenderer, startPointBaseColor, alpha);
+        SetRendererAlpha(endPointRenderer, endPointBaseColor, alpha);
     }
 
-    private void SetPrePointAlphaMultiplier(float multiplier)
+    private static void SetRendererAlpha(SpriteRenderer renderer, Color baseColor, float alpha)
     {
-        SetRendererAlphaMultiplier(startPointRenderer, multiplier);
-        SetRendererAlphaMultiplier(endPointRenderer, multiplier);
+        baseColor.a = Mathf.Clamp01(alpha);
+        renderer.color = baseColor;
     }
-
-    private void SetRendererAlphaMultiplier(SpriteRenderer renderer, float multiplier)
-    {
-        int index = fadeRenderers.IndexOf(renderer);
-        Color color = baseColors[index];
-        color.a *= multiplier;
-        renderer.color = color;
-    }
-
-    private float GetBossSilhouetteAlpha() => bossMaterial.GetColor(ColorId).a;
 
     private void SetBossSilhouetteAlpha(float alpha)
     {

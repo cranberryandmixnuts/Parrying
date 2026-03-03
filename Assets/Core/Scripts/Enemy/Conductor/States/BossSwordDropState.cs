@@ -2,7 +2,14 @@ using UnityEngine;
 
 public sealed class BossSwordDropState : BossState
 {
-    private int phase;
+    private enum Phase
+    {
+        Tele,
+        Swing,
+        End
+    }
+
+    private Phase phase;
     private int faceDir;
     private float baseAngle;
     private float startLocal;
@@ -22,11 +29,7 @@ public sealed class BossSwordDropState : BossState
 
     public override void Enter()
     {
-        Transform t = ChooseSideTop();
-        bool choseLeft = t == boss.LeftTop;
-        faceDir = choseLeft ? 1 : -1;
-
-        phase = 0;
+        phase = Phase.Tele;
         resolved = false;
         boss.SetLethal(BossController.AttackContext.Sword, false);
         boss.StopHorizontal();
@@ -36,12 +39,19 @@ public sealed class BossSwordDropState : BossState
         boss.SetVelocityX(0f);
         boss.SetVelocityY(0f);
 
-        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(t.position, OnTeleported));
+        float playerX = boss.PlayerTarget.transform.position.x;
+        float leftX = boss.LeftTop.position.x;
+        float rightX = boss.RightTop.position.x;
+
+        Transform target = playerX < (leftX + rightX) * 0.5f ? boss.LeftTop : boss.RightTop;
+        faceDir = target == boss.LeftTop ? 1 : -1;
+        Vector3 point = target.position;
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
     }
 
     public override void Update()
     {
-        if (phase != 1) return;
+        if (phase != Phase.Swing) return;
 
         float dt = Time.deltaTime;
         elapsed += dt;
@@ -97,13 +107,13 @@ public sealed class BossSwordDropState : BossState
         {
             boss.SetLethal(BossController.AttackContext.Sword, false);
             boss.ChangeToIdle(true);
-            phase = 2;
+            phase = Phase.End;
         }
     }
 
     public override void FixedUpdate()
     {
-        if (phase == 0)
+        if (phase == Phase.Tele)
         {
             boss.SetVelocityX(0f);
             boss.SetVelocityY(0f);
@@ -130,7 +140,7 @@ public sealed class BossSwordDropState : BossState
         boss.FaceTo(faceDir);
         boss.Play(BossController.AnimSideSword);
 
-        phase = 1;
+        phase = Phase.Swing;
         boss.SetLethal(BossController.AttackContext.Sword, true);
 
         float startAngle = boss.Settings.swordStartAngle;
@@ -151,14 +161,6 @@ public sealed class BossSwordDropState : BossState
         resolved = false;
 
         boss.DebugClearSwingLine();
-    }
-
-    private Transform ChooseSideTop()
-    {
-        float px = boss.PlayerTarget.transform.position.x;
-        float dl = Mathf.Abs(px - boss.LeftTop.position.x);
-        float dr = Mathf.Abs(px - boss.RightTop.position.x);
-        if (dl < dr) return boss.LeftTop; else return boss.RightTop;
     }
 
     private Vector2 BladeCenter(float angleDeg)

@@ -39,7 +39,9 @@ public sealed class BossRadialLaserState : BossState
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
 
-        BeginTeleportToRadialPosition();
+        Transform target = boss.RadialLaserPoint;
+        Vector3 point = new(target.position.x, target.position.y, boss.transform.position.z);
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
     }
 
     public override void Update()
@@ -112,22 +114,11 @@ public sealed class BossRadialLaserState : BossState
         StopBeamVfx();
     }
 
-    private void BeginTeleportToRadialPosition()
-    {
-        Transform target = boss.RadialLaserPoint;
-        Vector3 p = new(target.position.x, target.position.y, boss.transform.position.z);
-        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(p, OnTeleported));
-    }
-
     private void OnTeleported()
     {
         teleportRoutine = null;
         boss.FaceToPlayer();
-        EnterAfterTeleport();
-    }
 
-    private void EnterAfterTeleport()
-    {
         boss.Play(BossController.AnimCrackLaser);
 
         laserWarningDuration = boss.Settings.laserWindupTime + boss.Settings.extraWarningTail;

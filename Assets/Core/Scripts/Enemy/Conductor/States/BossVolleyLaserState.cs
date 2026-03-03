@@ -56,7 +56,16 @@ public sealed class BossVolleyLaserState : BossState
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
 
-        BeginTeleportToVolleyPosition();
+        float playerX = boss.PlayerTarget.transform.position.x;
+        float centerX = boss.VolleyCenter.position.x;
+        float offset = boss.Settings.volleySideOffset;
+
+        float targetX = playerX + (playerX < centerX ? offset : -offset);
+        float targetY = boss.VolleyHeight.position.y;
+
+        Vector3 point = new(targetX, targetY, boss.transform.position.z);
+
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
     }
 
     public override void Update()
@@ -116,33 +125,11 @@ public sealed class BossVolleyLaserState : BossState
         boss.SetLethal(BossController.AttackContext.None, false);
     }
 
-    private void BeginTeleportToVolleyPosition()
-    {
-        float playerX = boss.PlayerTarget.transform.position.x;
-        float centerX = boss.VolleyCenter.position.x;
-        float offset = boss.Settings.volleySideOffset;
-
-        float targetX;
-        if (playerX < centerX)
-            targetX = playerX + offset;
-        else
-            targetX = playerX - offset;
-
-        float targetY = boss.VolleyHeight.position.y;
-        Vector3 p = new(targetX, targetY, boss.transform.position.z);
-
-        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(p, OnTeleported));
-    }
-
     private void OnTeleported()
     {
         teleportRoutine = null;
         boss.FaceToPlayer();
-        EnterAfterTeleport();
-    }
 
-    private void EnterAfterTeleport()
-    {
         boss.Play(BossController.AnimFire);
         fireDuration = boss.AnimLen(BossController.AnimFire);
         stateTimer = fireDuration;
