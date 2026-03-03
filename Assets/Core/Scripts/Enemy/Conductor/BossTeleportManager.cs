@@ -1,8 +1,8 @@
+using DG.Tweening;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 public sealed class BossTeleportManager : MonoBehaviour
@@ -67,6 +67,16 @@ public sealed class BossTeleportManager : MonoBehaviour
     }
 
     private void OnDisable() => ForceReset();
+
+    public void TeleportImmediate(Transform bossTransform, Vector3 toPosition, Action onTeleported = null)
+    {
+        KillSequences();
+        ResetToStandbyImmediate();
+        RestoreBossBaseMaterialColor();
+
+        bossTransform.position = toPosition;
+        onTeleported?.Invoke();
+    }
 
     public IEnumerator PlayTeleportSequence(Transform bossTransform, Vector3 toPosition, Action onTeleported = null)
     {
