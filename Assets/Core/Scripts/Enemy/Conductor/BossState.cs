@@ -6,10 +6,10 @@ public enum BossStateType
     SwordDrop,
     PlungeRush,
     VolleyLaser,
+    CurvedSlash,
     RadialLaser,
     Death
 }
-
 
 public abstract class BossState
 {

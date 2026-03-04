@@ -9,6 +9,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     {
         None,
         Sword,
+        CurvedSlash,
         Plunge,
         Rush,
         LaserP1,
@@ -24,12 +25,21 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public const string AnimFire = "Fire";
     public const string AnimCrackLaser = "Crack Laser";
     public const string AnimDeath = "Death";
+    public const string AnimCurvedSlashDown = "Curved Slash Down";
+    public const string AnimCurvedSlashUp = "Curved Slash Up";
+    public const string AnimExternalRush = "External Rush";
 
     [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Stacks"), ReadOnly, SerializeField]
     private int p1Stacks;
 
-    [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Stacks"), ReadOnly, SerializeField]
-    private int p2Stacks;
+    [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Phase 1"), ReadOnly, SerializeField]
+    private int p1CountersTowardCurvedSlash;
+
+    [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Phase 1"), ReadOnly, SerializeField]
+    private int p1CurvedSlashRemaining;
+
+    [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Phase 1"), ReadOnly, SerializeField]
+    private bool pendingCurvedSlash;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Settings"), SerializeField, Required]
     private BossSettings settings;
@@ -42,6 +52,15 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform rightTop;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
+    private Transform curvedTopLeft;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
+    private Transform curvedMid;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
+    private Transform curvedTopRight;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
     private Transform ceilingPoint;
@@ -57,6 +76,15 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
     private Collider2D rushCollider;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/ExternalRush"), SerializeField, Required]
+    private Transform externalRushSpawnLeft;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/ExternalRush"), SerializeField, Required]
+    private Transform externalRushSpawnTop;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/ExternalRush"), SerializeField, Required]
+    private Transform externalRushSpawnRight;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
     private Collider2D projectileHitbox;
@@ -93,8 +121,12 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         base.Start();
 
         gravityOriginal = Body.gravityScale;
-        p1Stacks = settings.p1Stacks;
-        p2Stacks = settings.p2Stacks;
+
+        p1Stacks = settings.P1TotalStacks;
+        p1CountersTowardCurvedSlash = 0;
+        p1CurvedSlashRemaining = settings.p1PatternBundleRepeatCount;
+        pendingCurvedSlash = false;
+
         stateMachine = new BossStateMachine();
         stateMachine.Initialize(new BossIdleState(this, stateMachine, true));
         FacePlayer();
@@ -109,11 +141,17 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public BossSettings Settings => settings;
     public Transform LeftTop => leftTop;
     public Transform RightTop => rightTop;
+    public Transform CurvedTopLeft => curvedTopLeft;
+    public Transform CurvedMid => curvedMid;
+    public Transform CurvedTopRight => curvedTopRight;
     public Transform CeilingPoint => ceilingPoint;
     public Transform RushStopLeft => rushStopLeft;
     public Transform RushStopRight => rushStopRight;
     public Collider2D PlungeCollider => plungeCollider;
     public Collider2D RushCollider => rushCollider;
+    public Transform ExternalRushSpawnLeft => externalRushSpawnLeft;
+    public Transform ExternalRushSpawnTop => externalRushSpawnTop;
+    public Transform ExternalRushSpawnRight => externalRushSpawnRight;
     public EnemyProjectile MissilePrefab => projectilePrefab;
     public Transform VolleyCenter => volleyCenter;
     public Transform VolleyHeight => volleyHeight;
@@ -132,6 +170,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public void ChangeToSwordDrop() => stateMachine.ChangeState(new BossSwordDropState(this, stateMachine));
     public void ChangeToPlungeRush() => stateMachine.ChangeState(new BossPlungeRushState(this, stateMachine));
     public void ChangeToVolleyLaser() => stateMachine.ChangeState(new BossVolleyLaserState(this, stateMachine));
+    public void ChangeToCurvedSlash() => stateMachine.ChangeState(new BossCurvedSlashState(this, stateMachine));
     public void ChangeToRadialLaser() => stateMachine.ChangeState(new BossRadialLaserState(this, stateMachine));
     public void ChangeToDeath() => stateMachine.ChangeState(new BossDeathState(this, stateMachine));
     #endregion
@@ -155,9 +194,21 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         if (!lethalActive) return;
         Player.ClearParryCandidate(this);
         SetLethal(AttackContext.None, false);
-        if (attackCx == AttackContext.LaserP2) { ChangeToDeath(); return; }
-        if (HasP1Stacks) { ConsumeP1Stack(); ChangeToGroggy(settings.groggyDuration); return; }
-        if (HasP2Stacks) { ConsumeP2Stack(); ChangeToGroggy(settings.groggyDuration); return; }
+
+        if (attackCx == AttackContext.LaserP2)
+        {
+            ChangeToDeath();
+            return;
+        }
+
+        if (HasP1Stacks)
+        {
+            bool fromCurvedSlash = stateMachine.CurrentStateType == BossStateType.CurvedSlash;
+            ConsumeP1Stack(!fromCurvedSlash);
+            ChangeToGroggy(settings.groggyDuration);
+            return;
+        }
+
         ChangeToDeath();
     }
 
@@ -165,14 +216,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     {
         if (HasP1Stacks)
         {
-            ConsumeP1Stack();
-            ChangeToGroggy(settings.groggyDuration);
-            return;
-        }
-
-        if (HasP2Stacks)
-        {
-            ConsumeP2Stack();
+            ConsumeP1Stack(true);
             ChangeToGroggy(settings.groggyDuration);
             return;
         }
@@ -182,6 +226,20 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void DecideP1()
     {
+        if (!HasP1Stacks)
+        {
+            ChangeToRadialLaser();
+            return;
+        }
+
+        if (pendingCurvedSlash)
+        {
+            pendingCurvedSlash = false;
+            if (p1CurvedSlashRemaining > 0) p1CurvedSlashRemaining -= 1;
+            ChangeToCurvedSlash();
+            return;
+        }
+
         int pattern = GetNextP1Pattern();
 
         switch (pattern)
@@ -267,19 +325,22 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         return weights.Length - 1;
     }
 
-    public void ConsumeP1Stack()
+    private void ConsumeP1Stack(bool countTowardCurvedSlash)
     {
         if (p1Stacks > 0) p1Stacks -= 1;
+
+        if (!countTowardCurvedSlash) return;
+        if (pendingCurvedSlash) return;
+        if (p1CurvedSlashRemaining <= 0) return;
+
+        p1CountersTowardCurvedSlash += 1;
+        if (p1CountersTowardCurvedSlash < settings.p1CountersToTriggerCurvedSlash) return;
+
+        pendingCurvedSlash = true;
+        p1CountersTowardCurvedSlash = 0;
     }
 
     public bool HasP1Stacks => p1Stacks > 0;
-
-    public void ConsumeP2Stack()
-    {
-        if (p2Stacks > 0) p2Stacks -= 1;
-    }
-
-    public bool HasP2Stacks => p2Stacks > 0;
 
     public void SetLethal(AttackContext cx, bool on)
     {
@@ -287,7 +348,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         attackCx = cx;
         lethalActive = on;
         Player.ClearParryCandidate(this);
-        if (!on && prev == AttackContext.Sword) DebugClearSwingLine();
+
+        if (!on && (prev == AttackContext.Sword || prev == AttackContext.CurvedSlash))
+            DebugClearSwingLine();
     }
 
     public IEnumerator TeleportRoutine(Vector3 p, Action onTeleported = null) => teleportManager.PlayTeleportSequence(p, onTeleported);
@@ -301,6 +364,8 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public void FaceToPlayer() => FacePlayer();
 
     public void FaceTo(int dir) => ApplyFacing(dir < 0 ? -1 : 1);
+
+    public void ResetRotationToFacing() => transform.rotation = Quaternion.Euler(0f, FacingDirection == -1 ? 180f : 0f, 0f);
 
     public void SetGravityScale(float v) => Body.gravityScale = v;
 
@@ -349,8 +414,13 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void DebugUpdateSwingLine(Vector2 origin, Vector2 dir, float length)
     {
+        DebugUpdateSwingLine(origin, dir, length, settings.swordBladeThickness);
+    }
+
+    public void DebugUpdateSwingLine(Vector2 origin, Vector2 dir, float length, float thickness)
+    {
         if (Line == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
-        Line.widthMultiplier = settings.swordBladeThickness;
+        Line.widthMultiplier = thickness;
         Line.useWorldSpace = true;
         Line.positionCount = 2;
         Vector3 a = origin;

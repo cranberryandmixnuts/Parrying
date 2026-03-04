@@ -20,8 +20,7 @@ public sealed class BossGroggyState : BossState
         timer -= Time.deltaTime;
         if (timer > 0f) return;
         if (boss.HasP1Stacks) boss.ChangeToIdle(true);
-        else if (boss.HasP2Stacks) boss.ChangeToRadialLaser();
-        else boss.ChangeToDeath();
+        else boss.ChangeToRadialLaser();
     }
 
     public override void FixedUpdate() => boss.StopHorizontal();

@@ -10,11 +10,14 @@ public sealed class BossSettings : ScriptableObject
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Layers")]
     public LayerMask groundLayer;
 
-    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Stacks"), MinValue(0)]
-    public int p1Stacks = 9;
+    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Phase 1"), MinValue(1)]
+    public int p1CountersToTriggerCurvedSlash = 2;
 
-    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Stacks"), MinValue(0)]
-    public int p2Stacks = 1;
+    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Phase 1"), MinValue(1)]
+    public int p1PatternBundleRepeatCount = 3;
+
+    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Phase 1"), ShowInInspector, ReadOnly]
+    public int P1TotalStacks => (p1CountersToTriggerCurvedSlash + 1) * p1PatternBundleRepeatCount;
 
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float idleDelay = 0.6f;
@@ -51,6 +54,39 @@ public sealed class BossSettings : ScriptableObject
 
     [TabGroup("BossSettings", "Plunge"), BoxGroup("BossSettings/Plunge/Movement"), SuffixLabel("u/s", true), MinValue(0f)]
     public float plungeBounceUpSpeed = 12f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Damage"), MinValue(0)]
+    public int curvedSlashDamage = 200;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("deg", true)]
+    public float curvedSlashStartAngle = 130f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("deg", true)]
+    public float curvedSlashEndAngle = -20f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("u", true), MinValue(0f)]
+    public float curvedSlashBladeLength = 7f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("u", true), MinValue(0f)]
+    public float curvedSlashBladeThickness = 0.5f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Curve"), SuffixLabel("u", true)]
+    public float curvedSlashDownCurveBulgeY = 6f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Curve"), SuffixLabel("u", true)]
+    public float curvedSlashUpCurveBulgeY = -6f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("u/s", true), MinValue(0f)]
+    public float externalRushSpeed = 18f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("u", true), MinValue(0f)]
+    public float externalRushSideYRandomRange = 6f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("u", true), MinValue(0f)]
+    public float externalRushTopXRandomRange = 10f;
+
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("s", true), MinValue(0f)]
+    public float externalRushHitDisableTime = 1f;
 
     [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float rushStartDelay = 0.1f;

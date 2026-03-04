@@ -18,8 +18,8 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  p1Stacks: 3
-  p2Stacks: 1
+  p1CountersToTriggerCurvedSlash: 1
+  p1PatternBundleRepeatCount: 3
   idleDelay: 0.6
   groggyDuration: 3
   repeatPenalty: 0.7
@@ -32,6 +32,17 @@ MonoBehaviour:
   plungeFallSpeed: 16
   plungeDamage: 100
   plungeBounceUpSpeed: 12
+  curvedSlashDamage: 200
+  curvedSlashStartAngle: 130
+  curvedSlashEndAngle: -20
+  curvedSlashBladeLength: 7
+  curvedSlashBladeThickness: 0.5
+  curvedSlashDownCurveBulgeY: 6
+  curvedSlashUpCurveBulgeY: -6
+  externalRushSpeed: 18
+  externalRushSideYRandomRange: 6
+  externalRushTopXRandomRange: 10
+  externalRushHitDisableTime: 1
   rushStartDelay: 0.5
   rushSpeed: 12
   rushMaxTime: 2
