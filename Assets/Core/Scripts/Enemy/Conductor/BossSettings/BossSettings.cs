@@ -88,6 +88,9 @@ public sealed class BossSettings : ScriptableObject
     [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("s", true), MinValue(0f)]
     public float externalRushHitDisableTime = 1f;
 
+    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("s", true), MinValue(0f)]
+    public float externalRushInterval = 0.3f;
+
     [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float rushStartDelay = 0.1f;
 

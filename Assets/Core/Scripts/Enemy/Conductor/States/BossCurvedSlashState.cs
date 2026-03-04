@@ -6,16 +6,11 @@ public sealed class BossCurvedSlashState : BossState
     {
         Tele,
         Down,
-        MidPause,
         Up,
         ExternalRush
     }
 
-    private const float MidPauseSec = 0.1f;
-
     private Phase phase;
-
-    private bool startOnLeft;
     private int faceDir;
 
     private float baseAngle;
@@ -24,8 +19,6 @@ public sealed class BossCurvedSlashState : BossState
 
     private float elapsed;
     private float duration;
-
-    private float midPauseTimer;
 
     private float prevAngle;
     private float curAngle;
@@ -44,8 +37,11 @@ public sealed class BossCurvedSlashState : BossState
     private Vector3 upP2;
 
     private Vector2 rushDir;
-    private bool rushEnteredScreen;
     private float rushHitDisable;
+
+    private bool rushActive;
+    private bool rushEnteredBounds;
+    private float rushBetweenTimer;
 
     private bool projectileHitboxPrevEnabled;
     private bool projectileHitboxOverridden;
@@ -62,8 +58,10 @@ public sealed class BossCurvedSlashState : BossState
         phase = Phase.Tele;
         resolved = false;
 
-        rushEnteredScreen = false;
         rushHitDisable = 0f;
+        rushActive = false;
+        rushEnteredBounds = false;
+        rushBetweenTimer = 0f;
 
         projectileHitboxOverridden = false;
 
@@ -74,39 +72,19 @@ public sealed class BossCurvedSlashState : BossState
         boss.StopHorizontal();
         boss.DebugClearSwingLine();
 
-        Vector3 player = boss.PlayerTarget.transform.position;
-        float dl = Mathf.Abs(player.x - boss.CurvedTopLeft.position.x);
-        float dr = Mathf.Abs(player.x - boss.CurvedTopRight.position.x);
-        startOnLeft = dl >= dr;
+        float playerX = boss.PlayerTarget.transform.position.x;
+        float leftX = boss.CurvedTopLeft.position.x;
+        float rightX = boss.CurvedTopRight.position.x;
 
-        Transform start = startOnLeft ? boss.CurvedTopLeft : boss.CurvedTopRight;
-        Vector3 p = start.position;
-        p.z = boss.transform.position.z;
+        Transform target = playerX < (leftX + rightX) * 0.5f ? boss.CurvedTopRight : boss.CurvedTopLeft;
+        faceDir = target == boss.CurvedTopLeft ? 1 : -1;
+        Vector3 point = target.position;
 
-        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(p, OnTeleported));
+        teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
     }
 
     public override void Update()
     {
-        if (phase == Phase.MidPause)
-        {
-            midPauseTimer -= Time.deltaTime;
-            if (midPauseTimer > 0f) return;
-
-            boss.Play(BossController.AnimCurvedSlashUp);
-            boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
-
-            phase = Phase.Up;
-            duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
-            elapsed = 0f;
-
-            curAngle = baseAngle + endLocal;
-            prevAngle = curAngle;
-            prevBossPos = boss.transform.position;
-
-            return;
-        }
-
         if (phase == Phase.Down || phase == Phase.Up)
         {
             float dt = Time.deltaTime;
@@ -152,11 +130,17 @@ public sealed class BossCurvedSlashState : BossState
             {
                 if (phase == Phase.Down)
                 {
-                    boss.DebugClearSwingLine();
-                    boss.SetLethal(BossController.AttackContext.None, false);
+                    boss.Play(BossController.AnimCurvedSlashUp);
+                    boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
 
-                    phase = Phase.MidPause;
-                    midPauseTimer = MidPauseSec;
+                    phase = Phase.Up;
+                    duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
+                    elapsed = 0f;
+
+                    curAngle = baseAngle + endLocal;
+                    prevAngle = curAngle;
+                    prevBossPos = boss.transform.position;
+
                     return;
                 }
 
@@ -168,33 +152,55 @@ public sealed class BossCurvedSlashState : BossState
 
         if (phase == Phase.ExternalRush)
         {
-            if (rushHitDisable > 0f)
+            if (rushActive)
             {
-                rushHitDisable -= Time.deltaTime;
-                if (rushHitDisable <= 0f) boss.SetLethal(BossController.AttackContext.Rush, true);
-            }
-            else
-            {
-                int hit = boss.HandleHitbox(boss.RushCollider, boss.Settings.curvedSlashDamage);
-                if (hit > 0)
+                if (rushHitDisable > 0f)
                 {
+                    rushHitDisable -= Time.deltaTime;
+                    if (rushHitDisable <= 0f) boss.SetLethal(BossController.AttackContext.Rush, true);
+                }
+                else
+                {
+                    int hit = boss.HandleHitbox(boss.RushCollider, boss.Settings.curvedSlashDamage);
+                    if (hit > 0)
+                    {
+                        boss.SetLethal(BossController.AttackContext.Rush, false);
+                        rushHitDisable = boss.Settings.externalRushHitDisableTime;
+                    }
+                    else if (!boss.LethalActive)
+                    {
+                        rushHitDisable = boss.Settings.externalRushHitDisableTime;
+                    }
+                }
+
+                bool inside = boss.ExternalRushBounds.OverlapPoint(boss.transform.position);
+                if (!rushEnteredBounds && inside) rushEnteredBounds = true;
+
+                if (rushEnteredBounds && !inside)
+                {
+                    Vector3 clamped = boss.ExternalRushBounds.ClosestPoint(boss.transform.position);
+                    clamped.z = boss.transform.position.z;
+                    boss.transform.position = clamped;
+
+                    boss.SetVelocityX(0f);
+                    boss.SetVelocityY(0f);
                     boss.SetLethal(BossController.AttackContext.Rush, false);
-                    rushHitDisable = boss.Settings.externalRushHitDisableTime;
+
+                    rushActive = false;
+                    rushEnteredBounds = false;
+                    rushBetweenTimer = boss.Settings.externalRushInterval;
                 }
-                else if (!boss.LethalActive)
-                {
-                    rushHitDisable = boss.Settings.externalRushHitDisableTime;
-                }
+
+                return;
             }
 
-            bool inside = IsInsideExternalRushBounds(boss.transform.position);
-            if (!rushEnteredScreen && inside) rushEnteredScreen = true;
+            rushBetweenTimer -= Time.deltaTime;
+            if (rushBetweenTimer > 0f) return;
 
-            if (rushEnteredScreen && !inside)
-            {
-                WarpToNextExternalRushSpawn();
-                rushEnteredScreen = false;
-            }
+            WarpToNextExternalRushSpawn();
+            boss.SetLethal(BossController.AttackContext.Rush, true);
+            rushHitDisable = 0f;
+            rushActive = true;
         }
     }
 
@@ -203,6 +209,14 @@ public sealed class BossCurvedSlashState : BossState
         if (phase == Phase.ExternalRush)
         {
             boss.SetGravityScale(0f);
+
+            if (!rushActive)
+            {
+                boss.SetVelocityX(0f);
+                boss.SetVelocityY(0f);
+                return;
+            }
+
             float spd = boss.Settings.externalRushSpeed;
             boss.SetVelocityX(rushDir.x * spd);
             boss.SetVelocityY(rushDir.y * spd);
@@ -237,10 +251,9 @@ public sealed class BossCurvedSlashState : BossState
     {
         teleportRoutine = null;
 
-        float playerX = boss.PlayerTarget.transform.position.x;
-        faceDir = playerX >= boss.transform.position.x ? 1 : -1;
         boss.FaceTo(faceDir);
 
+        bool startOnLeft = faceDir > 0;
         Vector3 a = (startOnLeft ? boss.CurvedTopLeft : boss.CurvedTopRight).position;
         Vector3 b = boss.CurvedMid.position;
         Vector3 c = (startOnLeft ? boss.CurvedTopRight : boss.CurvedTopLeft).position;
@@ -249,11 +262,11 @@ public sealed class BossCurvedSlashState : BossState
 
         downP0 = new Vector3(a.x, a.y, z);
         downP2 = new Vector3(b.x, b.y, z);
-        downP1 = CurveControlY(downP0, downP2, boss.Settings.curvedSlashDownCurveBulgeY);
+        downP1 = CurveControlSlope(downP0, downP2, boss.Settings.curvedSlashDownCurveBulgeY);
 
         upP0 = downP2;
         upP2 = new Vector3(c.x, c.y, z);
-        upP1 = CurveControlY(upP0, upP2, boss.Settings.curvedSlashUpCurveBulgeY);
+        upP1 = CurveControlSlope(upP0, upP2, boss.Settings.curvedSlashUpCurveBulgeY);
 
         boss.Play(BossController.AnimCurvedSlashDown);
         boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
@@ -292,6 +305,9 @@ public sealed class BossCurvedSlashState : BossState
 
         WarpToNextExternalRushSpawn();
         rushHitDisable = 0f;
+        rushActive = true;
+        rushEnteredBounds = false;
+        rushBetweenTimer = 0f;
         phase = Phase.ExternalRush;
     }
 
@@ -301,11 +317,11 @@ public sealed class BossCurvedSlashState : BossState
         spawn.z = boss.transform.position.z;
         boss.transform.position = spawn;
 
-        Vector2 player = boss.PlayerTarget.transform.position;
+        Vector2 aim = boss.PlayerTarget.transform.position;
         Vector2 p = spawn;
-        rushDir = (player - p).sqrMagnitude > 0f ? (player - p).normalized : Vector2.right;
+        rushDir = (aim - p).sqrMagnitude > 0f ? (aim - p).normalized : Vector2.right;
 
-        float zAng = Mathf.Atan2(rushDir.y, rushDir.x) * Mathf.Rad2Deg;
+        float zAng = Mathf.Atan2(rushDir.y, rushDir.x) * Mathf.Rad2Deg - 90f;
         boss.transform.rotation = Quaternion.Euler(0f, 0f, zAng);
 
         boss.SetVelocityX(0f);
@@ -335,15 +351,6 @@ public sealed class BossCurvedSlashState : BossState
             float y = b.y + Random.Range(-boss.Settings.externalRushSideYRandomRange, boss.Settings.externalRushSideYRandomRange);
             return new Vector3(b.x, y, b.z);
         }
-    }
-
-    private bool IsInsideExternalRushBounds(Vector3 p)
-    {
-        float leftX = boss.ExternalRushSpawnLeft.position.x;
-        float rightX = boss.ExternalRushSpawnRight.position.x;
-        float topY = boss.ExternalRushSpawnTop.position.y;
-
-        return p.x >= leftX && p.x <= rightX && p.y <= topY;
     }
 
     private void TryBladeHitAndRegistration(Vector3 prevPos, float prevAng, Vector3 currPos, float currAng)
@@ -417,10 +424,19 @@ public sealed class BossCurvedSlashState : BossState
         return dx * dx + dy * dy <= r2;
     }
 
-    private Vector3 CurveControlY(Vector3 p0, Vector3 p2, float bulgeY)
+    private Vector3 CurveControlSlope(Vector3 p0, Vector3 p2, float bulge)
     {
+        Vector2 d = p2 - p0;
+        float s = d.sqrMagnitude;
         Vector3 m = (p0 + p2) * 0.5f;
-        return new Vector3(m.x, m.y + bulgeY, m.z);
+        if (s <= 0f) return m;
+
+        Vector2 n = new(-d.y, d.x);
+        n.Normalize();
+        if (n.y < 0f) n = -n;
+
+        float b = Mathf.Abs(bulge);
+        return new Vector3(m.x + n.x * b, m.y + n.y * b, m.z);
     }
 
     private Vector3 Bezier2(Vector3 p0, Vector3 p1, Vector3 p2, float t)

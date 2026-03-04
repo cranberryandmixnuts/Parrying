@@ -43,6 +43,8 @@ MonoBehaviour:
   externalRushSideYRandomRange: 6
   externalRushTopXRandomRange: 10
   externalRushHitDisableTime: 1
+  externalRushInterval: 0.3
+  externalRushAimHeadOffsetY: 0
   rushStartDelay: 0.5
   rushSpeed: 12
   rushMaxTime: 2

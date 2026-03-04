@@ -41,11 +41,17 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Runtime"), BoxGroup("Boss Controller/Runtime/Phase 1"), ReadOnly, SerializeField]
     private bool pendingCurvedSlash;
 
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Settings"), SerializeField, Required]
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/GlobalRefs"), SerializeField, Required]
     private BossSettings settings;
 
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/TeleportManager"), SerializeField, Required]
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/GlobalRefs"), SerializeField, Required]
     private BossTeleportManager teleportManager;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/GlobalRefs"), SerializeField, Required]
+    private Collider2D externalRushBounds;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/GlobalRefs"), SerializeField, Required]
+    private Collider2D projectileHitbox;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform leftTop;
@@ -85,9 +91,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/ExternalRush"), SerializeField, Required]
     private Transform externalRushSpawnRight;
-
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
-    private Collider2D projectileHitbox;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField]
     private EnemyProjectile projectilePrefab;
@@ -152,6 +155,7 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public Transform ExternalRushSpawnLeft => externalRushSpawnLeft;
     public Transform ExternalRushSpawnTop => externalRushSpawnTop;
     public Transform ExternalRushSpawnRight => externalRushSpawnRight;
+    public Collider2D ExternalRushBounds => externalRushBounds;
     public EnemyProjectile MissilePrefab => projectilePrefab;
     public Transform VolleyCenter => volleyCenter;
     public Transform VolleyHeight => volleyHeight;
