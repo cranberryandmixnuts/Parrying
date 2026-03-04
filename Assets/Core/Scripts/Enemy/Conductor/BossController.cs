@@ -53,6 +53,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/GlobalRefs"), SerializeField, Required]
     private Collider2D projectileHitbox;
 
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/GlobalRefs"), SerializeField, Required]
+    private Transform arenaCenter;
+
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform leftTop;
 
@@ -95,14 +98,8 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField]
     private EnemyProjectile projectilePrefab;
 
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
-    private Transform volleyCenter;
-
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/VolleyLaser"), SerializeField, Required]
-    private Transform volleyHeight;
-
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/RadialLaser"), SerializeField, Required]
-    private Transform radialLaserPoint;
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Volley&RadialLaser"), SerializeField, Required]
+    private Transform laserHeightPoint;
 
     [Header("Debug")]
     [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
@@ -157,9 +154,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public Transform ExternalRushSpawnRight => externalRushSpawnRight;
     public Collider2D ExternalRushBounds => externalRushBounds;
     public EnemyProjectile MissilePrefab => projectilePrefab;
-    public Transform VolleyCenter => volleyCenter;
-    public Transform VolleyHeight => volleyHeight;
-    public Transform RadialLaserPoint => radialLaserPoint;
+    public Transform VolleyCenter => arenaCenter;
+    public Transform VolleyHeight => laserHeightPoint;
+    public Transform RadialLaserPoint => laserHeightPoint;
     public bool LethalActive => lethalActive;
     public float FacingDir => FacingDirection;
     public float OriginalGravityScale => gravityOriginal;

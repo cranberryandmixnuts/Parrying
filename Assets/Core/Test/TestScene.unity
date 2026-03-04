@@ -2240,6 +2240,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 586266734}
     - target: {fileID: 3863519930290643584, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
+      propertyPath: LaserHeight
+      value: 
+      objectReference: {fileID: 7751110404093136835}
+    - target: {fileID: 3863519930290643584, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
+      propertyPath: arenaCenter
+      value: 
+      objectReference: {fileID: 7751110404093136836}
+    - target: {fileID: 3863519930290643584, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
       propertyPath: curvedTopLeft
       value: 
       objectReference: {fileID: 1372114673}
@@ -2247,6 +2255,10 @@ PrefabInstance:
       propertyPath: curvedTopRight
       value: 
       objectReference: {fileID: 137350341}
+    - target: {fileID: 3863519930290643584, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
+      propertyPath: laserHeightPoint
+      value: 
+      objectReference: {fileID: 7751110404093136835}
     - target: {fileID: 3863519930290643584, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
       propertyPath: externalRushBounds
       value: 
@@ -2308,6 +2320,16 @@ PrefabInstance:
 --- !u!4 &7751110404093136834 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1228675093817166672, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
+  m_PrefabInstance: {fileID: 7751110404093136833}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7751110404093136835 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3590922185391642427, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
+  m_PrefabInstance: {fileID: 7751110404093136833}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7751110404093136836 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5921581166761325228, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
   m_PrefabInstance: {fileID: 7751110404093136833}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8716441742125073611 stripped
