@@ -33,7 +33,7 @@ public sealed class BossCurvedSlashState : BossState
     private Vector3 prevBossPos;
 
     private SplineContainer curvedPath;
-    private ISpline curvedSpline;
+    private Spline curvedSpline;
     private int curveCount;
     private float downCurveLength;
     private float upCurveLength;
@@ -98,19 +98,18 @@ public sealed class BossCurvedSlashState : BossState
             if (elapsed > duration) elapsed = duration;
 
             float t = duration > 0f ? elapsed / duration : 1f;
-            float s = t * t;
 
             Vector3 prevPos = prevBossPos;
             prevAngle = curAngle;
 
             if (phase == Phase.Down)
             {
-                curAngle = downSwingFromAngle + downSwingDelta * s;
+                curAngle = downSwingFromAngle + downSwingDelta * t;
                 boss.transform.position = WithZ(EvaluateCurvedSegmentPosition(0, downCurveLength, t));
             }
             else
             {
-                curAngle = upSwingFromAngle + upSwingDelta * s;
+                curAngle = upSwingFromAngle + upSwingDelta * t;
                 boss.transform.position = WithZ(EvaluateCurvedSegmentPosition(1, upCurveLength, t));
             }
 
@@ -264,12 +263,12 @@ public sealed class BossCurvedSlashState : BossState
         boss.Play(BossController.AnimCurvedSlashDown);
         boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
 
-        float upAngle = boss.Settings.curvedSlashStartAngle;
-        float downAngle = boss.Settings.curvedSlashEndAngle;
+        float startAngle = boss.Settings.curvedSlashStartAngle;
+        float endAngle = boss.Settings.curvedSlashEndAngle;
 
         float baseAngle = faceDir > 0 ? 0f : 180f;
-        float upLocal = faceDir > 0 ? upAngle : -upAngle;
-        float downLocal = faceDir > 0 ? downAngle : -downAngle;
+        float upLocal = faceDir > 0 ? startAngle : -startAngle;
+        float downLocal = faceDir > 0 ? endAngle : -endAngle;
 
         float upWorld = baseAngle + upLocal;
         float downWorld = baseAngle + downLocal;
@@ -280,6 +279,7 @@ public sealed class BossCurvedSlashState : BossState
 
         upSwingFromAngle = downWorld;
         upSwingDelta = Mathf.DeltaAngle(downWorld, upWorld);
+        if (upSwingDelta < 0f) upSwingDelta += 360f;
 
         elapsed = 0f;
         duration = boss.AnimLen(BossController.AnimCurvedSlashDown);
