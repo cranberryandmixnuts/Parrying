@@ -32,11 +32,8 @@ public sealed class BossCurvedSlashState : BossState
 
     private Vector3 prevBossPos;
 
-    private SplineContainer curvedPath;
-    private Spline curvedSpline;
-    private int curveCount;
-    private float downCurveLength;
-    private float upCurveLength;
+    private SplineContainer downPath;
+    private SplineContainer upPath;
 
     private Vector2 rushDir;
     private float rushHitDisable;
@@ -76,14 +73,16 @@ public sealed class BossCurvedSlashState : BossState
 
         float playerX = boss.PlayerTarget.transform.position.x;
 
-        float3 leftStart = boss.CurvedSlashLeftStartPath.EvaluatePosition(0f);
-        float3 rightStart = boss.CurvedSlashRightStartPath.EvaluatePosition(0f);
+        float3 leftStart = boss.LeftStandardDownPath.EvaluatePosition(0f);
+        float3 rightStart = boss.RightStandardDownPath.EvaluatePosition(0f);
         float midX = (leftStart.x + rightStart.x) * 0.5f;
 
-        curvedPath = playerX < midX ? boss.CurvedSlashRightStartPath : boss.CurvedSlashLeftStartPath;
-        faceDir = curvedPath == boss.CurvedSlashLeftStartPath ? 1 : -1;
+        bool useRightPath = playerX < midX;
+        downPath = useRightPath ? boss.RightStandardDownPath : boss.LeftStandardDownPath;
+        upPath = useRightPath ? boss.RightStandardUpPath : boss.LeftStandardUpPath;
+        faceDir = useRightPath ? -1 : 1;
 
-        float3 start = curvedPath.EvaluatePosition(0f);
+        float3 start = downPath.EvaluatePosition(0f);
         Vector3 point = new(start.x, start.y, boss.transform.position.z);
 
         teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
@@ -102,12 +101,12 @@ public sealed class BossCurvedSlashState : BossState
             if (phase == Phase.Down)
             {
                 curAngle = downSwingFromAngle + downSwingDelta * t;
-                boss.transform.position = WithZ(EvaluateCurvedSegmentPosition(0, downCurveLength, t));
+                boss.transform.position = WithZ(EvaluatePathPosition(downPath, t));
             }
             else
             {
                 curAngle = upSwingFromAngle + upSwingDelta * t;
-                boss.transform.position = WithZ(EvaluateCurvedSegmentPosition(1, upCurveLength, t));
+                boss.transform.position = WithZ(EvaluatePathPosition(upPath, t));
             }
 
             Vector3 currPos = boss.transform.position;
@@ -131,7 +130,7 @@ public sealed class BossCurvedSlashState : BossState
 
             if (phase == Phase.Down)
             {
-                Vector3 junction = WithZ(EvaluateCurvedSegmentPosition(0, downCurveLength, 1f));
+                Vector3 junction = WithZ(EvaluatePathPosition(upPath, 0f));
                 boss.transform.position = junction;
                 prevBossPos = junction;
 
@@ -253,32 +252,37 @@ public sealed class BossCurvedSlashState : BossState
 
         boss.FaceTo(faceDir);
 
-        curvedSpline = curvedPath.Spline;
-        curveCount = SplineUtility.GetCurveCount(curvedSpline);
-
-        downCurveLength = curvedSpline.GetCurveLength(0);
-        upCurveLength = curvedSpline.GetCurveLength(1);
-
         boss.Play(BossController.AnimCurvedSlashDown);
         boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
 
         float startAngle = boss.Settings.curvedSlashStartAngle;
         float endAngle = boss.Settings.curvedSlashEndAngle;
 
-        float baseAngle = faceDir > 0 ? 0f : 180f;
-        float upLocal = faceDir > 0 ? startAngle : -startAngle;
-        float downLocal = faceDir > 0 ? endAngle : -endAngle;
+        float downStartAngle;
+        float downEndAngle;
+        float upStartAngle;
+        float upEndAngle;
 
-        float upWorld = baseAngle + upLocal;
-        float downWorld = baseAngle + downLocal;
+        if (faceDir > 0)
+        {
+            downStartAngle = startAngle;
+            downEndAngle = endAngle;
+            upStartAngle = endAngle;
+            upEndAngle = startAngle;
+        }
+        else
+        {
+            downStartAngle = 180f - startAngle;
+            downEndAngle = 180f - endAngle;
+            upStartAngle = 180f - endAngle;
+            upEndAngle = 180f - startAngle;
+        }
 
-        downSwingFromAngle = upWorld;
-        downSwingDelta = Mathf.DeltaAngle(upWorld, downWorld);
-        if (downSwingDelta > 0f) downSwingDelta -= 360f;
+        downSwingFromAngle = downStartAngle;
+        downSwingDelta = Mathf.DeltaAngle(downStartAngle, downEndAngle);
 
-        upSwingFromAngle = downWorld;
-        upSwingDelta = Mathf.DeltaAngle(downWorld, upWorld);
-        if (upSwingDelta < 0f) upSwingDelta += 360f;
+        upSwingFromAngle = upStartAngle;
+        upSwingDelta = Mathf.DeltaAngle(upStartAngle, upEndAngle);
 
         elapsed = 0f;
         duration = boss.AnimLen(BossController.AnimCurvedSlashDown);
@@ -427,12 +431,9 @@ public sealed class BossCurvedSlashState : BossState
         return dx * dx + dy * dy <= r2;
     }
 
-    private Vector3 EvaluateCurvedSegmentPosition(int curveIndex, float curveLength, float t01)
+    private Vector3 EvaluatePathPosition(SplineContainer path, float t01)
     {
-        float dist = curveLength * t01;
-        float curveT = curvedSpline.GetCurveInterpolation(curveIndex, dist);
-        float splineT = (curveIndex + curveT) / curveCount;
-        float3 p = curvedPath.EvaluatePosition(splineT);
+        float3 p = path.EvaluatePosition(Mathf.Clamp01(t01));
         return new Vector3(p.x, p.y, p.z);
     }
 

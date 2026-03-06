@@ -129,5 +129,6 @@ public abstract class EnemyBase : MonoBehaviour
         Body.linearVelocity = Vector2.zero;
         Body.simulated = false;
         enabled = false;
+        gameObject.SetActive(false);
     }
 }

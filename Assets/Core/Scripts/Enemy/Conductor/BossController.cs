@@ -64,10 +64,16 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     private Transform rightTop;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
-    private SplineContainer curvedSlashLeftStartPath;
+    private SplineContainer rightStandardDownPath;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
-    private SplineContainer curvedSlashRightStartPath;
+    private SplineContainer rightStandardUpPath;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
+    private SplineContainer leftStandardDownPath;
+
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
+    private SplineContainer leftStandardUpPath;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
     private Transform ceilingPoint;
@@ -139,8 +145,10 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public BossSettings Settings => settings;
     public Transform LeftTop => leftTop;
     public Transform RightTop => rightTop;
-    public SplineContainer CurvedSlashLeftStartPath => curvedSlashLeftStartPath;
-    public SplineContainer CurvedSlashRightStartPath => curvedSlashRightStartPath;
+    public SplineContainer RightStandardDownPath => rightStandardDownPath;
+    public SplineContainer RightStandardUpPath => rightStandardUpPath;
+    public SplineContainer LeftStandardDownPath => leftStandardDownPath;
+    public SplineContainer LeftStandardUpPath => leftStandardUpPath;
     public Transform CeilingPoint => ceilingPoint;
     public Transform RushStopLeft => rushStopLeft;
     public Transform RushStopRight => rushStopRight;

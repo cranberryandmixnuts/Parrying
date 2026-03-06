@@ -375,8 +375,10 @@ MonoBehaviour:
   arenaCenter: {fileID: 5921581166761325228}
   leftTop: {fileID: 6466427956574511806}
   rightTop: {fileID: 4678971370129052570}
-  curvedSlashLeftStartPath: {fileID: 4532393172706058741}
-  curvedSlashRightStartPath: {fileID: 1801518499329460410}
+  rightStandardDownPath: {fileID: 1801518499329460410}
+  rightStandardUpPath: {fileID: 6655035631951402473}
+  leftStandardDownPath: {fileID: 4532393172706058741}
+  leftStandardUpPath: {fileID: 8065462212377238764}
   ceilingPoint: {fileID: 3993595406944785321}
   rushStopLeft: {fileID: 6466427956574511806}
   rushStopRight: {fileID: 4678971370129052570}
