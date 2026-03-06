@@ -70,12 +70,6 @@ public sealed class BossSettings : ScriptableObject
     [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("u", true), MinValue(0f)]
     public float curvedSlashBladeThickness = 0.5f;
 
-    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Curve"), SuffixLabel("u", true)]
-    public float curvedSlashDownCurveBulgeY = 6f;
-
-    [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Curve"), SuffixLabel("u", true)]
-    public float curvedSlashUpCurveBulgeY = -6f;
-
     [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/External Rush"), SuffixLabel("u/s", true), MinValue(0f)]
     public float externalRushSpeed = 18f;
 

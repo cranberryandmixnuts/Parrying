@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Splines;
 using Sirenix.OdinInspector;
 using System.Collections;
 
@@ -63,13 +64,10 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     private Transform rightTop;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
-    private Transform curvedTopLeft;
+    private SplineContainer curvedSlashLeftStartPath;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
-    private Transform curvedMid;
-
-    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
-    private Transform curvedTopRight;
+    private SplineContainer curvedSlashRightStartPath;
 
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/PlungeRush"), SerializeField, Required]
     private Transform ceilingPoint;
@@ -141,9 +139,8 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public BossSettings Settings => settings;
     public Transform LeftTop => leftTop;
     public Transform RightTop => rightTop;
-    public Transform CurvedTopLeft => curvedTopLeft;
-    public Transform CurvedMid => curvedMid;
-    public Transform CurvedTopRight => curvedTopRight;
+    public SplineContainer CurvedSlashLeftStartPath => curvedSlashLeftStartPath;
+    public SplineContainer CurvedSlashRightStartPath => curvedSlashRightStartPath;
     public Transform CeilingPoint => ceilingPoint;
     public Transform RushStopLeft => rushStopLeft;
     public Transform RushStopRight => rushStopRight;

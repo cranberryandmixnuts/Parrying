@@ -1,4 +1,6 @@
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public sealed class BossCurvedSlashState : BossState
 {
@@ -13,28 +15,28 @@ public sealed class BossCurvedSlashState : BossState
     private Phase phase;
     private int faceDir;
 
-    private float baseAngle;
-    private float startLocal;
-    private float endLocal;
-
     private float elapsed;
     private float duration;
 
     private float prevAngle;
     private float curAngle;
 
+    private float downSwingFromAngle;
+    private float downSwingDelta;
+
+    private float upSwingFromAngle;
+    private float upSwingDelta;
+
     private Vector2 boxSize;
     private bool resolved;
 
     private Vector3 prevBossPos;
 
-    private Vector3 downP0;
-    private Vector3 downP1;
-    private Vector3 downP2;
-
-    private Vector3 upP0;
-    private Vector3 upP1;
-    private Vector3 upP2;
+    private SplineContainer curvedPath;
+    private ISpline curvedSpline;
+    private int curveCount;
+    private float downCurveLength;
+    private float upCurveLength;
 
     private Vector2 rushDir;
     private float rushHitDisable;
@@ -73,12 +75,16 @@ public sealed class BossCurvedSlashState : BossState
         boss.DebugClearSwingLine();
 
         float playerX = boss.PlayerTarget.transform.position.x;
-        float leftX = boss.CurvedTopLeft.position.x;
-        float rightX = boss.CurvedTopRight.position.x;
 
-        Transform target = playerX < (leftX + rightX) * 0.5f ? boss.CurvedTopRight : boss.CurvedTopLeft;
-        faceDir = target == boss.CurvedTopLeft ? 1 : -1;
-        Vector3 point = target.position;
+        float3 leftStart = boss.CurvedSlashLeftStartPath.EvaluatePosition(0f);
+        float3 rightStart = boss.CurvedSlashRightStartPath.EvaluatePosition(0f);
+        float midX = (leftStart.x + rightStart.x) * 0.5f;
+
+        curvedPath = playerX < midX ? boss.CurvedSlashRightStartPath : boss.CurvedSlashLeftStartPath;
+        faceDir = curvedPath == boss.CurvedSlashLeftStartPath ? 1 : -1;
+
+        float3 start = curvedPath.EvaluatePosition(0f);
+        Vector3 point = new(start.x, start.y, boss.transform.position.z);
 
         teleportRoutine = boss.StartCoroutine(boss.TeleportRoutine(point, OnTeleported));
     }
@@ -99,13 +105,13 @@ public sealed class BossCurvedSlashState : BossState
 
             if (phase == Phase.Down)
             {
-                curAngle = baseAngle + Mathf.Lerp(startLocal, endLocal, s);
-                boss.transform.position = WithZ(Bezier2(downP0, downP1, downP2, t));
+                curAngle = downSwingFromAngle + downSwingDelta * s;
+                boss.transform.position = WithZ(EvaluateCurvedSegmentPosition(0, downCurveLength, t));
             }
             else
             {
-                curAngle = baseAngle + Mathf.Lerp(endLocal, startLocal, s);
-                boss.transform.position = WithZ(Bezier2(upP0, upP1, upP2, t));
+                curAngle = upSwingFromAngle + upSwingDelta * s;
+                boss.transform.position = WithZ(EvaluateCurvedSegmentPosition(1, upCurveLength, t));
             }
 
             Vector3 currPos = boss.transform.position;
@@ -122,9 +128,7 @@ public sealed class BossCurvedSlashState : BossState
                 boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.curvedSlashBladeLength, boss.Settings.curvedSlashBladeThickness);
             }
             else if (!boss.LethalActive)
-            {
                 boss.DebugClearSwingLine();
-            }
 
             if (elapsed >= duration)
             {
@@ -137,7 +141,7 @@ public sealed class BossCurvedSlashState : BossState
                     duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
                     elapsed = 0f;
 
-                    curAngle = baseAngle + endLocal;
+                    curAngle = upSwingFromAngle;
                     prevAngle = curAngle;
                     prevBossPos = boss.transform.position;
 
@@ -168,9 +172,7 @@ public sealed class BossCurvedSlashState : BossState
                         rushHitDisable = boss.Settings.externalRushHitDisableTime;
                     }
                     else if (!boss.LethalActive)
-                    {
                         rushHitDisable = boss.Settings.externalRushHitDisableTime;
-                    }
                 }
 
                 bool inside = boss.ExternalRushBounds.OverlapPoint(boss.transform.position);
@@ -253,41 +255,43 @@ public sealed class BossCurvedSlashState : BossState
 
         boss.FaceTo(faceDir);
 
-        bool startOnLeft = faceDir > 0;
-        Vector3 a = (startOnLeft ? boss.CurvedTopLeft : boss.CurvedTopRight).position;
-        Vector3 b = boss.CurvedMid.position;
-        Vector3 c = (startOnLeft ? boss.CurvedTopRight : boss.CurvedTopLeft).position;
+        curvedSpline = curvedPath.Spline;
+        curveCount = SplineUtility.GetCurveCount(curvedSpline);
 
-        float z = boss.transform.position.z;
-
-        downP0 = new Vector3(a.x, a.y, z);
-        downP2 = new Vector3(b.x, b.y, z);
-        downP1 = CurveControlSlope(downP0, downP2, boss.Settings.curvedSlashDownCurveBulgeY);
-
-        upP0 = downP2;
-        upP2 = new Vector3(c.x, c.y, z);
-        upP1 = CurveControlSlope(upP0, upP2, boss.Settings.curvedSlashUpCurveBulgeY);
+        downCurveLength = curvedSpline.GetCurveLength(0);
+        upCurveLength = curvedSpline.GetCurveLength(1);
 
         boss.Play(BossController.AnimCurvedSlashDown);
         boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
 
-        float startAngle = boss.Settings.curvedSlashStartAngle;
-        float endAngle = boss.Settings.curvedSlashEndAngle;
-        float bladeLen = boss.Settings.curvedSlashBladeLength;
-        float bladeThick = boss.Settings.curvedSlashBladeThickness;
+        float upAngle = boss.Settings.curvedSlashStartAngle;
+        float downAngle = boss.Settings.curvedSlashEndAngle;
 
-        baseAngle = faceDir > 0 ? 0f : 180f;
-        startLocal = faceDir > 0 ? startAngle : -startAngle;
-        endLocal = faceDir > 0 ? endAngle : -endAngle;
+        float baseAngle = faceDir > 0 ? 0f : 180f;
+        float upLocal = faceDir > 0 ? upAngle : -upAngle;
+        float downLocal = faceDir > 0 ? downAngle : -downAngle;
+
+        float upWorld = baseAngle + upLocal;
+        float downWorld = baseAngle + downLocal;
+
+        downSwingFromAngle = upWorld;
+        downSwingDelta = Mathf.DeltaAngle(upWorld, downWorld);
+        if (downSwingDelta > 0f) downSwingDelta -= 360f;
+
+        upSwingFromAngle = downWorld;
+        upSwingDelta = Mathf.DeltaAngle(downWorld, upWorld);
 
         elapsed = 0f;
         duration = boss.AnimLen(BossController.AnimCurvedSlashDown);
 
-        curAngle = baseAngle + startLocal;
+        curAngle = downSwingFromAngle;
         prevAngle = curAngle;
-        boxSize = new Vector2(bladeLen, bladeThick);
-        resolved = false;
 
+        float bladeLen = boss.Settings.curvedSlashBladeLength;
+        float bladeThick = boss.Settings.curvedSlashBladeThickness;
+        boxSize = new Vector2(bladeLen, bladeThick);
+
+        resolved = false;
         prevBossPos = boss.transform.position;
         phase = Phase.Down;
     }
@@ -330,25 +334,25 @@ public sealed class BossCurvedSlashState : BossState
 
     private Vector3 ChooseExternalRushSpawn()
     {
-        int r = Random.Range(1, 4);
+        int r = UnityEngine.Random.Range(1, 4);
 
         if (r == 1)
         {
             Vector3 b = boss.ExternalRushSpawnLeft.position;
-            float y = b.y + Random.Range(-boss.Settings.externalRushSideYRandomRange, boss.Settings.externalRushSideYRandomRange);
+            float y = b.y + UnityEngine.Random.Range(-boss.Settings.externalRushSideYRandomRange, boss.Settings.externalRushSideYRandomRange);
             return new Vector3(b.x, y, b.z);
         }
 
         if (r == 2)
         {
             Vector3 b = boss.ExternalRushSpawnTop.position;
-            float x = b.x + Random.Range(-boss.Settings.externalRushTopXRandomRange, boss.Settings.externalRushTopXRandomRange);
+            float x = b.x + UnityEngine.Random.Range(-boss.Settings.externalRushTopXRandomRange, boss.Settings.externalRushTopXRandomRange);
             return new Vector3(x, b.y, b.z);
         }
 
         {
             Vector3 b = boss.ExternalRushSpawnRight.position;
-            float y = b.y + Random.Range(-boss.Settings.externalRushSideYRandomRange, boss.Settings.externalRushSideYRandomRange);
+            float y = b.y + UnityEngine.Random.Range(-boss.Settings.externalRushSideYRandomRange, boss.Settings.externalRushSideYRandomRange);
             return new Vector3(b.x, y, b.z);
         }
     }
@@ -424,25 +428,13 @@ public sealed class BossCurvedSlashState : BossState
         return dx * dx + dy * dy <= r2;
     }
 
-    private Vector3 CurveControlSlope(Vector3 p0, Vector3 p2, float bulge)
+    private Vector3 EvaluateCurvedSegmentPosition(int curveIndex, float curveLength, float t01)
     {
-        Vector2 d = p2 - p0;
-        float s = d.sqrMagnitude;
-        Vector3 m = (p0 + p2) * 0.5f;
-        if (s <= 0f) return m;
-
-        Vector2 n = new(-d.y, d.x);
-        n.Normalize();
-        if (n.y < 0f) n = -n;
-
-        float b = Mathf.Abs(bulge);
-        return new Vector3(m.x + n.x * b, m.y + n.y * b, m.z);
-    }
-
-    private Vector3 Bezier2(Vector3 p0, Vector3 p1, Vector3 p2, float t)
-    {
-        float u = 1f - t;
-        return u * u * p0 + 2f * u * t * p1 + t * t * p2;
+        float dist = curveLength * t01;
+        float curveT = curvedSpline.GetCurveInterpolation(curveIndex, dist);
+        float splineT = (curveIndex + curveT) / curveCount;
+        float3 p = curvedPath.EvaluatePosition(splineT);
+        return new Vector3(p.x, p.y, p.z);
     }
 
     private Vector3 WithZ(Vector3 p) => new(p.x, p.y, boss.transform.position.z);
