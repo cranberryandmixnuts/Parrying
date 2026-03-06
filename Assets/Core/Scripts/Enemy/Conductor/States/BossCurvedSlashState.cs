@@ -94,10 +94,7 @@ public sealed class BossCurvedSlashState : BossState
         if (phase == Phase.Down || phase == Phase.Up)
         {
             float dt = Time.deltaTime;
-            elapsed += dt;
-            if (elapsed > duration) elapsed = duration;
-
-            float t = duration > 0f ? elapsed / duration : 1f;
+            float t = duration > 0f ? Mathf.Clamp01(elapsed / duration) : 1f;
 
             Vector3 prevPos = prevBossPos;
             prevAngle = curAngle;
@@ -129,27 +126,29 @@ public sealed class BossCurvedSlashState : BossState
             else if (!boss.LethalActive)
                 boss.DebugClearSwingLine();
 
-            if (elapsed >= duration)
+            elapsed += dt;
+            if (elapsed < duration) return;
+
+            if (phase == Phase.Down)
             {
-                if (phase == Phase.Down)
-                {
-                    boss.Play(BossController.AnimCurvedSlashUp);
-                    boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
+                Vector3 junction = WithZ(EvaluateCurvedSegmentPosition(0, downCurveLength, 1f));
+                boss.transform.position = junction;
+                prevBossPos = junction;
 
-                    phase = Phase.Up;
-                    duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
-                    elapsed = 0f;
+                boss.Play(BossController.AnimCurvedSlashUp);
+                boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
 
-                    curAngle = upSwingFromAngle;
-                    prevAngle = curAngle;
-                    prevBossPos = boss.transform.position;
+                phase = Phase.Up;
+                duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
+                elapsed = 0f;
 
-                    return;
-                }
+                curAngle = upSwingFromAngle;
+                prevAngle = curAngle;
 
-                BeginExternalRush();
+                return;
             }
 
+            BeginExternalRush();
             return;
         }
 
