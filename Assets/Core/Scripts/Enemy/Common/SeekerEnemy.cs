@@ -20,7 +20,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     private Transform firePoint;
 
     [TabGroup("Seeker Enemy", "Setup"), BoxGroup("Seeker Enemy/Setup/References"), SerializeField, Required]
-    private BoxCollider2D hitbox;
+    private Collider2D hitbox;
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Drift"), SerializeField, MinValue(0f), SuffixLabel("u", true)]
     private float desiredHeight = 4.5f;

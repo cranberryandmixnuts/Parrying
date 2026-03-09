@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: b8237c39711fd974c84d6c479f4d8ad5
+guid: a37e7435b425290429f6157d24ee0496
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5335672055058570113
-    second: Drift_0
+      213: 4035959289877228764
+    second: Walk_0
   - first:
-      213: 8610476255415291321
-    second: Drift_1
+      213: -982904232830982447
+    second: Walk_1
   - first:
-      213: 4265758170611062761
-    second: Drift_2
+      213: -350908408369970039
+    second: Walk_2
   - first:
-      213: 4932148257081308253
-    second: Drift_3
+      213: -5409570386352685021
+    second: Walk_3
   - first:
-      213: -6479729894280258590
-    second: Drift_4
+      213: 1553940418269799609
+    second: Walk_4
   - first:
-      213: -8844488600858862724
-    second: Drift_5
+      213: 2416434504916517810
+    second: Walk_5
   - first:
-      213: 8583766360592875262
-    second: Drift_6
+      213: -6428935122508569504
+    second: Walk_6
   - first:
-      213: -799035947491584861
-    second: Drift_7
+      213: 7144598999076838305
+    second: Walk_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -149,8 +149,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 926b8a99e14ccee41a6b17d96f0914cd
-      internalID: 1851939232
+      spriteID: 5215851bb6b1ee248b403fea16854dff
+      internalID: -1006731885
       vertices: []
       indices: 
       edges: []
@@ -171,8 +171,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f7d86dcd5d4d7b5439a656e2814c711f
-      internalID: -273549631
+      spriteID: d8cd49abcf5c72d4d91abda2e070d8ca
+      internalID: 1403896786
       vertices: []
       indices: 
       edges: []
@@ -193,8 +193,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2279640be51efb2488339f398a9a87a6
-      internalID: -1824889148
+      spriteID: 8b11885d11af26c4789caec63cd49416
+      internalID: -2037014071
       vertices: []
       indices: 
       edges: []
@@ -215,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8ba664565e89724bb95c717dc73b3b4
-      internalID: -1081751441
+      spriteID: 795d2f3d740856942aeeadcf1679bfef
+      internalID: 1487050535
       vertices: []
       indices: 
       edges: []
@@ -237,8 +237,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83a08e4e8672b274bbe7fbf8de942283
-      internalID: -18774878
+      spriteID: a6a889af72385c846b1ece77eb12c683
+      internalID: -1003043467
       vertices: []
       indices: 
       edges: []
@@ -259,8 +259,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 91a0fea0721f3ff4ca0569fa6537b034
-      internalID: 1305285000
+      spriteID: b5951745d700ca94b89b3af074ddd494
+      internalID: 303487610
       vertices: []
       indices: 
       edges: []
@@ -281,8 +281,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 96f187268b107294b88ad0dbd488e0e9
-      internalID: -890838313
+      spriteID: 0792c23928bf3164a805b405426e8c90
+      internalID: -448521180
       vertices: []
       indices: 
       edges: []
@@ -303,8 +303,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b6dd03e140df078429e4725e3a77ef59
-      internalID: -1339615494
+      spriteID: 06a2a397cba12df439d1d7ecd292b272
+      internalID: -756849250
       vertices: []
       indices: 
       edges: []
@@ -325,14 +325,14 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":8.0,"y":1.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Drift_0: 1851939232
-      Drift_1: -273549631
-      Drift_2: -1824889148
-      Drift_3: -1081751441
-      Drift_4: -18774878
-      Drift_5: 1305285000
-      Drift_6: -890838313
-      Drift_7: -1339615494
+      Drift_0: -1006731885
+      Drift_1: 1403896786
+      Drift_2: -2037014071
+      Drift_3: 1487050535
+      Drift_4: -1003043467
+      Drift_5: 303487610
+      Drift_6: -448521180
+      Drift_7: -756849250
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

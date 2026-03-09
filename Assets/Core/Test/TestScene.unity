@@ -1727,21 +1727,13 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6567384598194903862, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6567384598194903862, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8251505396069226598, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8251505396069226598, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.9
+      value: -2.6
       objectReference: {fileID: 0}
     - target: {fileID: 8251505396069226598, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1799,7 +1791,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1080052741200358110, guid: 18b9878d160a09946852b9eaa61fe1f2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.9
+      value: -2.5
       objectReference: {fileID: 0}
     - target: {fileID: 1080052741200358110, guid: 18b9878d160a09946852b9eaa61fe1f2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1854,14 +1846,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2024086082}
     m_Modifications:
-    - target: {fileID: 1831685207242647202, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1831685207242647202, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7164145057172459947, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
       propertyPath: m_Name
       value: SeekerRoot
@@ -1977,7 +1961,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8952552094277220523, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
