@@ -1850,10 +1850,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeekerRoot
       objectReference: {fileID: 0}
-    - target: {fileID: 7164145057172459947, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7498784342201332014, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6
@@ -1961,7 +1957,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8952552094277220523, guid: 82860bdc7e30bbe4eaae1d85defd2331, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

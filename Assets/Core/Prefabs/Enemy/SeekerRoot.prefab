@@ -117,7 +117,7 @@ MonoBehaviour:
   driftStopRadius: 0.15
   fireIntervalRange: {x: 2, y: 4}
   fireRecoilForce: 2
-  fireShootPercent: 0.87
+  fireShootPercent: 0.6625
   projectileDamage: 50
 --- !u!50 &3882682788119740176
 Rigidbody2D:
