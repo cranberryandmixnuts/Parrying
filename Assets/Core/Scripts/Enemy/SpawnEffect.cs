@@ -14,6 +14,10 @@ public sealed class SpawnEffect : MonoBehaviour
 
     private void Start()
     {
+        Vector3 playerPosition = PlayerController.Instance.transform.position;
+        int playerDirection = playerPosition.x < outline.transform.position.x ? -1 : 1;
+        outline.transform.rotation = Quaternion.Euler(0f, playerDirection == -1 ? 180f : 0f, 0f);
+
         SetOutlineAlpha(0f);
         SetSilhouetteAlpha(1f);
         mainEnemy.SetActive(false);
