@@ -8,7 +8,7 @@ public sealed class QuitGame : MonoBehaviour
 {
     [Header("Fade UI")]
     [SerializeField, Required] private Image fadeImage;
-    [SerializeField] private float fadeDuration = 1.0f;
+    [SerializeField] private float fadeDuration = 0.6f;
 
     private bool isQuitting;
     private Tween fadeTween;
