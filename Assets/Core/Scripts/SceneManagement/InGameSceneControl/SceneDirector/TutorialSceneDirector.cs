@@ -64,67 +64,43 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
     private UIInfoStep hpSystemStep;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Entry"), SerializeField, Min(0f)]
-    private float firstFireDelaySeconds = 0.4f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Entry"), SerializeField, Min(0f)]
-    private float firstHitRecoverDelaySeconds = 0.8f;
+    private float firstHitRecoverDelaySeconds = 3.5f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Parry"), SerializeField, Min(0f)]
-    private float parryFireDelaySeconds = 0.3f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Parry"), SerializeField, Min(0f)]
-    private float parryPreSlowDelaySeconds = 0.35f;
+    private float parryPreSlowDelaySeconds = 0.285f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Parry"), SerializeField, Min(0f)]
     private float parrySlowSeconds = 1f;
 
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Parry"), SerializeField, Min(0f)]
-    private float afterParryDelaySeconds = 0.25f;
+    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
+    private float imperfectParryFireDelaySeconds = 1f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
-    private float imperfectParryFireDelaySeconds = 0.3f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
-    private float imperfectParryPreSlowDelaySeconds = 0.35f;
+    private float imperfectParryPreSlowDelaySeconds = 2.55f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
     private float imperfectParrySlowSeconds = 1f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Imperfect Parry"), SerializeField, Min(0f)]
-    private float afterImperfectParryDelaySeconds = 0.25f;
+    private float afterImperfectParryDelaySeconds = 1f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Dodge"), SerializeField, Min(0f)]
-    private float dodgeFireDelaySeconds = 0.3f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Dodge"), SerializeField, Min(0f)]
-    private float dodgePreSlowDelaySeconds = 0.35f;
+    private float dodgePreSlowDelaySeconds = 2.83f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Dodge"), SerializeField, Min(0f)]
     private float dodgeSlowSeconds = 1f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Dodge"), SerializeField, Min(0f)]
-    private float afterDodgeDelaySeconds = 0.25f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Counter Charge"), SerializeField, Min(0f)]
-    private float counterChargePanelDelaySeconds = 0.2f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Counter Charge"), SerializeField, Min(0f)]
-    private float afterCounterChargeDelaySeconds = 0.2f;
+    private float afterDodgeDelaySeconds = 1.3f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Counter Parry"), SerializeField, Min(0f)]
-    private float counterParryFireDelaySeconds = 0.2f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Counter Parry"), SerializeField, Min(0f)]
-    private float counterParryPreSlowDelaySeconds = 0.35f;
+    private float counterParryPreSlowDelaySeconds = 2.4f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Counter Parry"), SerializeField, Min(0f)]
     private float counterParrySlowSeconds = 1f;
 
     [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Counter Parry"), SerializeField, Min(0f)]
-    private float afterCounterParryDelaySeconds = 0.25f;
-
-    [TabGroup("Tutorial", "Timing"), BoxGroup("Tutorial/Timing/Heal"), SerializeField, Min(0f)]
-    private float healPanelDelaySeconds = 0.2f;
+    private float afterCounterParryDelaySeconds = 1.2f;
 
     [TabGroup("Tutorial", "UI"), SerializeField, Min(0f)]
     private float panelFadeInSeconds = 0.5f;
@@ -173,12 +149,10 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         input.SetAllModes(InputMode.Auto);
         InputModeState newState = input.GetModes();
 
-        yield return new WaitForSecondsRealtime(firstFireDelaySeconds);
+        yield return null;
         seeker.FireAtPlayer();
 
         yield return new WaitForSecondsRealtime(firstHitRecoverDelaySeconds);
-
-        yield return new WaitForSecondsRealtime(parryFireDelaySeconds);
 
         input.SetAllModes(InputMode.Auto);
         newState = input.GetModes();
@@ -191,8 +165,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
             parrySlowSeconds,
             () => input.ParryDown
         );
-
-        yield return new WaitForSecondsRealtime(afterParryDelaySeconds);
 
         yield return new WaitForSecondsRealtime(imperfectParryFireDelaySeconds);
 
@@ -212,8 +184,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return RunUIInfoStep(imperfectParryEffectStep);
 
-        yield return new WaitForSecondsRealtime(dodgeFireDelaySeconds);
-
         input.SetAllModes(InputMode.Auto);
         newState = input.GetModes();
         newState.DashDown = InputMode.Manual;
@@ -229,8 +199,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         yield return new WaitForSecondsRealtime(afterDodgeDelaySeconds);
 
         yield return RunUIInfoStep(energySystemStep);
-
-        yield return new WaitForSecondsRealtime(counterChargePanelDelaySeconds);
         yield return ShowPanel(counterChargePanel);
 
         input.SetAllModes(InputMode.Auto);
@@ -243,10 +211,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         input.SetAllModes(InputMode.Auto);
         input.SetAutoHeld(ActionKey.Parry, true);
         counterChargePanel.HideImmediate();
-
-        yield return new WaitForSecondsRealtime(afterCounterChargeDelaySeconds);
-
-        yield return new WaitForSecondsRealtime(counterParryFireDelaySeconds);
 
         newState = input.GetModes();
         newState.ParryHeld = InputMode.Manual;
@@ -262,8 +226,6 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
         yield return new WaitForSecondsRealtime(afterCounterParryDelaySeconds);
 
         yield return RunUIInfoStep(hpSystemStep);
-
-        yield return new WaitForSecondsRealtime(healPanelDelaySeconds);
         yield return ShowPanel(healPanel);
 
         input.SetMode(ActionKey.Heal, InputMode.Manual);
@@ -278,7 +240,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
     private IEnumerator RunUIInfoStep(UIInfoStep step)
     {
-        input.SetCusorMode(true);
+        input.SetCursorMode(true);
         input.SetAllModes(InputMode.Auto);
 
         step.Root.SetActive(true);
@@ -329,7 +291,7 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         yield return new WaitUntil(() => pressed);
 
-        input.SetCusorMode(false);
+        input.SetCursorMode(false);
         ClearCurrentOkListener();
         ResetInfoStepImmediate(step);
     }

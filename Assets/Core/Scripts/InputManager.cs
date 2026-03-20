@@ -296,12 +296,16 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
         SetMode(ActionKey.Escape, mode);
     }
 
-    public void SetCusorMode(bool mode)
+    public void SetCursorMode(bool mode)
     {
-        if (mode) Cursor.lockState = CursorLockMode.None;
-        else Cursor.lockState = CursorLockMode.Locked;
+#if !UNITY_EDITOR
+    if (mode)
+        Cursor.lockState = CursorLockMode.None;
+    else
+        Cursor.lockState = CursorLockMode.Locked;
 
-        Cursor.visible = mode;
+    Cursor.visible = mode;
+#endif
     }
 
     public void SetAutoMoveAxis(float axis) => autoMoveAxis = Mathf.Clamp(axis, -1f, 1f);

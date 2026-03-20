@@ -23,7 +23,7 @@ public sealed class TutorialSeeker : EnemyBase, IEnemyProjectileOwner
     private BoxCollider2D hitbox;
 
     [TabGroup("Tutorial Seeker", "Tuning"), BoxGroup("Tutorial Seeker/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
-    private float fireShootPercent = 0.6f;
+    private float fireShootPercent = 0.65f;
 
     [TabGroup("Tutorial Seeker", "Tuning"), BoxGroup("Tutorial Seeker/Tuning/Fire"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
     private int projectileDamage = 80;

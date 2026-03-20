@@ -359,8 +359,7 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
             GameOverOptionButtons.SetActive(true);
             buttonsGroup.alpha = 0f;
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            InputManager.Instance.SetCursorMode(true);
         });
 
         seq.Append(buttonsGroup.DOFade(1f, 0.5f).SetEase(Ease.Linear).SetUpdate(true));

@@ -31,8 +31,8 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         cachedTimeScale = Time.timeScale;
         cachedInputState = input.GetModes();
 
-        if (EscapeToOpen) input.SetCusorMode(false);
-        else input.SetCusorMode(true);
+        if (EscapeToOpen) input.SetCursorMode(false);
+        else input.SetCursorMode(true);
     }
 
     private void Update()
@@ -70,7 +70,7 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         AudioPanel.SetActive(false);
         ControlPanel.SetActive(false);
 
-        if (EscapeToOpen) input.SetCusorMode(true);
+        if (EscapeToOpen) input.SetCursorMode(true);
 
         CurrentTab = SettingsTab.Root;
     }
@@ -84,7 +84,7 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         ControlPanel.SetActive(false);
         SettingsWindow.SetActive(false);
 
-        if (EscapeToOpen) input.SetCusorMode(false);
+        if (EscapeToOpen) input.SetCursorMode(false);
 
         if (input != null)
             input.SetModes(cachedInputState);

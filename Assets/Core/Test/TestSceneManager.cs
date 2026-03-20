@@ -11,7 +11,7 @@ public class TestSceneManager : MonoBehaviour
 
     private void Start()
     {
-        InputManager.Instance.SetCusorMode(true);
+        InputManager.Instance.SetCursorMode(true);
 
         if (DoInitializePlayerStatus)
             playerSettings.InitializePlayerStatus();

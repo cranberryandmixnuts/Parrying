@@ -41,13 +41,13 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     private float driftStopRadius = 0.15f;
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, MinMaxSlider(0f, 10f, true)]
-    private Vector2 fireIntervalRange = new(2f, 4f);
+    private Vector2 fireIntervalRange = new(1f, 3f);
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, MinValue(0f), SuffixLabel("imp", true)]
     private float fireRecoilForce = 2f;
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
-    private float fireShootPercent = 0.6f;
+    private float fireShootPercent = 0.65f;
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
     private int projectileDamage = 50;
