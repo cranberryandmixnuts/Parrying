@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1c0cf5f085b3289409b3382943f8d492
+guid: 3a4da116d6c97e0499f24110a44d8408
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8251505574100086631
-    second: BG3_0
+      213: 1310009151168804977
+    second: "PARRIT \uD0C0\uC774\uD2C0\uD654\uBA74_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BG3_0
+      name: "PARRIT \uD0C0\uC774\uD2C0\uD654\uBA74_0"
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 3840
-        height: 2160
+        width: 1920
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 990db911663cc7d80800000000000000
-      internalID: -8251505574100086631
+      spriteID: 1787debd1661e2210800000000000000
+      internalID: 1310009151168804977
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BG3_0: -8251505574100086631
+      "PARRIT \uD0C0\uC774\uD2C0\uD654\uBA74_0": 1310009151168804977
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
