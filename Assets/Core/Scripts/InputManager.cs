@@ -68,6 +68,16 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     [TabGroup("InputManager", "Action Names"), BoxGroup("InputManager/Action Names/UI"), SerializeField]
     private string escapeActionName = "Escape";
 
+    private static readonly string[] IgnoredRebindControlPaths =
+    {
+        "<Mouse>/scroll",
+        "<Mouse>/scroll/x",
+        "<Mouse>/scroll/y",
+        "<Pointer>/scroll",
+        "<Pointer>/scroll/x",
+        "<Pointer>/scroll/y"
+    };
+
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction dashAction;
@@ -406,8 +416,8 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
     public void LoadBindingOverrides()
     {
         Debug.Log("Loading input binding overrides.");
-        if (!PlayerPrefs.HasKey(RebindsKey))
-            return;
+
+        if (!PlayerPrefs.HasKey(RebindsKey)) return;
 
         string json = PlayerPrefs.GetString(RebindsKey);
         actions.LoadBindingOverridesFromJson(json);
@@ -479,15 +489,22 @@ public sealed class InputManager : Singleton<InputManager, GlobalScope>
 
     private InputActionRebindingExtensions.RebindingOperation BuildRebindOperation(InputAction action, int bindingIndex, bool excludeMouse)
     {
-        var operation = action.PerformInteractiveRebinding(bindingIndex);
+        InputActionRebindingExtensions.RebindingOperation operation = action.PerformInteractiveRebinding(bindingIndex);
 
         if (excludeMouse) operation.WithControlsExcluding("Mouse");
 
+        ApplyIgnoredRebindControls(operation);
         operation.OnMatchWaitForAnother(0.1f);
 
         return operation
             .OnComplete(o => FinishRebind(action))
             .OnCancel(o => CancelRebind(action));
+    }
+
+    private static void ApplyIgnoredRebindControls(InputActionRebindingExtensions.RebindingOperation operation)
+    {
+        for (int i = 0; i < IgnoredRebindControlPaths.Length; i++)
+            operation.WithControlsExcluding(IgnoredRebindControlPaths[i]);
     }
 
     private void FinishRebind(InputAction action)

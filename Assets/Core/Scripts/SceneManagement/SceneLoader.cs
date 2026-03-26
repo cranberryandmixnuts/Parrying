@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,8 +13,9 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
     [SerializeField] private float fadeDuration = 1.0f;
 
     public bool IsTransitioning { get; private set; } = false;
-
     public SceneType CurrentSceneType { get; private set; } = SceneType.None;
+
+    public event Action<SceneType> TransitionCompleted;
 
     private Tween fadeTween;
     private Tween pendingRequestTween;
@@ -75,7 +77,6 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
     private IEnumerator LoadSceneSequence(SceneType scene)
     {
         IsTransitioning = true;
-
         fadeImage.gameObject.SetActive(true);
 
         BgmId bgm = GetBgmForScene(scene);
@@ -96,11 +97,12 @@ public sealed class SceneLoader : Singleton<SceneLoader, GlobalScope>
         yield return new WaitUntil(() => asyncLoad.isDone);
 
         CurrentSceneType = GetCurrentSceneType();
+        TransitionCompleted?.Invoke(CurrentSceneType);
 
         yield return FadeTo(0f).WaitForCompletion();
 
-        IsTransitioning = false;
         fadeImage.gameObject.SetActive(false);
+        IsTransitioning = false;
 
         if (pendingScene != SceneType.None)
         {

@@ -213,6 +213,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -363,6 +364,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &1789766527892000804
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,6 +547,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &2650371730897192468
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,6 +697,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &3821519239585838727
 GameObject:
   m_ObjectHideFlags: 0
@@ -1017,6 +1021,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &4750329632846894856
 GameObject:
   m_ObjectHideFlags: 0
@@ -1187,6 +1192,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &6066289032634522197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1395,6 +1401,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!114 &8615980361859897701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1544,6 +1551,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &7160931578690838840
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,6 +1672,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &7205017267991623382
 GameObject:
   m_ObjectHideFlags: 0
@@ -1871,6 +1880,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &7414851840108064494
 GameObject:
   m_ObjectHideFlags: 0
@@ -2049,6 +2059,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &7896365785417695348
 GameObject:
   m_ObjectHideFlags: 0
@@ -2247,6 +2258,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1 &8736505306721434121
 GameObject:
   m_ObjectHideFlags: 0
@@ -2367,6 +2379,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
 --- !u!1001 &1248419910385089071
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2489,7 +2502,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8392293462928373144, guid: aabd454a1f6f6f248809eb6c610fcbba, type: 3}
       propertyPath: m_text
-      value: "\uCC98\uC74C\uBD80\uD130 \uB2E4\uC2DC \uC2DC\uC791"
+      value: "\uB2E4\uC2DC \uC2DC\uB3C4"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2521,7 +2534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd5abd66a6d6d146a14df5432658f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoadButton
-  scene: 2
+  reloadCurrentScene: 1
+  scene: 0
 --- !u!1001 &1367184060731337633
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2676,4 +2690,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd5abd66a6d6d146a14df5432658f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoadButton
+  reloadCurrentScene: 0
   scene: 1

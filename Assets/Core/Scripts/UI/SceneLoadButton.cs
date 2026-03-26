@@ -3,6 +3,10 @@ using Sirenix.OdinInspector;
 
 public sealed class SceneLoadButton : MonoBehaviour
 {
+    [SerializeField]
+    private bool reloadCurrentScene = false;
+
+    [HideIf(nameof(reloadCurrentScene))]
     [ValidateInput(nameof(IsValidScene), "SceneType이 None이면 로드할 수 없습니다!"), SerializeField]
     private SceneType scene = SceneType.None;
 
@@ -10,11 +14,17 @@ public sealed class SceneLoadButton : MonoBehaviour
 
     public void Load()
     {
-        if (scene == SceneType.None || Loaded) return;
-        Loaded = true;
+        if (Loaded) return;
 
+        SceneType targetScene = reloadCurrentScene
+            ? SceneLoader.Instance.CurrentSceneType
+            : scene;
+
+        if (targetScene == SceneType.None) return;
+
+        Loaded = true;
         InputManager.Instance.SetAllModes(InputMode.Auto);
-        SceneLoader.Instance.LoadScene(scene);
+        SceneLoader.Instance.LoadScene(targetScene);
     }
 
     private void OnDisable()
@@ -23,5 +33,5 @@ public sealed class SceneLoadButton : MonoBehaviour
             InputManager.Instance.SetAllModes(InputMode.Manual);
     }
 
-    private bool IsValidScene(SceneType value) => value != SceneType.None;
+    private bool IsValidScene(SceneType value) => reloadCurrentScene || value != SceneType.None;
 }

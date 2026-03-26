@@ -40,10 +40,24 @@ public sealed class PlayerVitals : Singleton<PlayerVitals, GlobalScope>
         }
     }
 
+    private SceneType savedcurrentScene = SceneType.None;
+    private int currentSceneEntranceHealth = -1;
+    private int currentSceneEntranceEnergy = -1;
+
     public int MaxHealth => settings.maxHealth;
     public int MaxEnergy => settings.maxEnergy;
 
-    private void Start() => InitializePlayerStatus();
+    private void OnEnable()
+    {
+        if (SceneLoader.Instance != null)
+            SceneLoader.Instance.TransitionCompleted += SaveAndLoadSceneStatus;
+    }
+
+    private void Start()
+    {
+        InitializePlayerStatus();
+        SceneLoader.Instance.TransitionCompleted += SaveAndLoadSceneStatus;
+    }
 
     private void Update()
     {
@@ -57,6 +71,12 @@ public sealed class PlayerVitals : Singleton<PlayerVitals, GlobalScope>
             IsInvincible = false;
             invincibleTimer = 0f;
         }
+    }
+
+    private void OnDisable()
+    {
+        if (SceneLoader.Instance != null)
+            SceneLoader.Instance.TransitionCompleted -= SaveAndLoadSceneStatus;
     }
 
     public bool SetInvincibleTimer(float time)
@@ -125,10 +145,30 @@ public sealed class PlayerVitals : Singleton<PlayerVitals, GlobalScope>
         return true;
     }
 
+    private void SaveAndLoadSceneStatus(SceneType CurrentSceneType)
+    {
+        if (savedcurrentScene == CurrentSceneType)
+        {
+            if (currentSceneEntranceHealth >= 0)
+                Health = currentSceneEntranceHealth;
+
+            if (currentSceneEntranceEnergy >= 0)
+                Energy = currentSceneEntranceEnergy;
+        }
+
+        savedcurrentScene = CurrentSceneType;
+        currentSceneEntranceHealth = Health;
+        currentSceneEntranceEnergy = Energy;
+    }
+
     [Button]
     public void InitializePlayerStatus()
     {
         Health = settings.maxHealth;
         Energy = settings.maxEnergy;
+
+        savedcurrentScene = SceneType.None;
+        currentSceneEntranceHealth = -1;
+        currentSceneEntranceEnergy = -1;
     }
 }
