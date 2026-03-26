@@ -1,44 +1,49 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public sealed class PlayerVitals : MonoBehaviour
+public sealed class PlayerVitals : Singleton<PlayerVitals, GlobalScope>
 {
-    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), ReadOnly, SerializeField]
-    private bool IsInvincible = false;
-
-    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), ReadOnly, SerializeField]
-    private float invincibleTimer = 0f;
-
     [TabGroup("Player Vitals", "Setup"), BoxGroup("Player Vitals/Setup/Scene References"), SerializeField, Required]
     private PlayerSettings settings;
 
-    [TabGroup("Player Vitals", "Setup"), BoxGroup("Player Vitals/Setup/Scene References"), SerializeField, Required]
-    private PlayerController player;
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Status"), SuffixLabel("HP", true), MinValue(0), MaxValue("@settings.maxHealth")]
+    public int currentHealth = 1000;
+
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Status"), SuffixLabel("EN", true), MinValue(0), MaxValue("@settings.maxEnergy")]
+    public int currentEnergy = 500;
+
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), ReadOnly, SerializeField]
+    private bool IsInvincible = false;
+
+    [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/Invincible"), SerializeField]
+    private float invincibleTimer = 0f;
 
     [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ShowInInspector, ReadOnly]
     public int Health
     {
-        get => settings.currentHealth;
+        get => currentHealth;
         private set
         {
             Debug.Log($"Setting player health: {value}");
-            settings.currentHealth = Mathf.Clamp(value, 0, settings.maxHealth);
+            currentHealth = Mathf.Clamp(value, 0, settings.maxHealth);
         }
     }
 
     [TabGroup("Player Vitals", "Runtime"), BoxGroup("Player Vitals/Runtime/State"), ShowInInspector, ReadOnly]
     public int Energy
     {
-        get => settings.currentEnergy;
+        get => currentEnergy;
         private set
         {
             Debug.Log($"Setting player energy: {value}");
-            settings.currentEnergy = Mathf.Clamp(value, 0, settings.maxEnergy);
+            currentEnergy = Mathf.Clamp(value, 0, settings.maxEnergy);
         }
     }
 
     public int MaxHealth => settings.maxHealth;
     public int MaxEnergy => settings.maxEnergy;
+
+    private void Start() => InitializePlayerStatus();
 
     private void Update()
     {
@@ -118,5 +123,12 @@ public sealed class PlayerVitals : MonoBehaviour
 
         Energy += amount;
         return true;
+    }
+
+    [Button]
+    public void InitializePlayerStatus()
+    {
+        Health = settings.maxHealth;
+        Energy = settings.maxEnergy;
     }
 }

@@ -15,6 +15,24 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         public string Text;
     }
 
+    private readonly struct SpriteFadeEntry
+    {
+        public readonly SpriteRenderer SpriteRenderer;
+        public readonly float Alpha;
+
+        public SpriteFadeEntry(SpriteRenderer spriteRenderer)
+        {
+            SpriteRenderer = spriteRenderer;
+            Alpha = spriteRenderer.color.a;
+        }
+    }
+
+    private sealed class DoorFadeTarget
+    {
+        public GameObject Root;
+        public SpriteFadeEntry[] SpriteRenderers;
+    }
+
     [TabGroup("Boss Room", "Refs"), BoxGroup("Boss Room/Refs/Boss"), SerializeField, Required]
     private BossController bossController;
 
@@ -25,13 +43,16 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
     private TMP_Text dialogueText;
 
     [TabGroup("Boss Room", "Refs"), BoxGroup("Boss Room/Refs/Door"), SerializeField]
-    private GameObject[] lockDoors;
+    private GameObject lockDoor;
 
     [TabGroup("Boss Room", "Timing"), SerializeField, Min(0f)]
     private float startDelaySeconds = 1f;
 
     [TabGroup("Boss Room", "Timing"), SerializeField, Min(0f)]
     private float betweenLinesDelaySeconds = 1.6f;
+
+    [TabGroup("Boss Room", "Timing"), SerializeField, Min(0f)]
+    private float lockDoorFadeDuration = 0.5f;
 
     [TabGroup("Boss Room", "Typing"), SerializeField, Min(1f)]
     private float charsPerSecond = 30f;
@@ -42,13 +63,15 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
     [TabGroup("Boss Room", "Dialogue"), SerializeField]
     private List<DialogueLine> lines = new();
 
+    private DoorFadeTarget doorFadeTarget;
     private Coroutine routine;
-
     private Tween typingTween;
+    private Tween doorFadeTween;
 
     private void Start()
     {
-        SetDoorsActive(false);
+        CacheDoorFadeTarget();
+        SetDoorInstant(false);
         dialogueRoot.SetActive(false);
 
         routine = StartCoroutine(RunSequence());
@@ -68,14 +91,14 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         for (int i = 0; i < count; i++)
         {
             yield return PlayLine(lines[i].Text);
-
             yield return new WaitForSecondsRealtime(betweenLinesDelaySeconds);
         }
 
-        SetDoorsActive(true);
+        yield return FadeDoor(true);
+
         dialogueRoot.SetActive(false);
 
-        yield return new WaitForSecondsRealtime(betweenLinesDelaySeconds / 2);
+        yield return new WaitForSecondsRealtime(betweenLinesDelaySeconds / 2f);
 
         bossController.enabled = true;
         InputManager.Instance.SetAllModes(InputMode.Manual);
@@ -100,11 +123,75 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         yield return typingTween.WaitForCompletion();
     }
 
-    private void SetDoorsActive(bool active)
+    private void CacheDoorFadeTarget()
     {
-        int count = lockDoors.Length;
-        for (int i = 0; i < count; i++)
-            lockDoors[i].SetActive(active);
+        SpriteRenderer[] spriteRenderers = lockDoor.GetComponentsInChildren<SpriteRenderer>(true);
+
+        SpriteFadeEntry[] spriteEntries = new SpriteFadeEntry[spriteRenderers.Length];
+        for (int i = 0; i < spriteRenderers.Length; i++)
+            spriteEntries[i] = new SpriteFadeEntry(spriteRenderers[i]);
+
+        doorFadeTarget = new DoorFadeTarget
+        {
+            Root = lockDoor,
+            SpriteRenderers = spriteEntries
+        };
+    }
+
+    private void SetDoorInstant(bool active)
+    {
+        float factor = active ? 1f : 0f;
+
+        doorFadeTarget.Root.SetActive(true);
+        SetDoorAlpha(doorFadeTarget, factor);
+
+        if (!active)
+            doorFadeTarget.Root.SetActive(false);
+    }
+
+    private IEnumerator FadeDoor(bool active)
+    {
+        if (doorFadeTween != null && doorFadeTween.IsActive())
+            doorFadeTween.Kill();
+
+        Sequence sequence = DOTween.Sequence();
+        float factor = active ? 1f : 0f;
+
+        if (active)
+        {
+            doorFadeTarget.Root.SetActive(true);
+            SetDoorAlpha(doorFadeTarget, 0f);
+        }
+
+        JoinDoorFade(sequence, doorFadeTarget, factor);
+
+        doorFadeTween = sequence;
+        yield return sequence.WaitForCompletion();
+
+        if (!active)
+            doorFadeTarget.Root.SetActive(false);
+
+        doorFadeTween = null;
+    }
+
+    private void JoinDoorFade(Sequence sequence, DoorFadeTarget target, float factor)
+    {
+        for (int i = 0; i < target.SpriteRenderers.Length; i++)
+        {
+            SpriteFadeEntry entry = target.SpriteRenderers[i];
+            sequence.Join(entry.SpriteRenderer.DOFade(entry.Alpha * factor, lockDoorFadeDuration));
+        }
+    }
+
+    private void SetDoorAlpha(DoorFadeTarget target, float factor)
+    {
+        for (int i = 0; i < target.SpriteRenderers.Length; i++)
+        {
+            SpriteFadeEntry entry = target.SpriteRenderers[i];
+            Color color = entry.SpriteRenderer.color;
+            color.a = entry.Alpha * factor;
+            entry.SpriteRenderer.color = color;
+        }
     }
 
     private void KillTypingTween()
@@ -119,5 +206,8 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
     {
         if (routine != null) StopCoroutine(routine);
         KillTypingTween();
+
+        if (doorFadeTween != null && doorFadeTween.IsActive())
+            doorFadeTween.Kill();
     }
 }

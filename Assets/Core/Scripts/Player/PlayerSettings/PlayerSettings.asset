@@ -15,7 +15,7 @@ MonoBehaviour:
   maxHealth: 1000
   maxEnergy: 500
   currentHealth: 1000
-  currentEnergy: 15
+  currentEnergy: 300
   moveSpeed: 10
   groundAccelTime: 0.25
   airAccelTime: 0.3

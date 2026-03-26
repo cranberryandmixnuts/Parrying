@@ -6,7 +6,6 @@ public class TestSceneManager : MonoBehaviour
     [SerializeField] private bool StartToPlayTestAutoPilot = false;
 
     [Header("References")]
-    [SerializeField] PlayerSettings playerSettings;
     [SerializeField] TestAutoPilot testAutoPilot;
 
     private void Start()
@@ -14,7 +13,7 @@ public class TestSceneManager : MonoBehaviour
         InputManager.Instance.SetCursorMode(true);
 
         if (DoInitializePlayerStatus)
-            playerSettings.InitializePlayerStatus();
+            PlayerVitals.Instance.InitializePlayerStatus();
 
         if (StartToPlayTestAutoPilot)
             testAutoPilot.StartAutoPilot();

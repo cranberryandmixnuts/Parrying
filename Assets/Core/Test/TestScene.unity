@@ -644,6 +644,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &591419375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 591419377}
+  - component: {fileID: 591419376}
+  m_Layer: 0
+  m_Name: PlayerVitals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &591419376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591419375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f586b224db60df74386ce170200d9f33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVitals
+  settings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
+  currentHealth: 1000
+  currentEnergy: 500
+  IsInvincible: 0
+  invincibleTimer: 0
+--- !u!4 &591419377
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591419375}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.35119, y: 3.98368, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &632452507 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1080052741200358110, guid: 18b9878d160a09946852b9eaa61fe1f2, type: 3}
@@ -840,7 +889,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestSceneManager
   DoInitializePlayerStatus: 1
   StartToPlayTestAutoPilot: 0
-  playerSettings: {fileID: 11400000, guid: 4e05b640f6f37c349b09c4065db2baa6, type: 2}
   testAutoPilot: {fileID: 829659253}
 --- !u!4 &829659252
 Transform:
@@ -1997,6 +2045,7 @@ SceneRoots:
   - {fileID: 2024086082}
   - {fileID: 40010786}
   - {fileID: 1606497450}
+  - {fileID: 591419377}
   - {fileID: 674710720109569258}
   - {fileID: 499860205}
   - {fileID: 829659252}

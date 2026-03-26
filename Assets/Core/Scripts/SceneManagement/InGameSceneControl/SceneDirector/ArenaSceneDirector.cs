@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -33,6 +34,24 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
         public List<SpawnDefinition> Spawns = new();
     }
 
+    private readonly struct SpriteFadeEntry
+    {
+        public readonly SpriteRenderer SpriteRenderer;
+        public readonly float Alpha;
+
+        public SpriteFadeEntry(SpriteRenderer spriteRenderer)
+        {
+            SpriteRenderer = spriteRenderer;
+            Alpha = spriteRenderer.color.a;
+        }
+    }
+
+    private sealed class DoorFadeTarget
+    {
+        public GameObject Root;
+        public SpriteFadeEntry[] SpriteRenderers;
+    }
+
     private sealed class SpawnedEnemy
     {
         public GameObject Root;
@@ -44,6 +63,9 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
 
     [TabGroup("Arena", "Timing"), SerializeField, Min(0f)]
     private float betweenWavesDelaySeconds = 1f;
+
+    [TabGroup("Arena", "Timing"), SerializeField, Min(0f)]
+    private float lockDoorFadeDuration = 0.5f;
 
     [TabGroup("Arena", "Refs"), SerializeField]
     private Transform enemiesRoot;
@@ -58,15 +80,19 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
     private List<WaveDefinition> waves = new();
 
     private readonly List<SpawnedEnemy> spawned = new(64);
+    private readonly List<DoorFadeTarget> doorFadeTargets = new();
 
     private Coroutine routine;
+    private Tween doorFadeTween;
 
     private void Start()
     {
+        CacheDoorFadeTargets();
+
         Time.timeScale = 1f;
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
-        SetDoorsActive(false);
+        SetDoorsInstant(false);
         ExitBox.SetActive(false);
         routine = StartCoroutine(RunSequence());
     }
@@ -76,7 +102,7 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
         if (startDelaySeconds > 0f)
             yield return new WaitForSeconds(startDelaySeconds);
 
-        SetDoorsActive(true);
+        yield return FadeDoors(true);
 
         int waveCount = waves.Count;
         for (int i = 0; i < waveCount; i++)
@@ -89,7 +115,7 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
                 yield return new WaitForSeconds(betweenWavesDelaySeconds);
         }
 
-        SetDoorsActive(false);
+        yield return FadeDoors(false);
         ExitBox.SetActive(true);
 
         Debug.Log("Scene End");
@@ -141,14 +167,101 @@ public sealed class ArenaSceneDirector : Singleton<ArenaSceneDirector, SceneScop
         return false;
     }
 
-    private void SetDoorsActive(bool active)
+    private void CacheDoorFadeTargets()
     {
+        doorFadeTargets.Clear();
+
         for (int i = 0; i < lockDoors.Length; i++)
-            lockDoors[i].SetActive(active);
+        {
+            GameObject root = lockDoors[i];
+            SpriteRenderer[] spriteRenderers = root.GetComponentsInChildren<SpriteRenderer>(true);
+
+            SpriteFadeEntry[] spriteEntries = new SpriteFadeEntry[spriteRenderers.Length];
+            for (int j = 0; j < spriteRenderers.Length; j++)
+                spriteEntries[j] = new SpriteFadeEntry(spriteRenderers[j]);
+
+            doorFadeTargets.Add(new DoorFadeTarget
+            {
+                Root = root,
+                SpriteRenderers = spriteEntries
+            });
+        }
+    }
+
+    private void SetDoorsInstant(bool active)
+    {
+        float factor = active ? 1f : 0f;
+
+        for (int i = 0; i < doorFadeTargets.Count; i++)
+        {
+            DoorFadeTarget target = doorFadeTargets[i];
+
+            target.Root.SetActive(true);
+            SetDoorAlpha(target, factor);
+
+            if (!active)
+                target.Root.SetActive(false);
+        }
+    }
+
+    private IEnumerator FadeDoors(bool active)
+    {
+        if (doorFadeTween != null && doorFadeTween.IsActive())
+            doorFadeTween.Kill();
+
+        Sequence sequence = DOTween.Sequence();
+        float factor = active ? 1f : 0f;
+
+        for (int i = 0; i < doorFadeTargets.Count; i++)
+        {
+            DoorFadeTarget target = doorFadeTargets[i];
+
+            if (active)
+            {
+                target.Root.SetActive(true);
+                SetDoorAlpha(target, 0f);
+            }
+
+            JoinDoorFade(sequence, target, factor);
+        }
+
+        doorFadeTween = sequence;
+        yield return sequence.WaitForCompletion();
+
+        if (!active)
+        {
+            for (int i = 0; i < doorFadeTargets.Count; i++)
+                doorFadeTargets[i].Root.SetActive(false);
+        }
+
+        doorFadeTween = null;
+    }
+
+    private void JoinDoorFade(Sequence sequence, DoorFadeTarget target, float factor)
+    {
+        for (int i = 0; i < target.SpriteRenderers.Length; i++)
+        {
+            SpriteFadeEntry entry = target.SpriteRenderers[i];
+            sequence.Join(entry.SpriteRenderer.DOFade(entry.Alpha * factor, lockDoorFadeDuration));
+        }
+    }
+
+    private void SetDoorAlpha(DoorFadeTarget target, float factor)
+    {
+        for (int i = 0; i < target.SpriteRenderers.Length; i++)
+        {
+            SpriteFadeEntry entry = target.SpriteRenderers[i];
+            Color color = entry.SpriteRenderer.color;
+            color.a = entry.Alpha * factor;
+            entry.SpriteRenderer.color = color;
+        }
     }
 
     private void OnDisable()
     {
         if (routine != null) StopCoroutine(routine);
+
+        if (doorFadeTween != null && doorFadeTween.IsActive())
+            doorFadeTween.Kill();
     }
 }

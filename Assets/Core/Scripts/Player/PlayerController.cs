@@ -2,7 +2,6 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Windows;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -23,9 +22,7 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
     public Vector2 CurrentVelocity => Rigidbody.linearVelocity;
-
-    [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
-    private PlayerVitals vitals;
+    public PlayerVitals Vitals { get; private set; }
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private PlayerSettings settings;
@@ -44,8 +41,6 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private SpriteRenderer sprite;
-
-    public PlayerVitals Vitals => vitals;
     public PlayerSettings Settings => settings;
     public EffectManager Effects => effects;
     public Animator Anim => anim;
@@ -117,6 +112,8 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         );
 
     private PlayerStateMachine stateMachine;
+
+    protected override void SingletonAwake() => Vitals = PlayerVitals.Instance;
 
     private void Start()
     {

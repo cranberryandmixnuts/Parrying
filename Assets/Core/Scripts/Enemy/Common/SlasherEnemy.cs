@@ -57,10 +57,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
     private int attackDamage = 100;
 
-    [Header("Debug")]
-    [SerializeField] private LineRenderer swingLine;
-    [SerializeField] private float swingLineWidth = 0.05f;
-
     private State state;
     private float stateTimer;
     private float attackCooldownTimer;
@@ -88,17 +84,11 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         attackResolved = false;
 
         Anim.Play(AnimChase);
-
-        swingLine.useWorldSpace = true;
-        swingLine.positionCount = 0;
-        swingLine.startWidth = swingLineWidth;
-        swingLine.endWidth = swingLineWidth;
     }
 
     public override void Die()
     {
         if (IsDead()) return;
-        ClearSwingLine();
         base.Die();
     }
 
@@ -190,7 +180,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         if (attackPhase == 0)
         {
-            ClearSwingLine();
             RegisterDashAssistRay();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f)
@@ -212,14 +201,12 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
                 attackPhaseTimer = attackRecoverRuntime;
                 StartAttackCooldown();
                 Player.ClearParryCandidate(this);
-                ClearSwingLine();
             }
             return;
         }
 
         if (attackPhase == 2)
         {
-            ClearSwingLine();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f) ChooseMovementState();
         }
@@ -285,13 +272,11 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
                 attackPhase = 0;
                 attackPhaseTimer = attackWindupRuntime;
                 attackResolved = false;
-                ClearSwingLine();
                 break;
 
             case State.Hit:
                 Anim.Play(AnimHit);
                 stateTimer = GetAnimLength(AnimHit);
-                ClearSwingLine();
                 break;
         }
     }
@@ -354,15 +339,11 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         {
             if (Player.TryHit(attackDamage, originPos + dir * hit.distance))
             {
-                UpdateSwingLine(originPos, dir, hit.distance);
                 attackResolved = true;
                 StartAttackCooldown();
                 Player.ClearParryCandidate(this);
-                ClearSwingLine();
             }
-            else UpdateSwingLine(originPos, dir, swingLength);
         }
-        else UpdateSwingLine(originPos, dir, swingLength);
     }
 
     private bool SegmentIntersectsCircle(Vector2 a, Vector2 b, Vector2 c, float r)
@@ -479,7 +460,6 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             attackPhase = 2;
             attackPhaseTimer = attackRecoverRuntime;
             Player.ClearParryCandidate(this);
-            ClearSwingLine();
         }
     }
 
@@ -490,60 +470,11 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
             attackResolved = true;
             StartAttackCooldown();
             Player.ClearParryCandidate(this);
-            ClearSwingLine();
         }
     }
 
     public void OnCounterParry(Vector2 hitPoint)
     {
         Die();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Vector3 originPos = attackOrigin.position;
-
-        int steps = 24;
-        float facing = Application.isPlaying ? FacingDirection : (transform.lossyScale.x >= 0f ? 1f : -1f);
-        Vector2 forward = Vector2.right * facing;
-
-        float minLocal = facing >= 0f
-            ? Mathf.Min(swingStartAngleDeg, swingEndAngleDeg)
-            : Mathf.Min(-swingStartAngleDeg, -swingEndAngleDeg);
-
-        float maxLocal = facing >= 0f
-            ? Mathf.Max(swingStartAngleDeg, swingEndAngleDeg)
-            : Mathf.Max(-swingStartAngleDeg, -swingEndAngleDeg);
-
-        Gizmos.color = Color.red;
-
-        float step = (maxLocal - minLocal) / steps;
-        Vector3 prev = originPos + (Vector3)((Quaternion.AngleAxis(minLocal, Vector3.forward) * (Vector3)forward).normalized * swingLength);
-
-        for (int i = 1; i <= steps; i++)
-        {
-            float a = minLocal + step * i;
-            Vector3 curr = originPos + (Vector3)((Quaternion.AngleAxis(a, Vector3.forward) * (Vector3)forward).normalized * swingLength);
-            Gizmos.DrawLine(prev, curr);
-            prev = curr;
-        }
-
-        Vector3 minDir = (Quaternion.AngleAxis(minLocal, Vector3.forward) * (Vector3)forward).normalized * swingLength;
-        Vector3 maxDir = (Quaternion.AngleAxis(maxLocal, Vector3.forward) * (Vector3)forward).normalized * swingLength;
-
-        Gizmos.DrawLine(originPos, originPos + minDir);
-        Gizmos.DrawLine(originPos, originPos + maxDir);
-    }
-
-    private void UpdateSwingLine(Vector2 origin, Vector2 dir, float length)
-    {
-        swingLine.positionCount = 2;
-        swingLine.SetPosition(0, origin);
-        swingLine.SetPosition(1, origin + dir.normalized * length);
-    }
-
-    private void ClearSwingLine()
-    {
-        swingLine.positionCount = 0;
     }
 }

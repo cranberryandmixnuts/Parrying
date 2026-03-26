@@ -32,7 +32,7 @@ public sealed class GameStartSceneDirector : Singleton<GameStartSceneDirector, S
         jumpTutorial.HideImmediate();
 
         input.SetAllModes(InputMode.Auto);
-        player.Settings.InitializePlayerStatus();
+        player.Vitals.InitializePlayerStatus();
         int startEnergy = 
             player.Settings.perfectParryEnergyGain + 
             player.Settings.imperfectParryEnergyGain + 
