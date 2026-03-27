@@ -59,6 +59,9 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         cachedInputState = input.GetModes();
         cachedTimeScale = Time.timeScale;
 
+        input.SetAllModes(InputMode.Auto);
+        input.SetMode(ActionKey.Escape, InputMode.Manual);
+
         if (!timePausedByThis)
         {
             Time.timeScale = 0f;
@@ -84,10 +87,12 @@ public sealed class SettingsWindowManager : Singleton<SettingsWindowManager, Sce
         ControlPanel.SetActive(false);
         SettingsWindow.SetActive(false);
 
-        if (EscapeToOpen) input.SetCursorMode(false);
-
         if (input != null)
+        {
+            if (EscapeToOpen) input.SetCursorMode(false);
+
             input.SetModes(cachedInputState);
+        }
 
         if (timePausedByThis)
         {
