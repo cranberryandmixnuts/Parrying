@@ -116,19 +116,36 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
     {
         EnsureVolumeLoaded();
 
-        if (bgmSourcePool.Count <= 0)
-            bgmSourcePool.AddFirst(CreateBGMSource());
+        if (string.IsNullOrEmpty(audioName))
+        {
+            if (bgmSourcePool.Count <= 0)
+                return;
 
-        AudioSource currentSource = bgmSourcePool.First.Value;
-        currentSource.DOKill();
-        currentSource.DOFade(0f, fadeDuration).OnComplete(currentSource.Stop);
-        bgmSourcePool.AddLast(currentSource);
+            AudioSource currentSource = bgmSourcePool.First.Value;
+            currentSource.DOKill();
+            currentSource.DOFade(0f, fadeDuration).OnComplete(currentSource.Stop);
+            bgmSourcePool.AddLast(currentSource);
+            bgmSourcePool.RemoveFirst();
+            return;
+        }
+
+        if (bgmSourcePool.Count <= 0)
+        {
+            AudioSource firstSource = CreateBGMSource();
+            firstSource.clip = audioRegistry.GetAudioClip(audioName);
+            firstSource.volume = 1f;
+            firstSource.Play();
+            bgmSourcePool.AddFirst(firstSource);
+            return;
+        }
+
+        AudioSource playingSource = bgmSourcePool.First.Value;
+        playingSource.DOKill();
+        playingSource.DOFade(0f, fadeDuration).OnComplete(playingSource.Stop);
+        bgmSourcePool.AddLast(playingSource);
         bgmSourcePool.RemoveFirst();
 
-        if (string.IsNullOrEmpty(audioName))
-            return;
-
-        if (bgmSourcePool.Count <= 0 || !Mathf.Approximately(bgmSourcePool.First.Value.volume, 0f))
+        if (bgmSourcePool.First.Value.isPlaying)
             bgmSourcePool.AddFirst(CreateBGMSource());
 
         AudioSource nextSource = bgmSourcePool.First.Value;
