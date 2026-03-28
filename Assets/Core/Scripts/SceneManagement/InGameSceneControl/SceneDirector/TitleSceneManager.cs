@@ -8,7 +8,11 @@ public sealed class TitleSceneManager : Singleton<TitleSceneManager, SceneScope>
     private const string VolumeSfxKey = "Volume_SFX_Db";
     private const string RebindsKey = "InputService_Rebinds";
 
-    private void Start() => PlayerVitals.Instance.InitializePlayerStatus();
+    private void Start()
+    {
+        AudioManager.Instance.SetBGM("TitleBGM", 1f);
+        PlayerVitals.Instance.InitializePlayerStatus();
+    }
 
     public void StartAtFirst()
     {
@@ -40,7 +44,6 @@ public sealed class TitleSceneManager : Singleton<TitleSceneManager, SceneScope>
                 continue;
 
             controller.ResetToDefaults();
-            controller.ClearSaved();
         }
 
         if (InputManager.Instance.IsRebinding)

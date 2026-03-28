@@ -26,7 +26,6 @@ public sealed class QuitGame : MonoBehaviour
     {
         if (isQuitting) return;
         InputManager.Instance.SetAllModes(InputMode.Auto);
-        SoundManager.Instance.ChangeBgm(BgmId.None, fadeDuration);
         StartCoroutine(QuitSequence());
     }
 

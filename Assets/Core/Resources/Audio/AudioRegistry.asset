@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f57860735d864fb49a4c3041bf8bd16b, type: 3}
+  m_Name: AudioRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::AudioRegistry
+  audioClips:
+  - {fileID: 8300000, guid: 7bb625b6a42c7204d957003761e7d4f2, type: 3}
+  - {fileID: 8300000, guid: 3a96195c61c755e4dbebdb97bc713376, type: 3}
+  - {fileID: 8300000, guid: bc38ad02c4643b9428c55fd4de0303b2, type: 3}
+  - {fileID: 8300000, guid: a4a1a74c06c75d74289f3e6395507ec3, type: 3}
+  - {fileID: 8300000, guid: cacbf8f1ed41f3f46aa3ffdbad9c24f0, type: 3}
+  - {fileID: 8300000, guid: ef234f830f7c1d341a4f3ec6f0db8e49, type: 3}
+  - {fileID: 8300000, guid: b689ff40328b99143ab8cfb9fb914c84, type: 3}
+  - {fileID: 8300000, guid: 4ae4cf255400f8f4ebd8e1a81086445d, type: 3}
+  - {fileID: 8300000, guid: 2a66226834cebfd4a8af75ca11460611, type: 3}
+  - {fileID: 8300000, guid: 98ac4490c422c454f92d660b791e53dd, type: 3}
+  - {fileID: 8300000, guid: 28bad42817598d14e9f7216f0acf5065, type: 3}
+  - {fileID: 8300000, guid: 5e79d69d4d486d64991aa28765212d21, type: 3}
+  - {fileID: 8300000, guid: 81767523365173f4397aaf319369779d, type: 3}
+  - {fileID: 8300000, guid: 4049d2810747b094f982cface4624e99, type: 3}
+  - {fileID: 8300000, guid: 65855dbfce09661438e661023b86f7f1, type: 3}
+  - {fileID: 8300000, guid: fa229a6f9ab06c04c97c27a4a3bc31fb, type: 3}
+  - {fileID: 8300000, guid: 8000b0b45f8662946b0178b6ddb44d6c, type: 3}
+  - {fileID: 8300000, guid: cb03581e55f2860428ea56afe3f40438, type: 3}
+  - {fileID: 8300000, guid: 5f04ad5058f79314eaef46872fd97849, type: 3}
+  - {fileID: 8300000, guid: 396686dda8fa55e4e97d4a6ad857549b, type: 3}
+  - {fileID: 8300000, guid: 426ade092c513724584892fc3f3b262c, type: 3}
+  - {fileID: 8300000, guid: b2cc16bc1a4fe0945879c444399ab0ff, type: 3}
