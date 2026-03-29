@@ -10,6 +10,7 @@ public sealed class TitleSceneManager : Singleton<TitleSceneManager, SceneScope>
 
     private void Start()
     {
+        Application.runInBackground = true;
         AudioManager.Instance.SetBGM("TitleBGM");
         PlayerVitals.Instance.InitializePlayerStatus();
     }
@@ -36,17 +37,7 @@ public sealed class TitleSceneManager : Singleton<TitleSceneManager, SceneScope>
     {
         SettingsWindowManager.Instance.CloseSettings();
 
-        VolumeController[] volumeControllers = FindAll<VolumeController>();
-
-        for (int i = 0; i < volumeControllers.Length; i++)
-        {
-            VolumeController controller = volumeControllers[i];
-
-            if (controller == null)
-                continue;
-
-            controller.ResetToDefaults();
-        }
+        AudioManager.Instance.ResetVolumesToDefault();
 
         if (InputManager.Instance.IsRebinding)
             InputManager.Instance.CancelCurrentRebind();

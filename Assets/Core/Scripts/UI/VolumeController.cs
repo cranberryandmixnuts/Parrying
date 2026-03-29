@@ -23,6 +23,7 @@ public sealed class VolumeController : MonoBehaviour
         masterSlider.OnValueChanged.AddListener(OnMasterChanged);
         bgmSlider.OnValueChanged.AddListener(OnBgmChanged);
         sfxSlider.OnValueChanged.AddListener(OnSfxChanged);
+        RefreshUI();
     }
 
     public void OnDisable()
@@ -30,12 +31,6 @@ public sealed class VolumeController : MonoBehaviour
         masterSlider.OnValueChanged.RemoveListener(OnMasterChanged);
         bgmSlider.OnValueChanged.RemoveListener(OnBgmChanged);
         sfxSlider.OnValueChanged.RemoveListener(OnSfxChanged);
-    }
-
-    public void ResetToDefaults()
-    {
-        audioManager.ResetVolumesToDefault();
-        RefreshUI();
     }
 
     private void RefreshUI()

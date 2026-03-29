@@ -5404,6 +5404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   audioRegistry: {fileID: 11400000, guid: 823b65d2a1bbf6a4794ff1441b92f32e, type: 2}
   sfxPrefab: {fileID: 481162255565895830, guid: ab7bff9f254d2ef498205b09b63b5916, type: 3}
+  sfxPoolRoot: {fileID: 0}
   bgmSourceA: {fileID: 442972221}
   bgmSourceB: {fileID: 1625964205}
   audioMixer: {fileID: 24100000, guid: 19bf823cacbcc4d4a837a744f5f0231e, type: 2}
@@ -5415,7 +5416,6 @@ MonoBehaviour:
   defaultMasterDb: 0
   defaultBgmDb: 0
   defaultSfxDb: 0
-  aaaaaaaaa: "\uCE74\uC6B4\uD130 \uD328\uB9C1 \uC131\uACF5"
 --- !u!4 &1761898908
 Transform:
   m_ObjectHideFlags: 0
