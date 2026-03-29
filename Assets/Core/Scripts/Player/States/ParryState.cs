@@ -17,6 +17,8 @@ public sealed class ParryState : PlayerState
 
     public override void Enter()
     {
+        player.AudioManager.PlaySFX("패링 시전");
+
         wasAirParry = !player.isGround;
         airParryKnockbackTimer = 0f;
         airParryKnockbackSlowTimer = 0f;
@@ -77,6 +79,7 @@ public sealed class ParryState : PlayerState
 
                     if (frac <= 0.5f)
                     {
+                        player.AudioManager.PlaySFX("패링 성공");
                         player.Effects.DoPerfectParryImpact();
                         player.Effects.PlayParry();
                         player.Vitals.GainEnergy(player.Settings.perfectParryEnergyGain);
@@ -85,6 +88,7 @@ public sealed class ParryState : PlayerState
                     }
                     else
                     {
+                        player.AudioManager.PlaySFX("부분 패링");
                         player.Vitals.ApplyDamage(c.ImperfectParryDamage, true);
                         player.Vitals.GainEnergy(player.Settings.imperfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;

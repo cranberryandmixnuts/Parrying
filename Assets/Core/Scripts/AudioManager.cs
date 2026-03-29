@@ -15,7 +15,10 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
 
     [Header("Prefabs")]
     [SerializeField] private AudioSource sfxPrefab;
-    [SerializeField] private AudioSource bgmPrefab;
+
+    [Header("BGM Sources")]
+    [SerializeField] private AudioSource bgmSourceA;
+    [SerializeField] private AudioSource bgmSourceB;
 
     [Header("Mixer")]
     [SerializeField] private AudioMixer audioMixer;
@@ -33,13 +36,19 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
     [SerializeField] private float defaultSfxDb = 0.0f;
 
     private readonly List<AudioSource> sfxSourcePool = new();
-    private readonly LinkedList<AudioSource> bgmSourcePool = new();
+    private readonly Tween[] bgmFadeTweens = new Tween[2];
+    private readonly ulong[] bgmFadeOrders = new ulong[2];
 
     private float masterVolumeDb = 0.0f;
     private float bgmVolumeDb = 0.0f;
     private float sfxVolumeDb = 0.0f;
 
+    private int activeBgmSourceIndex = -1;
+    private ulong bgmFadeSequence;
+    private string currentBgmName;
+
     private bool isVolumeLoaded;
+    private bool isBgmInitialized;
 
     public float MasterVolumeDb
     {
@@ -89,7 +98,11 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
         }
     }
 
-    public void Start() => LoadVolumeSettings();
+    private void Start()
+    {
+        InitializeBgmSources();
+        LoadVolumeSettings();
+    }
 
     public void LoadVolumeSettings()
     {
@@ -115,45 +128,47 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
     public void SetBGM(string audioName, float fadeDuration = 1f)
     {
         EnsureVolumeLoaded();
+        InitializeBgmSources();
 
         if (string.IsNullOrEmpty(audioName))
         {
-            if (bgmSourcePool.Count <= 0)
-                return;
-
-            AudioSource currentSource = bgmSourcePool.First.Value;
-            currentSource.DOKill();
-            currentSource.DOFade(0f, fadeDuration).OnComplete(currentSource.Stop);
-            bgmSourcePool.AddLast(currentSource);
-            bgmSourcePool.RemoveFirst();
+            StopBGM(fadeDuration);
             return;
         }
 
-        if (bgmSourcePool.Count <= 0)
+        if (audioName == currentBgmName && activeBgmSourceIndex >= 0 && GetBgmSource(activeBgmSourceIndex).isPlaying)
+            return;
+
+        AudioClip clip = audioRegistry.GetAudioClip(audioName);
+        currentBgmName = audioName;
+
+        if (HasAnyBgmFade())
         {
-            AudioSource firstSource = CreateBGMSource();
-            firstSource.clip = audioRegistry.GetAudioClip(audioName);
-            firstSource.volume = 1f;
-            firstSource.Play();
-            bgmSourcePool.AddFirst(firstSource);
+            int reuseSourceIndex = GetOldestFadingBgmSourceIndex();
+            int otherSourceIndex = GetOtherBgmSourceIndex(reuseSourceIndex);
+
+            StopBgmSourceImmediately(reuseSourceIndex);
+            FadeOutBgmSource(otherSourceIndex, fadeDuration);
+            PlayBgmSource(reuseSourceIndex, clip, fadeDuration);
+
+            activeBgmSourceIndex = reuseSourceIndex;
             return;
         }
 
-        AudioSource playingSource = bgmSourcePool.First.Value;
-        playingSource.DOKill();
-        playingSource.DOFade(0f, fadeDuration).OnComplete(playingSource.Stop);
-        bgmSourcePool.AddLast(playingSource);
-        bgmSourcePool.RemoveFirst();
+        if (activeBgmSourceIndex >= 0 && GetBgmSource(activeBgmSourceIndex).isPlaying)
+        {
+            int nextSourceIndex = GetOtherBgmSourceIndex(activeBgmSourceIndex);
 
-        if (bgmSourcePool.First.Value.isPlaying)
-            bgmSourcePool.AddFirst(CreateBGMSource());
+            FadeOutBgmSource(activeBgmSourceIndex, fadeDuration);
+            PlayBgmSource(nextSourceIndex, clip, fadeDuration);
 
-        AudioSource nextSource = bgmSourcePool.First.Value;
-        nextSource.DOKill();
-        nextSource.clip = audioRegistry.GetAudioClip(audioName);
-        nextSource.volume = 0f;
-        nextSource.Play();
-        nextSource.DOFade(1f, fadeDuration);
+            activeBgmSourceIndex = nextSourceIndex;
+            return;
+        }
+
+        int sourceIndex = GetPreferredBgmSourceIndex();
+        PlayBgmSource(sourceIndex, clip, fadeDuration);
+        activeBgmSourceIndex = sourceIndex;
     }
 
     public void PlaySFX(string audioName)
@@ -184,6 +199,29 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
         audioSource.Stop();
     }
 
+    private void StopBGM(float fadeDuration)
+    {
+        currentBgmName = null;
+
+        if (HasAnyBgmFade())
+        {
+            int oldestFadingSourceIndex = GetOldestFadingBgmSourceIndex();
+            int otherSourceIndex = GetOtherBgmSourceIndex(oldestFadingSourceIndex);
+
+            StopBgmSourceImmediately(oldestFadingSourceIndex);
+            FadeOutBgmSource(otherSourceIndex, fadeDuration);
+            activeBgmSourceIndex = -1;
+            return;
+        }
+
+        if (activeBgmSourceIndex < 0)
+            return;
+
+        FadeOutBgmSource(activeBgmSourceIndex, fadeDuration);
+        FadeOutBgmSource(GetOtherBgmSourceIndex(activeBgmSourceIndex), fadeDuration);
+        activeBgmSourceIndex = -1;
+    }
+
     private AudioSource GetAvailableSFXSource()
     {
         foreach (AudioSource sfxSource in sfxSourcePool)
@@ -206,14 +244,129 @@ public class AudioManager : Singleton<AudioManager, GlobalScope>
         return audioSource;
     }
 
-    private AudioSource CreateBGMSource()
+    private void InitializeBgmSources()
     {
-        AudioSource audioSource = Instantiate(bgmPrefab, transform);
+        if (isBgmInitialized)
+            return;
+
+        ConfigureBgmSource(bgmSourceA);
+        ConfigureBgmSource(bgmSourceB);
+        isBgmInitialized = true;
+    }
+
+    private void ConfigureBgmSource(AudioSource source)
+    {
+        source.playOnAwake = false;
+        source.loop = true;
+        source.volume = 0f;
 
         if (bgmMixerGroup != null)
-            audioSource.outputAudioMixerGroup = bgmMixerGroup;
+            source.outputAudioMixerGroup = bgmMixerGroup;
+    }
 
-        return audioSource;
+    private AudioSource GetBgmSource(int index) => index == 0 ? bgmSourceA : bgmSourceB;
+
+    private int GetOtherBgmSourceIndex(int index) => index == 0 ? 1 : 0;
+
+    private int GetPreferredBgmSourceIndex()
+    {
+        if (!bgmSourceA.isPlaying)
+            return 0;
+
+        if (!bgmSourceB.isPlaying)
+            return 1;
+
+        return 0;
+    }
+
+    private bool HasAnyBgmFade() => IsBgmFadeActive(0) || IsBgmFadeActive(1);
+
+    private bool IsBgmFadeActive(int index) => bgmFadeTweens[index] != null && bgmFadeTweens[index].IsActive();
+
+    private int GetOldestFadingBgmSourceIndex()
+    {
+        bool isFirstFading = IsBgmFadeActive(0);
+        bool isSecondFading = IsBgmFadeActive(1);
+
+        if (isFirstFading && isSecondFading)
+            return bgmFadeOrders[0] <= bgmFadeOrders[1] ? 0 : 1;
+
+        return isFirstFading ? 0 : 1;
+    }
+
+    private void KillBgmFade(int index)
+    {
+        if (bgmFadeTweens[index] == null)
+            return;
+
+        bgmFadeTweens[index].Kill();
+        bgmFadeTweens[index] = null;
+        bgmFadeOrders[index] = 0;
+    }
+
+    private void PlayBgmSource(int index, AudioClip clip, float fadeDuration)
+    {
+        AudioSource source = GetBgmSource(index);
+
+        KillBgmFade(index);
+        source.clip = clip;
+        source.loop = true;
+
+        if (fadeDuration <= 0f)
+        {
+            source.volume = 1f;
+            source.Play();
+            return;
+        }
+
+        source.volume = 0f;
+        source.Play();
+
+        bgmFadeOrders[index] = ++bgmFadeSequence;
+        bgmFadeTweens[index] = source.DOFade(1f, fadeDuration).OnComplete(() =>
+        {
+            bgmFadeTweens[index] = null;
+            bgmFadeOrders[index] = 0;
+        });
+    }
+
+    private void FadeOutBgmSource(int index, float fadeDuration)
+    {
+        AudioSource source = GetBgmSource(index);
+
+        if (!source.isPlaying)
+        {
+            StopBgmSourceImmediately(index);
+            return;
+        }
+
+        KillBgmFade(index);
+
+        if (fadeDuration <= 0f)
+        {
+            StopBgmSourceImmediately(index);
+            return;
+        }
+
+        bgmFadeOrders[index] = ++bgmFadeSequence;
+        bgmFadeTweens[index] = source.DOFade(0f, fadeDuration).OnComplete(() =>
+        {
+            source.Stop();
+            source.clip = null;
+            source.volume = 0f;
+            bgmFadeTweens[index] = null;
+            bgmFadeOrders[index] = 0;
+        });
+    }
+
+    private void StopBgmSourceImmediately(int index)
+    {
+        AudioSource source = GetBgmSource(index);
+
+        KillBgmFade(index);
+        source.Stop();
+        source.clip = null;
+        source.volume = 0f;
     }
 
     private void EnsureVolumeLoaded()

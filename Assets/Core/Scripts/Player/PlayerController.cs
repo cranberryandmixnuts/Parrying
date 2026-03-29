@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(Animator))]
+[DefaultExecutionOrder(-29000)]
 public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 {
     public float MoveInput { get; private set; }
@@ -22,7 +23,9 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     public PlayerStateType CurrentStateType => stateMachine.CurrentStateType;
     public Vector2 CurrentVelocity => Rigidbody.linearVelocity;
+
     public PlayerVitals Vitals { get; private set; }
+    public AudioManager AudioManager { get; private set; }
 
     [TabGroup("Player Controller", "Setup"), BoxGroup("Player Controller/Setup/Scene References"), SerializeField, Required]
     private PlayerSettings settings;
@@ -113,7 +116,11 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
 
     private PlayerStateMachine stateMachine;
 
-    protected override void SingletonAwake() => Vitals = PlayerVitals.Instance;
+    protected override void SingletonAwake()
+    {
+        Vitals = PlayerVitals.Instance;
+        AudioManager = AudioManager.Instance;
+    }
 
     private void Start()
     {
