@@ -14,6 +14,8 @@ public sealed class HitState : PlayerState
 
     public override void Enter()
     {
+        AudioManager.Instance.PlayOneShotSFX("플레이어 피격", player.gameObject);
+
         player.Vitals.SetInvincibleTimer(player.Settings.hitInvincibleTime);
         player.currentSpeedAbs = 0f;
         player.Rigidbody.linearVelocity = Vector2.zero;

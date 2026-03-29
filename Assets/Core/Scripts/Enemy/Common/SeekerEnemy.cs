@@ -47,6 +47,9 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     private float fireRecoilForce = 2f;
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
+    private float fireChargePercent = 0.2f;
+
+    [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Fire"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
     private float fireShootPercent = 0.65f;
 
     [TabGroup("Seeker Enemy", "Tuning"), BoxGroup("Seeker Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
@@ -56,6 +59,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     private float fireCooldown;
     private float fireTimer = -999f;
     private float fireStateLength;
+    private bool charged;
     private bool fired;
     private int keepSide = 1;
 
@@ -143,6 +147,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
 
         fireStateLength = GetAnimLength(AnimFire);
         fireTimer = fireStateLength;
+        charged = false;
         fired = false;
     }
 
@@ -153,6 +158,12 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
         if (fireStateLength > 0f)
         {
             float progress = 1f - (fireTimer / fireStateLength);
+
+            if (!charged && progress >= fireChargePercent)
+            {
+                AudioManager.Instance.PlayOneShotSFX("적 탄환 충전", gameObject);
+                charged = true;
+            }
 
             if (!fired && progress >= fireShootPercent)
             {
@@ -172,6 +183,7 @@ public sealed class SeekerEnemy : EnemyBase, IEnemyProjectileOwner
     private void FireOne()
     {
         Vector2 dir = transform.right;
+        AudioManager.Instance.PlayOneShotSFX("적 탄환 발사", gameObject);
         EnemyProjectile proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
         proj.Initialize(this, Player, dir, projectileDamage);
         Body.AddForce(-dir * fireRecoilForce, ForceMode2D.Impulse);

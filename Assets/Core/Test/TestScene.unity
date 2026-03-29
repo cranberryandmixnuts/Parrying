@@ -1874,6 +1874,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   audioRegistry: {fileID: 11400000, guid: 823b65d2a1bbf6a4794ff1441b92f32e, type: 2}
   sfxPrefab: {fileID: 481162255565895830, guid: ab7bff9f254d2ef498205b09b63b5916, type: 3}
+  sfxPoolRoot: {fileID: 0}
   bgmSourceA: {fileID: 320205839}
   bgmSourceB: {fileID: 1199929468}
   audioMixer: {fileID: 24100000, guid: 19bf823cacbcc4d4a837a744f5f0231e, type: 2}
@@ -2172,6 +2173,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7463560113881161038, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
+      propertyPath: chargeSfxPercent
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8251505396069226598, guid: 1928138fdc64e324281eeeeacb334230, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7
@@ -2291,14 +2296,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2024086082}
     m_Modifications:
-    - target: {fileID: 1648154482920158090, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
-      propertyPath: fireIntervalRange.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1648154482920158090, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
-      propertyPath: fireIntervalRange.y
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 7164145057172459947, guid: 8eb86b9228870874b84b6f5d1ba84e46, type: 3}
       propertyPath: m_Name
       value: SeekerRoot

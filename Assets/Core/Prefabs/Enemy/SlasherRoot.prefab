@@ -311,6 +311,7 @@ MonoBehaviour:
   swingStartAngleDeg: 75
   swingEndAngleDeg: -30
   swingLength: 2
+  attackIntervalRange: {x: 1.5, y: 3}
   attackPrepPercent: 0.5925926
   attackEndPercent: 0.7407407
   attackDamage: 100

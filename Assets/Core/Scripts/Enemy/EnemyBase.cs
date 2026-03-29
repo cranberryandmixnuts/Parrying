@@ -104,6 +104,8 @@ public abstract class EnemyBase : MonoBehaviour
         if (dead) return;
         dead = true;
 
+        AudioManager.Instance.PlayOneShotSFX("적 사망", gameObject);
+
         if (Body != null)
         {
             Body.linearVelocity = Vector2.zero;

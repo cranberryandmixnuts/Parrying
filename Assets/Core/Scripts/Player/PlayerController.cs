@@ -103,17 +103,6 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     public bool HasDashBuffer => dashBufferTimer > 0f;
     public void ConsumeDashBuffer() => dashBufferTimer = 0f;
 
-    private bool ShouldShowCounterParryCharge =>
-        ParryHeld &&
-        (
-            inCounterParryPrep ||
-            (
-                !counterParryPrepLocked &&
-                parryHoldTimer >= settings.counterParryHoldTime &&
-                Vitals.Energy >= settings.counterParryEnterCost
-            )
-        );
-
     private PlayerStateMachine stateMachine;
 
     protected override void SingletonAwake()
@@ -138,7 +127,11 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         if (parryBufferTimer > 0f) parryBufferTimer -= Time.deltaTime;
         if (dashBufferTimer > 0f) dashBufferTimer -= Time.deltaTime;
 
-        Effects.ControlCounterParryCharge(ShouldShowCounterParryCharge);
+        Effects.ControlCounterParryCharge(inCounterParryPrep);
+        if (inCounterParryPrep)
+            AudioManager.PlayLoopSFX("카운터 패링 충전", gameObject, "CounterParryPrep");
+        else
+            AudioManager.StopSFX(gameObject, "CounterParryPrep");
 
         stateMachine.Update();
     }
@@ -189,6 +182,11 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
         else if (MoveInput < -0.01f) inputSign = -1;
 
         float dt = Time.fixedDeltaTime;
+
+        if (inputSign == 0 || !isGround)
+            AudioManager.StopSFX(gameObject, "Move");
+        else
+            AudioManager.PlayLoopSFX("플레이어 걷기", gameObject, "Move");
 
         if (inputSign == 0)
         {
@@ -343,6 +341,9 @@ public sealed class PlayerController : Singleton<PlayerController, SceneScope>
     public bool TryHit(int damage, Vector2 attackPos)
     {
         if (!Vitals.ApplyDamage(damage, false)) return false;
+
+        if (inCounterParryPrep)
+            AudioManager.PlayOneShotSFX("카운터 패링 방전", gameObject);
 
         inCounterParryPrep = false;
         counterParryPrepLocked = true;

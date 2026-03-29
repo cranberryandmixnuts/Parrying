@@ -58,12 +58,14 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private State state;
     private float cooldownTimer;
     private float chargeTimer;
+    private float chargeStateLength;
     private float attackDir;
     private float behindTimer;
     private float overshootTimer;
     private float backWalkTimer;
     private float stopTimer;
     private bool lethalActive;
+    private bool chargeSfxPlayed;
 
     protected override string DeathAnimName => AnimDeath;
 
@@ -76,6 +78,14 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         DeathDespawnDelay = -1f;
         ResetAttackCooldown();
         EnterWalk();
+    }
+
+    public override void Die()
+    {
+        if (IsDead()) return;
+
+        AudioManager.Instance.StopSFX(gameObject, "Move");
+        base.Die();
     }
 
     protected override void OnUpdate()
@@ -124,6 +134,8 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         }
 
         if (state == State.Attack) HandleAttackHitbox();
+
+        SyncMoveSFX();
     }
 
     private void EnterWalk()
@@ -134,6 +146,8 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
+        chargeStateLength = 0f;
+        chargeSfxPlayed = false;
         Anim.Play(AnimWalk);
     }
 
@@ -162,6 +176,8 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = Random.Range(backWalkDurationMin, backWalkDurationMax);
+        chargeStateLength = 0f;
+        chargeSfxPlayed = false;
         Anim.Play(AnimBackWalk);
     }
 
@@ -193,12 +209,24 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         stopTimer = 0f;
         backWalkTimer = 0f;
         Anim.Play(AnimCharge);
-        chargeTimer = GetAnimLength(AnimCharge);
+        chargeStateLength = GetAnimLength(AnimCharge);
+        chargeTimer = chargeStateLength;
+        chargeSfxPlayed = false;
     }
 
     private void UpdateCharge()
     {
         chargeTimer -= Time.deltaTime;
+
+        if (chargeStateLength > 0f)
+        {
+            if (!chargeSfxPlayed)
+            {
+                AudioManager.Instance.PlayOneShotSFX("적 돌진 충전", gameObject);
+                chargeSfxPlayed = true;
+            }
+        }
+
         if (chargeTimer <= 0f)
         {
             EnterAttack();
@@ -214,6 +242,8 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         behindTimer = 0f;
         stopTimer = 0f;
         backWalkTimer = 0f;
+        chargeStateLength = 0f;
+        chargeSfxPlayed = false;
         Anim.Play(AnimAttack);
     }
 
@@ -252,6 +282,8 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         overshootTimer = 0f;
         behindTimer = 0f;
         backWalkTimer = 0f;
+        chargeStateLength = 0f;
+        chargeSfxPlayed = false;
         Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
         Player.ClearParryCandidate(this);
         ResetAttackCooldown();
@@ -269,10 +301,7 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         }
     }
 
-    private bool IsPlayerTooClose()
-    {
-        return backOffRange.OverlapPoint(Player.transform.position);
-    }
+    private bool IsPlayerTooClose() => backOffRange.OverlapPoint(Player.transform.position);
 
     private void HandleAttackHitbox()
     {
@@ -291,6 +320,9 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
         if (OverlapsPlayerBody())
         {
             if (!Player.TryHit(contactDamage, hitPoint)) return;
+
+            AudioManager.Instance.PlayOneShotSFX("쿵 소리", gameObject);
+
             lethalActive = false;
             overshootTimer = overshootAfterParryDuration;
             Player.ClearParryCandidate(this);
@@ -328,6 +360,33 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private void ResetAttackCooldown()
     {
         cooldownTimer = Random.Range(attackCooldownRange.x, attackCooldownRange.y);
+    }
+
+    private void SyncMoveSFX()
+    {
+        float moveAbsX = Mathf.Abs(Body.linearVelocity.x);
+
+        if (state == State.Walk || state == State.BackWalk)
+        {
+            if (moveAbsX <= 0.01f)
+                AudioManager.Instance.StopSFX(gameObject, "Move");
+            else
+                AudioManager.Instance.PlayLoopSFX("적 걷기", gameObject, "Move");
+
+            return;
+        }
+
+        if (state == State.Attack)
+        {
+            if (moveAbsX <= 0.01f)
+                AudioManager.Instance.StopSFX(gameObject, "Move");
+            else
+                AudioManager.Instance.PlayLoopSFX("적 무겁게 달려옴", gameObject, "Move");
+
+            return;
+        }
+
+        AudioManager.Instance.StopSFX(gameObject, "Move");
     }
 
     public void OnPerfectParry(Vector2 hitPoint)

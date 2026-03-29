@@ -19,6 +19,8 @@ public sealed class DashState : PlayerState
 
     public override void Enter()
     {
+        player.AudioManager.PlayOneShotSFX("플레이어 대시", player.gameObject);
+
         player.CancelJump();
         player.lastDashTime = Time.time;
 
@@ -59,6 +61,9 @@ public sealed class DashState : PlayerState
         }
         else
             extremeDashSuccess = false;
+
+        if (extremeDashSuccess)
+            player.AudioManager.PlayOneShotSFX("플레이어 극한대시", player.gameObject);
 
         player.Effects.PlayDash();
     }

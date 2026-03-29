@@ -12,6 +12,8 @@ public sealed class CounterParryState : PlayerState
 
     public override void Enter()
     {
+        player.AudioManager.PlayOneShotSFX("카운터 패링 시전", player.gameObject);
+
         player.CancelJump();
         cachedGravity = player.Rigidbody.gravityScale;
         player.Rigidbody.gravityScale = 0f;
@@ -49,6 +51,7 @@ public sealed class CounterParryState : PlayerState
                 }
                 else
                 {
+                    player.AudioManager.PlayOneShotSFX("카운터 패링 성공", player.gameObject);
                     player.counterParryFirstResolved = true;
                     c.attacker.OnCounterParry(c.hitPoint);
                     player.Effects.DoCounterParryImpact();

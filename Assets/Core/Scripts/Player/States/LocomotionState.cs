@@ -50,6 +50,7 @@ public sealed class LocomotionState : PlayerState
                         int cost = ticks * player.Settings.counterParryDrainCost;
                         if (!player.Vitals.TryConsumeEnergy(cost))
                         {
+                            player.AudioManager.PlayOneShotSFX("카운터 패링 방전", player.gameObject);
                             player.inCounterParryPrep = false;
                             player.counterParryPrepLocked = true;
                         }
@@ -101,6 +102,7 @@ public sealed class LocomotionState : PlayerState
             player.isJumping = true;
             player.jumpTimeCounter = 0f;
             player.Anim.Play("Jump");
+            player.AudioManager.PlayOneShotSFX("플레이어 점프", player.gameObject);
             startedJump = true;
         }
 

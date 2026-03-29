@@ -10,12 +10,13 @@ public sealed class TitleSceneManager : Singleton<TitleSceneManager, SceneScope>
 
     private void Start()
     {
-        AudioManager.Instance.SetBGM("TitleBGM", 1f);
+        AudioManager.Instance.SetBGM("TitleBGM");
         PlayerVitals.Instance.InitializePlayerStatus();
     }
 
     public void StartAtFirst()
     {
+        AudioManager.Instance.SetBGM("", 0.5f);
         PlayerVitals.Instance.InitializePlayerStatus();
         InputManager.Instance.SetAllModes(InputMode.Auto);
         SceneLoader.Instance.LoadScene(SceneType.GameStartScene);
@@ -23,6 +24,7 @@ public sealed class TitleSceneManager : Singleton<TitleSceneManager, SceneScope>
 
     public void SkipTutorial()
     {
+        AudioManager.Instance.SetBGM("", 0.5f);
         PlayerVitals.Instance.InitializePlayerStatus();
         PlayerVitals.Instance.TryConsumeEnergy(485);
         InputManager.Instance.SetAllModes(InputMode.Auto);

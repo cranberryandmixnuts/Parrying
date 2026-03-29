@@ -230,7 +230,9 @@ public sealed class TutorialSceneDirector : Singleton<TutorialSceneDirector, Sce
 
         input.SetMode(ActionKey.Heal, InputMode.Manual);
 
-        yield return new WaitUntil(() => player.Vitals.Health >= player.Vitals.MaxHealth);
+        yield return new WaitUntil(() =>
+            (player.Vitals.Health >= player.Vitals.MaxHealth) ||
+            (player.Vitals.Energy < player.Settings.healEnergyPerTick));
 
         healPanel.HideImmediate();
         input.SetAllModes(InputMode.Manual);

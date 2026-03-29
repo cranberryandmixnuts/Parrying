@@ -48,7 +48,10 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Geometry"), SerializeField, MinValue(0f), SuffixLabel("u", true)]
     private float swingLength = 2f;
 
-    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, MinMaxSlider(0f, 10f, true)]
+    private Vector2 attackIntervalRange = new(1f, 3f);
+
+    [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true), MaxValue("@attackEndPercent - 0.1f")]
     private float attackPrepPercent = 0.2f;
 
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true)]
@@ -63,6 +66,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private int attackPhase;
     private float attackPhaseTimer;
     private bool attackResolved;
+    private bool SlashSoundPlayed;
 
     private float attackWindupRuntime;
     private float swingDurationRuntime;
@@ -89,6 +93,8 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     public override void Die()
     {
         if (IsDead()) return;
+
+        AudioManager.Instance.StopSFX(gameObject, "Move");
         base.Die();
     }
 
@@ -138,6 +144,8 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
                 StopHorizontal();
                 break;
         }
+
+        SyncMoveSFX();
     }
 
     private void UpdateIdle()
@@ -180,6 +188,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     {
         if (attackPhase == 0)
         {
+            if (SlashSoundPlayed) SlashSoundPlayed = false;
             RegisterDashAssistRay();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f)
@@ -193,6 +202,12 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
         if (attackPhase == 1)
         {
+            if (!SlashSoundPlayed)
+            {
+                AudioManager.Instance.PlayOneShotSFX("적 슬래시", gameObject);
+                SlashSoundPlayed = true;
+            }
+
             PerformSwingStep();
             attackPhaseTimer -= Time.deltaTime;
             if (attackPhaseTimer <= 0f)
@@ -242,6 +257,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         {
             case State.Idle:
                 Anim.Play(AnimIdle);
+                AudioManager.Instance.StopSFX(gameObject, "Move");
                 break;
             case State.Walk:
                 Anim.Play(AnimWalk);
@@ -254,15 +270,9 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
                 break;
             case State.Attack:
                 Anim.Play(AnimAttack);
+                AudioManager.Instance.StopSFX(gameObject, "Move");
 
                 float clipLen = GetAnimLength(AnimAttack);
-
-                if (attackPrepPercent >= attackEndPercent)
-                {
-                    Debug.LogError("SlasherEnemy: attackPrepPercent must be < attackEndPercent. Resetting to 0.25 / 0.75.");
-                    attackPrepPercent = 0.25f;
-                    attackEndPercent = 0.75f;
-                }
 
                 attackWindupRuntime = clipLen * attackPrepPercent;
                 swingDurationRuntime = clipLen * (attackEndPercent - attackPrepPercent);
@@ -276,6 +286,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
 
             case State.Hit:
                 Anim.Play(AnimHit);
+                AudioManager.Instance.StopSFX(gameObject, "Move");
                 stateTimer = GetAnimLength(AnimHit);
                 break;
         }
@@ -363,10 +374,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         return false;
     }
 
-    private void StartAttackCooldown()
-    {
-        attackCooldownTimer = Random.Range(1.5f, 3f);
-    }
+    private void StartAttackCooldown() => attackCooldownTimer = Random.Range(attackIntervalRange.x, attackIntervalRange.y);
 
     private void MoveTowardsPlayer(float speed)
     {
@@ -396,20 +404,38 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         Body.linearVelocity = new Vector2(-dirSign * speed, Body.linearVelocity.y);
     }
 
-    private void StopHorizontal()
+    private void StopHorizontal() => Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+
+    private void SyncMoveSFX()
     {
-        Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+        float moveAbsX = Mathf.Abs(Body.linearVelocity.x);
+
+        if (state == State.Walk || state == State.BackWalk)
+        {
+            if (moveAbsX <= 0.01f)
+                AudioManager.Instance.StopSFX(gameObject, "Move");
+            else
+                AudioManager.Instance.PlayLoopSFX("적 걷기", gameObject, "Move");
+
+            return;
+        }
+
+        if (state == State.Chase)
+        {
+            if (moveAbsX <= 0.01f)
+                AudioManager.Instance.StopSFX(gameObject, "Move");
+            else
+                AudioManager.Instance.PlayLoopSFX("적 무겁게 달려옴", gameObject, "Move");
+
+            return;
+        }
+
+        AudioManager.Instance.StopSFX(gameObject, "Move");
     }
 
-    private bool InWalkRange()
-    {
-        return walkRange.OverlapPoint(Player.transform.position);
-    }
+    private bool InWalkRange() => walkRange.OverlapPoint(Player.transform.position);
 
-    private bool InBackOffRange()
-    {
-        return backOffRange.OverlapPoint(Player.transform.position);
-    }
+    private bool InBackOffRange() => backOffRange.OverlapPoint(Player.transform.position);
 
     private bool IsPlayerInSwingCone()
     {
@@ -473,8 +499,5 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         }
     }
 
-    public void OnCounterParry(Vector2 hitPoint)
-    {
-        Die();
-    }
+    public void OnCounterParry(Vector2 hitPoint) => Die();
 }
