@@ -97,6 +97,8 @@ public sealed class BossTeleportManager : MonoBehaviour
         ApplyPoints(fromPosition, toPosition);
         SetPrePointAlpha(0f);
 
+        AudioManager.Instance.PlayOneShotSFX("텔레포트 충전", gameObject);
+
         activePreSequence = DOTween.Sequence().SetLink(gameObject);
         activePreSequence.Join(DOVirtual.Float(0f, prePointTargetAlpha, preEffectDuration, SetPrePointAlpha).SetEase(Ease.Linear));
         activePreSequence.Join(DOVirtual.Float(bossMaterial.GetColor(ColorId).a, bossSilhouetteTargetAlpha, preEffectDuration, SetBossSilhouetteAlpha).SetEase(Ease.Linear));
@@ -104,6 +106,8 @@ public sealed class BossTeleportManager : MonoBehaviour
         yield return activePreSequence.WaitForCompletion();
 
         activePreSequence = null;
+
+        AudioManager.Instance.PlayOneShotSFX("텔레포트", gameObject);
 
         bossTransform.position = toPosition;
         RestoreBossBaseMaterialColor();

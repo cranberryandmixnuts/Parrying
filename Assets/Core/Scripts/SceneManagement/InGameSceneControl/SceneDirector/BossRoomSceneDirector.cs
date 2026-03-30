@@ -45,6 +45,9 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
     [TabGroup("Boss Room", "Refs"), BoxGroup("Boss Room/Refs/Door"), SerializeField]
     private GameObject lockDoor;
 
+    [TabGroup("Boss Room", "Refs"), BoxGroup("Boss Room/Refs/Clear"), SerializeField, Required]
+    private CanvasGroup clearWindow;
+
     [TabGroup("Boss Room", "Timing"), SerializeField, Min(0f)]
     private float startDelaySeconds = 1f;
 
@@ -53,6 +56,9 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
 
     [TabGroup("Boss Room", "Timing"), SerializeField, Min(0f)]
     private float lockDoorFadeDuration = 0.5f;
+
+    [TabGroup("Boss Room", "Timing"), SerializeField, Min(0f)]
+    private float clearWindowFadeDuration = 1f;
 
     [TabGroup("Boss Room", "Typing"), SerializeField, Min(1f)]
     private float charsPerSecond = 30f;
@@ -67,11 +73,13 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
     private Coroutine routine;
     private Tween typingTween;
     private Tween doorFadeTween;
+    private Tween clearWindowFadeTween;
 
     private void Start()
     {
         CacheDoorFadeTarget();
         SetDoorInstant(false);
+        InitializeClearWindow();
         dialogueRoot.SetActive(false);
 
         routine = StartCoroutine(RunSequence());
@@ -104,6 +112,7 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
         yield return new WaitUntil(() => bossController.IsDead());
+        yield return FadeInClearWindow();
 
         Debug.Log("Scene End");
     }
@@ -194,6 +203,32 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         }
     }
 
+    private void InitializeClearWindow()
+    {
+        clearWindow.gameObject.SetActive(false);
+        clearWindow.alpha = 0f;
+        clearWindow.interactable = false;
+        clearWindow.blocksRaycasts = false;
+    }
+
+    private IEnumerator FadeInClearWindow()
+    {
+        if (clearWindowFadeTween != null && clearWindowFadeTween.IsActive())
+            clearWindowFadeTween.Kill();
+
+        clearWindow.gameObject.SetActive(true);
+        clearWindow.alpha = 0f;
+        clearWindow.interactable = false;
+        clearWindow.blocksRaycasts = false;
+
+        clearWindowFadeTween = clearWindow.DOFade(1f, clearWindowFadeDuration);
+        yield return clearWindowFadeTween.WaitForCompletion();
+
+        clearWindow.interactable = true;
+        clearWindow.blocksRaycasts = true;
+        clearWindowFadeTween = null;
+    }
+
     private void KillTypingTween()
     {
         if (typingTween != null && typingTween.IsActive())
@@ -209,5 +244,8 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
 
         if (doorFadeTween != null && doorFadeTween.IsActive())
             doorFadeTween.Kill();
+
+        if (clearWindowFadeTween != null && clearWindowFadeTween.IsActive())
+            clearWindowFadeTween.Kill();
     }
 }

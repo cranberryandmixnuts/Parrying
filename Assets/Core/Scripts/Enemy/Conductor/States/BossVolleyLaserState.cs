@@ -27,6 +27,7 @@ public sealed class BossVolleyLaserState : BossState
     private bool laserStarted;
     private bool laserInteractionDisabled;
     private bool laserDirectionLocked;
+    private bool laserFireSfxPlayed;
 
     private float laserTime;
 
@@ -107,7 +108,7 @@ public sealed class BossVolleyLaserState : BossState
 
     public override void Exit()
     {
-        if(teleportRoutine != null) boss.StopCoroutine(teleportRoutine);
+        if (teleportRoutine != null) boss.StopCoroutine(teleportRoutine);
         teleportRoutine = null;
         boss.CancelTeleportEffects();
 
@@ -150,6 +151,7 @@ public sealed class BossVolleyLaserState : BossState
         laserStarted = false;
         laserInteractionDisabled = false;
         laserDirectionLocked = false;
+        laserFireSfxPlayed = false;
         laserTime = 0f;
 
         laserLength = boss.Settings.laserLength;
@@ -192,6 +194,8 @@ public sealed class BossVolleyLaserState : BossState
 
         EnemyProjectile proj = Object.Instantiate(boss.MissilePrefab, origin, Quaternion.identity);
         proj.Initialize(boss, boss.PlayerTarget, dir, boss.Settings.projectileDamage);
+
+        AudioManager.Instance.PlayOneShotSFX("적 탄환 발사", boss.gameObject);
     }
 
     private void StartLaser()
@@ -211,6 +215,7 @@ public sealed class BossVolleyLaserState : BossState
         laserAngleDeg = Mathf.Atan2(laserDir.y, laserDir.x) * Mathf.Rad2Deg;
 
         laserVfx = EffectManager.Instance.BeginLaser(laserAngleDeg);
+        AudioManager.Instance.PlayOneShotSFX("레이저 충전", boss.gameObject);
 
         boss.SetLethal(BossController.AttackContext.LaserP1, true);
     }
@@ -238,6 +243,12 @@ public sealed class BossVolleyLaserState : BossState
         bool inTracking = laserTime < laserTrackDuration;
         bool inFiring = laserTime >= laserWarningDuration;
 
+        if (inFiring && !laserFireSfxPlayed)
+        {
+            AudioManager.Instance.PlayOneShotSFX("레이저 발사", boss.gameObject);
+            laserFireSfxPlayed = true;
+        }
+
         if (inWarning && inTracking)
             UpdateLaserDirectionTracking();
         else if (!laserDirectionLocked)
@@ -260,7 +271,9 @@ public sealed class BossVolleyLaserState : BossState
                 }
             }
             else
+            {
                 laserInteractionDisabled = true;
+            }
         }
     }
 

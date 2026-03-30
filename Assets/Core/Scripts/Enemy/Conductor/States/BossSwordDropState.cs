@@ -106,6 +106,7 @@ public sealed class BossSwordDropState : BossState
         if (elapsed >= duration)
         {
             boss.SetLethal(BossController.AttackContext.Sword, false);
+            AudioManager.Instance.PlayOneShotSFX("쿵 소리", boss.gameObject);
             boss.ChangeToIdle(true);
             phase = Phase.End;
         }

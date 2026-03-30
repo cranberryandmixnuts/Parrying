@@ -49,7 +49,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private float swingLength = 2f;
 
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, MinMaxSlider(0f, 10f, true)]
-    private Vector2 attackIntervalRange = new(1f, 3f);
+    private Vector2 attackCooldownRange = new(1f, 3f);
 
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Attack Timing"), SerializeField, PropertyRange(0f, 1f), SuffixLabel("%", true), MaxValue("@attackEndPercent - 0.1f")]
     private float attackPrepPercent = 0.2f;
@@ -58,7 +58,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
     private float attackEndPercent = 0.9f;
 
     [TabGroup("Slasher Enemy", "Tuning"), BoxGroup("Slasher Enemy/Tuning/Damage"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
-    private int attackDamage = 100;
+    private int attackDamage = 60;
 
     private State state;
     private float stateTimer;
@@ -374,7 +374,7 @@ public sealed class SlasherEnemy : EnemyBase, IParryReactive
         return false;
     }
 
-    private void StartAttackCooldown() => attackCooldownTimer = Random.Range(attackIntervalRange.x, attackIntervalRange.y);
+    private void StartAttackCooldown() => attackCooldownTimer = Random.Range(attackCooldownRange.x, attackCooldownRange.y);
 
     private void MoveTowardsPlayer(float speed)
     {

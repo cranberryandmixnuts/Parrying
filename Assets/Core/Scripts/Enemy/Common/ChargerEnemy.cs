@@ -38,7 +38,7 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private float stopFriction = 20f;
 
     [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinMaxSlider(0f, 10f, true)]
-    private Vector2 attackCooldownRange = new(1.5f, 3f);
+    private Vector2 attackCooldownRange = new(0.5f, 2f);
 
     [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Timing"), SerializeField, MinValue(0f), SuffixLabel("s", true)]
     private float missBehindDuration = 1f;
@@ -53,7 +53,7 @@ public sealed class ChargerEnemy : EnemyBase, IParryReactive
     private float backWalkDurationMax = 3f;
 
     [TabGroup("Charger Enemy", "Tuning"), BoxGroup("Charger Enemy/Tuning/Attack"), SerializeField, MinValue(0), SuffixLabel("HP", true)]
-    private int contactDamage = 100;
+    private int contactDamage = 50;
 
     private State state;
     private float cooldownTimer;

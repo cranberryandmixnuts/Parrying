@@ -18,6 +18,7 @@ public sealed class BossRadialLaserState : BossState
     private float laserThickness;
 
     private bool interactionsDisabled;
+    private bool laserFireSfxPlayed;
 
     private bool stateStarted;
     private Coroutine teleportRoutine;
@@ -72,6 +73,12 @@ public sealed class BossRadialLaserState : BossState
 
         bool inWarning = volleyTimer < laserWarningDuration;
         bool inFiring = volleyTimer >= laserWarningDuration;
+
+        if (inFiring && !laserFireSfxPlayed)
+        {
+            AudioManager.Instance.PlayOneShotSFX("레이저 발사", boss.gameObject);
+            laserFireSfxPlayed = true;
+        }
 
         if (!interactionsDisabled && boss.LethalActive)
         {
@@ -132,6 +139,7 @@ public sealed class BossRadialLaserState : BossState
         volleyTimer = 0f;
         volleyActive = false;
         interactionsDisabled = false;
+        laserFireSfxPlayed = false;
 
         beamDirs = null;
         beamAnglesDeg = null;
@@ -189,9 +197,12 @@ public sealed class BossRadialLaserState : BossState
         for (int i = 0; i < beamCount; i++)
             beamVfx[i] = EffectManager.Instance.BeginLaser(beamAnglesDeg[i]);
 
+        AudioManager.Instance.PlayOneShotSFX("레이저 충전", boss.gameObject);
+
         volleyTimer = 0f;
         volleyActive = true;
         interactionsDisabled = false;
+        laserFireSfxPlayed = false;
 
         boss.SetLethal(BossController.AttackContext.LaserP2, true);
     }
@@ -201,6 +212,7 @@ public sealed class BossRadialLaserState : BossState
         volleyActive = false;
         volleyTimer = 0f;
         interactionsDisabled = false;
+        laserFireSfxPlayed = false;
 
         boss.SetLethal(BossController.AttackContext.LaserP2, false);
 

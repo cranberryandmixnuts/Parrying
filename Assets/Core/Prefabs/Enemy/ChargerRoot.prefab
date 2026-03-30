@@ -227,7 +227,7 @@ Transform:
   m_GameObject: {fileID: 5609135845801224545}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -314,12 +314,12 @@ MonoBehaviour:
   walkSpeed: 1
   attackSpeed: 7
   stopFriction: 20
-  attackCooldownRange: {x: 1.5, y: 3}
+  attackCooldownRange: {x: 0.5, y: 2}
   missBehindDuration: 1
   overshootAfterParryDuration: 0.5
   backWalkDurationMin: 1
   backWalkDurationMax: 3
-  contactDamage: 100
+  contactDamage: 50
 --- !u!50 &8691103499594126072
 Rigidbody2D:
   serializedVersion: 5
@@ -441,7 +441,7 @@ Transform:
   m_GameObject: {fileID: 7415957546429233855}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

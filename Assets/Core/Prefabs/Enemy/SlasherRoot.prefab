@@ -311,10 +311,10 @@ MonoBehaviour:
   swingStartAngleDeg: 75
   swingEndAngleDeg: -30
   swingLength: 2
-  attackIntervalRange: {x: 1.5, y: 3}
+  attackCooldownRange: {x: 1, y: 3}
   attackPrepPercent: 0.5925926
   attackEndPercent: 0.7407407
-  attackDamage: 100
+  attackDamage: 60
 --- !u!50 &3671952253101339903
 Rigidbody2D:
   serializedVersion: 5

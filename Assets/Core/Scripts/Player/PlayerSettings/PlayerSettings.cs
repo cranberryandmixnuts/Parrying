@@ -56,7 +56,7 @@ public sealed class PlayerSettings : ScriptableObject
     public float extremeDashExtraDistance = 1f;
 
     [TabGroup("PlayerSettings", "이동"), FoldoutGroup("PlayerSettings/이동/Dash"), SuffixLabel("EN", true), MinValue(0f), MaxValue(1000f)]
-    public int extremeDashEnergyGainPerDetect = 50;
+    public int extremeDashEnergyGainPerDetect = 100;
 
     [TabGroup("PlayerSettings", "이동"), FoldoutGroup("PlayerSettings/이동/Dash"), SuffixLabel("x", true), MinValue(0f), MaxValue(1000f)]
     public float fadePower = 5f;
@@ -65,7 +65,7 @@ public sealed class PlayerSettings : ScriptableObject
     public float minLinearBlend = 0.1f;
 
     [TabGroup("PlayerSettings", "전투"), FoldoutGroup("PlayerSettings/전투/Normal Parry", Expanded = true), SuffixLabel("EN", true), MinValue(0), MaxValue(99999)]
-    public int perfectParryEnergyGain = 100;
+    public int perfectParryEnergyGain = 150;
 
     [TabGroup("PlayerSettings", "전투"), FoldoutGroup("PlayerSettings/전투/Normal Parry", Expanded = true), SuffixLabel("EN", true), MinValue(0), MaxValue(99999)]
     public int imperfectParryEnergyGain = 50;
