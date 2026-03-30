@@ -112,6 +112,10 @@ public sealed class BossRoomSceneDirector : Singleton<BossRoomSceneDirector, Sce
         InputManager.Instance.SetAllModes(InputMode.Manual);
 
         yield return new WaitUntil(() => bossController.IsDead());
+        yield return new WaitForSecondsRealtime(1.5f);
+
+        InputManager.Instance.SetAllModes(InputMode.Auto);
+        InputManager.Instance.SetCursorMode(true);
         yield return FadeInClearWindow();
 
         Debug.Log("Scene End");
