@@ -19,6 +19,7 @@ public sealed class BossSwordDropState : BossState
     private float prevWorldAngle;
     private float curWorldAngle;
     private float curLocalAngle;
+    private float swordVisualStartLocalAngle;
     private float swordVisualEndLocalAngle;
     private Vector2 boxSize;
     private bool resolved;
@@ -35,7 +36,6 @@ public sealed class BossSwordDropState : BossState
         resolved = false;
         boss.SetLethal(BossController.AttackContext.Sword, false);
         boss.StopHorizontal();
-        boss.DebugClearSwingLine();
         boss.ResetSwordVisual();
 
         boss.SetGravityScale(0f);
@@ -56,17 +56,11 @@ public sealed class BossSwordDropState : BossState
     {
         if (phase != Phase.Swing) return;
 
-        float dt = Time.deltaTime;
-        elapsed += dt;
+        elapsed += Time.deltaTime;
         if (elapsed > duration) elapsed = duration;
 
-        float t = elapsed / duration;
-        float s = t * t;
-
         prevWorldAngle = curWorldAngle;
-        curLocalAngle = Mathf.Lerp(startLocal, endLocal, s);
-        curWorldAngle = baseAngle + curLocalAngle;
-        boss.SetSwordVisualLocalAngle(Mathf.Lerp(0f, swordVisualEndLocalAngle, s));
+        ApplySwingPose(EaseInCubic(elapsed / duration));
 
         if (!resolved && !boss.LethalActive) resolved = true;
 
@@ -76,7 +70,7 @@ public sealed class BossSwordDropState : BossState
             Vector2 currCenter = BladeCenter(curWorldAngle);
             Vector2 castDir = currCenter - prevCenter;
             float castDist = castDir.magnitude;
-            Vector2 dir = castDist > 0f ? castDir / castDist : Vector2.right;
+            Vector2 dir = castDist > 0f ? castDir / castDist : TipDir(curWorldAngle);
 
             RaycastHit2D[] hits = Physics2D.BoxCastAll(prevCenter, boxSize, curWorldAngle, dir, castDist, boss.PlayerHitMask);
             for (int i = 0; i < hits.Length; i++)
@@ -95,17 +89,6 @@ public sealed class BossSwordDropState : BossState
             }
 
             PlayerParryDashRegistration(curWorldAngle);
-        }
-
-        if (boss.LethalActive && !resolved)
-        {
-            Vector2 origin = (Vector2)boss.transform.position;
-            Vector2 tipDir = TipDir(curWorldAngle);
-            boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.swordBladeLength);
-        }
-        else if (!boss.LethalActive)
-        {
-            boss.DebugClearSwingLine();
         }
 
         if (elapsed >= duration)
@@ -135,7 +118,6 @@ public sealed class BossSwordDropState : BossState
         teleportRoutine = null;
         boss.CancelTeleportEffects();
         boss.SetGravityScale(boss.OriginalGravityScale);
-        boss.DebugClearSwingLine();
         boss.ResetSwordVisual();
     }
 
@@ -158,21 +140,28 @@ public sealed class BossSwordDropState : BossState
         baseAngle = faceDir > 0 ? 0f : 180f;
         startLocal = faceDir > 0 ? startAngle : -startAngle;
         endLocal = faceDir > 0 ? endAngle : -endAngle;
+        swordVisualStartLocalAngle = 0f;
         swordVisualEndLocalAngle = -90f;
 
         elapsed = 0f;
         duration = boss.AnimLen(BossController.AnimSideSword);
 
-        curLocalAngle = startLocal;
-        curWorldAngle = baseAngle + curLocalAngle;
-        prevWorldAngle = curWorldAngle;
         boxSize = new Vector2(bladeLen, bladeThick);
         resolved = false;
 
         boss.SetSwordVisualActive(true);
-        boss.SetSwordVisualLocalAngle(0f);
-        boss.DebugClearSwingLine();
+        ApplySwingPose(0f);
+        prevWorldAngle = curWorldAngle;
     }
+
+    private void ApplySwingPose(float normalized)
+    {
+        curLocalAngle = Mathf.LerpUnclamped(startLocal, endLocal, normalized);
+        curWorldAngle = baseAngle + curLocalAngle;
+        boss.SetSwordVisualLocalAngle(Mathf.LerpUnclamped(swordVisualStartLocalAngle, swordVisualEndLocalAngle, normalized));
+    }
+
+    private float EaseInCubic(float t) => t * t * t;
 
     private Vector2 BladeCenter(float angleDeg)
     {
