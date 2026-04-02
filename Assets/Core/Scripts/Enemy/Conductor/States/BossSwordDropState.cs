@@ -16,8 +16,10 @@ public sealed class BossSwordDropState : BossState
     private float endLocal;
     private float elapsed;
     private float duration;
-    private float prevAngle;
-    private float curAngle;
+    private float prevWorldAngle;
+    private float curWorldAngle;
+    private float curLocalAngle;
+    private float swordVisualEndLocalAngle;
     private Vector2 boxSize;
     private bool resolved;
     private Coroutine teleportRoutine;
@@ -34,6 +36,7 @@ public sealed class BossSwordDropState : BossState
         boss.SetLethal(BossController.AttackContext.Sword, false);
         boss.StopHorizontal();
         boss.DebugClearSwingLine();
+        boss.ResetSwordVisual();
 
         boss.SetGravityScale(0f);
         boss.SetVelocityX(0f);
@@ -60,20 +63,22 @@ public sealed class BossSwordDropState : BossState
         float t = elapsed / duration;
         float s = t * t;
 
-        prevAngle = curAngle;
-        curAngle = baseAngle + Mathf.Lerp(startLocal, endLocal, s);
+        prevWorldAngle = curWorldAngle;
+        curLocalAngle = Mathf.Lerp(startLocal, endLocal, s);
+        curWorldAngle = baseAngle + curLocalAngle;
+        boss.SetSwordVisualLocalAngle(Mathf.Lerp(0f, swordVisualEndLocalAngle, s));
 
         if (!resolved && !boss.LethalActive) resolved = true;
 
         if (!resolved)
         {
-            Vector2 prevCenter = BladeCenter(prevAngle);
-            Vector2 currCenter = BladeCenter(curAngle);
+            Vector2 prevCenter = BladeCenter(prevWorldAngle);
+            Vector2 currCenter = BladeCenter(curWorldAngle);
             Vector2 castDir = currCenter - prevCenter;
             float castDist = castDir.magnitude;
             Vector2 dir = castDist > 0f ? castDir / castDist : Vector2.right;
 
-            RaycastHit2D[] hits = Physics2D.BoxCastAll(prevCenter, boxSize, curAngle, dir, castDist, boss.PlayerHitMask);
+            RaycastHit2D[] hits = Physics2D.BoxCastAll(prevCenter, boxSize, curWorldAngle, dir, castDist, boss.PlayerHitMask);
             for (int i = 0; i < hits.Length; i++)
             {
                 PlayerController pc = hits[i].collider.GetComponentInParent<PlayerController>();
@@ -89,13 +94,13 @@ public sealed class BossSwordDropState : BossState
                 }
             }
 
-            PlayerParryDashRegistration(curAngle);
+            PlayerParryDashRegistration(curWorldAngle);
         }
 
         if (boss.LethalActive && !resolved)
         {
             Vector2 origin = (Vector2)boss.transform.position;
-            Vector2 tipDir = TipDir(curAngle);
+            Vector2 tipDir = TipDir(curWorldAngle);
             boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.swordBladeLength);
         }
         else if (!boss.LethalActive)
@@ -131,6 +136,7 @@ public sealed class BossSwordDropState : BossState
         boss.CancelTeleportEffects();
         boss.SetGravityScale(boss.OriginalGravityScale);
         boss.DebugClearSwingLine();
+        boss.ResetSwordVisual();
     }
 
     private void OnTeleported()
@@ -152,15 +158,19 @@ public sealed class BossSwordDropState : BossState
         baseAngle = faceDir > 0 ? 0f : 180f;
         startLocal = faceDir > 0 ? startAngle : -startAngle;
         endLocal = faceDir > 0 ? endAngle : -endAngle;
+        swordVisualEndLocalAngle = -90f;
 
         elapsed = 0f;
         duration = boss.AnimLen(BossController.AnimSideSword);
 
-        curAngle = baseAngle + startLocal;
-        prevAngle = curAngle;
+        curLocalAngle = startLocal;
+        curWorldAngle = baseAngle + curLocalAngle;
+        prevWorldAngle = curWorldAngle;
         boxSize = new Vector2(bladeLen, bladeThick);
         resolved = false;
 
+        boss.SetSwordVisualActive(true);
+        boss.SetSwordVisualLocalAngle(0f);
         boss.DebugClearSwingLine();
     }
 

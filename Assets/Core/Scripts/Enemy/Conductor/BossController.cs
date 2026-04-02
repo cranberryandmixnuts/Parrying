@@ -63,6 +63,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
     private Transform rightTop;
 
+    [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/SwordDrop"), SerializeField, Required]
+    private Transform swordVisual;
+
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/CurvedSlash Path"), SerializeField, Required]
     private SplineContainer rightStandardDownPath;
 
@@ -130,6 +133,8 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         p1CountersTowardCurvedSlash = 0;
         p1CurvedSlashRemaining = settings.p1PatternBundleRepeatCount;
         pendingCurvedSlash = false;
+
+        ResetSwordVisual();
 
         stateMachine = new BossStateMachine();
         stateMachine.Initialize(new BossIdleState(this, stateMachine, true));
@@ -386,6 +391,16 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public bool IsTouchingGround() => Body.IsTouchingLayers(settings.groundLayer);
 
     public void StopHorizontal() => Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+
+    public void SetSwordVisualActive(bool active) => swordVisual.gameObject.SetActive(active);
+
+    public void SetSwordVisualLocalAngle(float angle) => swordVisual.localRotation = Quaternion.Euler(0f, 0f, angle);
+
+    public void ResetSwordVisual()
+    {
+        SetSwordVisualLocalAngle(0f);
+        SetSwordVisualActive(false);
+    }
 
     public int HandleHitbox(Collider2D hitCol, int damage)
     {
