@@ -2705,14 +2705,6 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6788411010569723890, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
-      propertyPath: valueRange.x
-      value: -80
-      objectReference: {fileID: 0}
-    - target: {fileID: 6788411010569723890, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
-      propertyPath: valueRange.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8940153656602436232, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
       propertyPath: m_FillAmount
       value: 0.94
@@ -2852,14 +2844,6 @@ PrefabInstance:
     - target: {fileID: 3755700510352575473, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6788411010569723890, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
-      propertyPath: valueRange.x
-      value: -80
-      objectReference: {fileID: 0}
-    - target: {fileID: 6788411010569723890, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
-      propertyPath: valueRange.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8940153656602436232, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
       propertyPath: m_FillAmount
@@ -4007,14 +3991,6 @@ PrefabInstance:
     - target: {fileID: 3755700510352575473, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6788411010569723890, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
-      propertyPath: valueRange.x
-      value: -80
-      objectReference: {fileID: 0}
-    - target: {fileID: 6788411010569723890, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
-      propertyPath: valueRange.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8940153656602436232, guid: 22927a8f0a6973048a220e1405765bca, type: 3}
       propertyPath: m_FillAmount
