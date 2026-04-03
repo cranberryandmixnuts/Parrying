@@ -58,7 +58,7 @@ public sealed class BossTeleportManager : MonoBehaviour
     private Sequence activePreSequence;
     private Sequence activePostSequence;
     private Material bossMaterial;
-    private Color bossBaseMaterialColor;
+    private Color bossMaterialColorTemplate;
 
     private static readonly int ColorId = Shader.PropertyToID("_Color");
 
@@ -70,7 +70,7 @@ public sealed class BossTeleportManager : MonoBehaviour
         silhouetteBaseColor = silhouetteSpriteRenderer.color;
 
         bossMaterial = bossSpriteRenderer.material;
-        bossBaseMaterialColor = bossMaterial.GetColor(ColorId);
+        bossMaterialColorTemplate = bossMaterial.GetColor(ColorId);
 
         ResetToStandbyImmediate();
     }
@@ -81,7 +81,6 @@ public sealed class BossTeleportManager : MonoBehaviour
     {
         KillSequences();
         ResetToStandbyImmediate();
-        RestoreBossBaseMaterialColor();
 
         bossTransform.position = toPosition;
         Debug.Log("Boss teleported immediately to: " + toPosition);
@@ -96,12 +95,13 @@ public sealed class BossTeleportManager : MonoBehaviour
 
         ApplyPoints(fromPosition, toPosition);
         SetPrePointAlpha(0f);
+        SetBossSilhouetteAlpha(0f);
 
         AudioManager.Instance.PlayOneShotSFX("텔레포트 충전", gameObject);
 
         activePreSequence = DOTween.Sequence().SetLink(gameObject);
         activePreSequence.Join(DOVirtual.Float(0f, prePointTargetAlpha, preEffectDuration, SetPrePointAlpha).SetEase(Ease.Linear));
-        activePreSequence.Join(DOVirtual.Float(bossMaterial.GetColor(ColorId).a, bossSilhouetteTargetAlpha, preEffectDuration, SetBossSilhouetteAlpha).SetEase(Ease.Linear));
+        activePreSequence.Join(DOVirtual.Float(0f, bossSilhouetteTargetAlpha, preEffectDuration, SetBossSilhouetteAlpha).SetEase(Ease.Linear));
 
         yield return activePreSequence.WaitForCompletion();
 
@@ -110,7 +110,7 @@ public sealed class BossTeleportManager : MonoBehaviour
         AudioManager.Instance.PlayOneShotSFX("텔레포트", gameObject);
 
         bossTransform.position = toPosition;
-        RestoreBossBaseMaterialColor();
+        SetBossSilhouetteAlpha(0f);
         onTeleported?.Invoke();
         Debug.Log("Boss teleported with a effect to: " + toPosition);
 
@@ -209,7 +209,7 @@ public sealed class BossTeleportManager : MonoBehaviour
         silhouetteRoot.localScale = Vector3.one;
 
         RestoreBaseColors();
-        RestoreBossBaseMaterialColor();
+        SetBossSilhouetteAlpha(0f);
     }
 
     private void SetPrePointAlpha(float alpha)
@@ -226,10 +226,8 @@ public sealed class BossTeleportManager : MonoBehaviour
 
     private void SetBossSilhouetteAlpha(float alpha)
     {
-        Color color = bossMaterial.GetColor(ColorId);
+        Color color = bossMaterialColorTemplate;
         color.a = Mathf.Clamp01(alpha);
         bossMaterial.SetColor(ColorId, color);
     }
-
-    private void RestoreBossBaseMaterialColor() => bossMaterial.SetColor(ColorId, bossBaseMaterialColor);
 }

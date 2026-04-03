@@ -6,6 +6,7 @@ public sealed class BossPlungeRushState : BossState
     {
         Tele,
         Fall,
+        Land,
         RushDelay,
         Rush,
         Bounce,
@@ -19,7 +20,6 @@ public sealed class BossPlungeRushState : BossState
     private float rushTime;
     private float rushDisable;
     private bool teleported;
-    private bool rushLoopPlaying;
     private Coroutine teleportRoutine;
 
     public override BossStateType StateType => BossStateType.PlungeRush;
@@ -30,7 +30,6 @@ public sealed class BossPlungeRushState : BossState
     public override void Enter()
     {
         teleported = false;
-        rushLoopPlaying = false;
         phase = Phase.End;
         timer = 0f;
         rushTime = 0f;
@@ -51,7 +50,8 @@ public sealed class BossPlungeRushState : BossState
 
     public override void Update()
     {
-        if (!teleported) return;
+        if (!teleported)
+            return;
 
         if (phase == Phase.Tele)
         {
@@ -92,6 +92,23 @@ public sealed class BossPlungeRushState : BossState
             {
                 AudioManager.Instance.PlayOneShotSFX("쿵 소리", boss.gameObject);
 
+                boss.SetLethal(BossController.AttackContext.Plunge, false);
+                boss.SetVelocityX(0f);
+                boss.SetVelocityY(0f);
+                boss.Play(BossController.AnimLanding);
+
+                phase = Phase.Land;
+                timer = boss.AnimLen(BossController.AnimLanding);
+                return;
+            }
+            return;
+        }
+
+        if (phase == Phase.Land)
+        {
+            timer -= Time.deltaTime;
+            if (timer <= 0f)
+            {
                 float px = boss.PlayerTarget.transform.position.x;
                 rushDir = px >= boss.transform.position.x ? 1 : -1;
                 boss.FaceTo(rushDir);
@@ -103,7 +120,6 @@ public sealed class BossPlungeRushState : BossState
 
                 timer = boss.Settings.rushStartDelay;
                 phase = Phase.RushDelay;
-                return;
             }
             return;
         }
@@ -117,7 +133,6 @@ public sealed class BossPlungeRushState : BossState
                 phase = Phase.Rush;
                 rushTime = 0f;
                 rushDisable = 0f;
-                StartRushLoopSfx();
             }
             return;
         }
@@ -147,7 +162,6 @@ public sealed class BossPlungeRushState : BossState
             rushTime += Time.deltaTime;
             if (ReachedRushStop() || rushTime >= boss.Settings.rushMaxTime)
             {
-                StopRushLoopSfx();
                 boss.SetLethal(BossController.AttackContext.Rush, false);
                 phase = Phase.End;
                 timer = boss.AnimLen(BossController.AnimGroundRush);
@@ -208,8 +222,6 @@ public sealed class BossPlungeRushState : BossState
         teleportRoutine = null;
         boss.CancelTeleportEffects();
 
-        StopRushLoopSfx();
-
         teleported = false;
         boss.SetLethal(BossController.AttackContext.Plunge, false);
         boss.SetLethal(BossController.AttackContext.Rush, false);
@@ -238,22 +250,6 @@ public sealed class BossPlungeRushState : BossState
         Vector2 hp = boss.transform.position;
         Vector2 d = hp - pc;
         if (d.sqrMagnitude <= pr * pr) boss.PlayerTarget.RegisterParryCandidate(boss, hp, 0);
-    }
-
-    private void StartRushLoopSfx()
-    {
-        if (rushLoopPlaying) return;
-
-        AudioManager.Instance.PlayLoopSFX("적 가볍게 달려옴", boss.gameObject, "Rush");
-        rushLoopPlaying = true;
-    }
-
-    private void StopRushLoopSfx()
-    {
-        if (!rushLoopPlaying) return;
-
-        AudioManager.Instance.StopSFX(boss.gameObject, "Rush");
-        rushLoopPlaying = false;
     }
 
     private bool GroundHit() => boss.IsTouchingGround();

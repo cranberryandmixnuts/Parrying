@@ -37,18 +37,14 @@ MonoBehaviour:
   curvedSlashEndAngle: -20
   curvedSlashBladeLength: 7
   curvedSlashBladeThickness: 0.5
-  curvedSlashDownCurveBulgeY: 6
-  curvedSlashUpCurveBulgeY: -6
   externalRushSpeed: 18
   externalRushSideYRandomRange: 6
   externalRushTopXRandomRange: 10
   externalRushHitDisableTime: 1
   externalRushInterval: 0.3
-  externalRushAimHeadOffsetY: 0
-  rushStartDelay: 0.5
-  rushSpeed: 12
+  rushStartDelay: 0
+  rushSpeed: 16
   rushMaxTime: 2
-  missBehindTime: 0.6
   rushDamage: 150
   missileVolleys: 3
   missileVolleyInterval: 0.5

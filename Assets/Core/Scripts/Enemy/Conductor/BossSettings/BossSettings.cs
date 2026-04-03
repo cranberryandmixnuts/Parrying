@@ -89,13 +89,10 @@ public sealed class BossSettings : ScriptableObject
     public float rushStartDelay = 0.1f;
 
     [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Movement"), SuffixLabel("u/s", true), MinValue(0f)]
-    public float rushSpeed = 12f;
+    public float rushSpeed = 16f;
 
     [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float rushMaxTime = 2.0f;
-
-    [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Timing"), SuffixLabel("s", true), MinValue(0f)]
-    public float missBehindTime = 0.6f;
 
     [TabGroup("BossSettings", "Rush"), BoxGroup("BossSettings/Rush/Damage"), MinValue(0)]
     public int rushDamage = 150;
