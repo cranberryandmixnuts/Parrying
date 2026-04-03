@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 401731cc264cdf7418fd4b80141b5b12
+guid: 0cb27e2881f806d439353a81a87ae45d
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -74,36 +74,6 @@ TextureImporter:
   - first:
       213: -8898172576548916272
     second: Attack_2_23
-  - first:
-      213: 6905908897218321619
-    second: Attack_2_24
-  - first:
-      213: 8830069428459605061
-    second: Attack_2_25
-  - first:
-      213: 493562392191436621
-    second: Attack_2_26
-  - first:
-      213: -5262155885566887038
-    second: Attack_2_27
-  - first:
-      213: -8642483390443647202
-    second: Attack_2_28
-  - first:
-      213: 5779566709780335636
-    second: Attack_2_29
-  - first:
-      213: -6432969661850131043
-    second: Attack_2_30
-  - first:
-      213: 7672661190472310180
-    second: Attack_2_31
-  - first:
-      213: -65805475392142908
-    second: Attack_2_32
-  - first:
-      213: -3405881136031444166
-    second: Attack_2_33
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -212,7 +182,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlungeRush_10
+      name: PlungeRush_0
       rect:
         serializedVersion: 2
         x: 0
@@ -227,8 +197,228 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 176ce675ec6f6344aa184c6404418868
-      internalID: 488725401
+      spriteID: a437d630d5656ea4c8e61d7d3313f830
+      internalID: 31218208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_1
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 991a3b39db2ae2f489dd482a0fa9c50f
+      internalID: 1213062128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_2
+      rect:
+        serializedVersion: 2
+        x: 2560
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa2cb8423c232bd4da8f645ec0b288c6
+      internalID: -1126534708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_3
+      rect:
+        serializedVersion: 2
+        x: 3840
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8973c187315b08d4ba26d230ce5e0a0a
+      internalID: 925766488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_4
+      rect:
+        serializedVersion: 2
+        x: 5120
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 617ef2e13a848ca4bbd552e12cfa9373
+      internalID: -247085576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_5
+      rect:
+        serializedVersion: 2
+        x: 6400
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b00f7acec6c4f34085f5a01629910a9
+      internalID: -111511338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_6
+      rect:
+        serializedVersion: 2
+        x: 7680
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0e2f7775105c14459a6303a4b8c250a
+      internalID: -1059354895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_7
+      rect:
+        serializedVersion: 2
+        x: 8960
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ac983d130c58fd4aa16f9edb6821bd5
+      internalID: -1040596229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_8
+      rect:
+        serializedVersion: 2
+        x: 10240
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac26a6f33dfce3244b4643f55eadb647
+      internalID: -920055760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_9
+      rect:
+        serializedVersion: 2
+        x: 11520
+        y: 2560
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdf044077da94d8408e85fea9e84e743
+      internalID: 1883857357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlungeRush_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1280
+        width: 1280
+        height: 1280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d30458aa4ebf3a64ba7a1a6d719bf497
+      internalID: 502827229
       vertices: []
       indices: 
       edges: []
@@ -238,7 +428,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -249,8 +439,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3c14cd2a40d059744af3c0fc34e39ade
-      internalID: 1800208388
+      spriteID: cd2a2146ffcfff24880d7ec364f1c382
+      internalID: -936312459
       vertices: []
       indices: 
       edges: []
@@ -260,7 +450,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 2560
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -271,8 +461,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 479f89ff953a259489ac5d047c1fe36d
-      internalID: 114094026
+      spriteID: 7459da57d7865c84a99d09a52ea73a60
+      internalID: -1451090490
       vertices: []
       indices: 
       edges: []
@@ -282,7 +472,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 3840
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -293,8 +483,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ef0fa6e6c092a144f96ada82e3a42bf7
-      internalID: 535980007
+      spriteID: a5cb8588410cda14785805dfe4d61ac9
+      internalID: -140064389
       vertices: []
       indices: 
       edges: []
@@ -304,7 +494,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 5120
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -315,8 +505,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 15dd8f0f66475f149a38535337817f73
-      internalID: -715354899
+      spriteID: 3aa5453d7d8917f469dd98b82ef739f2
+      internalID: 376022124
       vertices: []
       indices: 
       edges: []
@@ -326,7 +516,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 6400
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -337,8 +527,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe5102a8cba87d740bb4cf328efd68a5
-      internalID: -2043556561
+      spriteID: 9f59dad92df81724eb5cc01cf98db3d1
+      internalID: 773043758
       vertices: []
       indices: 
       edges: []
@@ -348,7 +538,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 7680
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -359,8 +549,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ca4960ef67b08bb48aeb741acdf122af
-      internalID: 1255096638
+      spriteID: 149fa60166131314b976a11a60ce18c6
+      internalID: -939882206
       vertices: []
       indices: 
       edges: []
@@ -370,7 +560,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 8960
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -381,8 +571,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 076992d994f843d4f9aa328ae94a2d84
-      internalID: 2117396716
+      spriteID: af7a3904199e25d488bc9d8fc46dec03
+      internalID: -1304939185
       vertices: []
       indices: 
       edges: []
@@ -392,7 +582,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 10240
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -403,8 +593,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9a8a31b31fc68e5459c7a5c0ecf5470e
-      internalID: 697541443
+      spriteID: dae2deb364c9d324fb9569af9374c320
+      internalID: 961191413
       vertices: []
       indices: 
       edges: []
@@ -414,7 +604,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 11520
-        y: 2560
+        y: 1280
         width: 1280
         height: 1280
       alignment: 0
@@ -425,8 +615,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dfe51b9a0ac4d7a43a9b3e3c0718086f
-      internalID: -1479495234
+      spriteID: e212df048cccada4d9e95b7f856a4f7c
+      internalID: 1678344455
       vertices: []
       indices: 
       edges: []
@@ -436,7 +626,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 1280
+        y: 0
         width: 1280
         height: 1280
       alignment: 0
@@ -447,8 +637,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8714502206dcea5449bff33bca0dc987
-      internalID: 1819993264
+      spriteID: e8125093871cee6498fe83b6265e3e27
+      internalID: 1185391249
       vertices: []
       indices: 
       edges: []
@@ -458,7 +648,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1280
-        y: 1280
+        y: 0
         width: 1280
         height: 1280
       alignment: 0
@@ -469,8 +659,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 651c2a68e3d48f8469aaec2342d6e26a
-      internalID: 363803354
+      spriteID: f32ee1dee9ad49e46a2592d935c7c700
+      internalID: 704860272
       vertices: []
       indices: 
       edges: []
@@ -480,7 +670,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 2560
-        y: 1280
+        y: 0
         width: 1280
         height: 1280
       alignment: 0
@@ -491,8 +681,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fba63e9cab1d8bc408bfbb27797e22e4
-      internalID: -787676058
+      spriteID: 75521696b1a6777438b08508cb651fad
+      internalID: 589391147
       vertices: []
       indices: 
       edges: []
@@ -502,160 +692,6 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 3840
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0ef5889968976cd468e2fa7119429b3c
-      internalID: 221843353
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_24
-      rect:
-        serializedVersion: 2
-        x: 5120
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4bf1aae11331fac49bd2727f407945ba
-      internalID: -713076468
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_25
-      rect:
-        serializedVersion: 2
-        x: 6400
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d13c64d01ec92a44f8ac8cffdab4e80b
-      internalID: 1329798758
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_26
-      rect:
-        serializedVersion: 2
-        x: 7680
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7a10a6b0667d3344b1d7fd7eee00e4c
-      internalID: -393612459
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_27
-      rect:
-        serializedVersion: 2
-        x: 8960
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f7b46b0b870aa204a8405ed05659b9bb
-      internalID: -70124380
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_28
-      rect:
-        serializedVersion: 2
-        x: 10240
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8afe914df3b08384081423ab6cc5fe64
-      internalID: -1163833719
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_29
-      rect:
-        serializedVersion: 2
-        x: 11520
-        y: 1280
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5b916b79a49f0704f98efd23a7bcb45d
-      internalID: -1913668006
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_30
-      rect:
-        serializedVersion: 2
-        x: 0
         y: 0
         width: 1280
         height: 1280
@@ -667,74 +703,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76c10a7650c8b204b8dcc6f925f9efae
-      internalID: -811745637
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_31
-      rect:
-        serializedVersion: 2
-        x: 1280
-        y: 0
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2283a864b1f32fb40a48798ca70e2821
-      internalID: 774862931
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_32
-      rect:
-        serializedVersion: 2
-        x: 2560
-        y: 0
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c4df03c6fb1e4a644aa175e4fdc1c9b7
-      internalID: 927234200
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PlungeRush_33
-      rect:
-        serializedVersion: 2
-        x: 3840
-        y: 0
-        width: 1280
-        height: 1280
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6da1d8ac372fdc24c8f9bbe0c2361266
-      internalID: 837829293
+      spriteID: 670e334bea8b1d74b94fb96f4d4da493
+      internalID: 1349751131
       vertices: []
       indices: 
       edges: []
@@ -753,42 +723,32 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":10.0,"y":4.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":10.0,"y":3.0},"gridSpriteSize":{"x":1280.0,"y":1280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      PlungeRush_0: -1710965351
-      PlungeRush_1: 1045594269
-      PlungeRush_10: 488725401
-      PlungeRush_11: 1800208388
-      PlungeRush_12: 114094026
-      PlungeRush_13: 535980007
-      PlungeRush_14: -715354899
-      PlungeRush_15: -2043556561
-      PlungeRush_16: 1255096638
-      PlungeRush_17: 2117396716
-      PlungeRush_18: 697541443
-      PlungeRush_19: -1479495234
-      PlungeRush_2: 2413871
-      PlungeRush_20: 1819993264
-      PlungeRush_21: 363803354
-      PlungeRush_22: -787676058
-      PlungeRush_23: 221843353
-      PlungeRush_24: -713076468
-      PlungeRush_25: 1329798758
-      PlungeRush_26: -393612459
-      PlungeRush_27: -70124380
-      PlungeRush_28: -1163833719
-      PlungeRush_29: -1913668006
-      PlungeRush_3: 1264672455
-      PlungeRush_30: -811745637
-      PlungeRush_31: 774862931
-      PlungeRush_32: 927234200
-      PlungeRush_33: 837829293
-      PlungeRush_4: 2007363574
-      PlungeRush_5: 1414690992
-      PlungeRush_6: -491393027
-      PlungeRush_7: 437546028
-      PlungeRush_8: -1987996716
-      PlungeRush_9: -45922323
+      PlungeRush_0: 31218208
+      PlungeRush_1: 1213062128
+      PlungeRush_10: 502827229
+      PlungeRush_11: -936312459
+      PlungeRush_12: -1451090490
+      PlungeRush_13: -140064389
+      PlungeRush_14: 376022124
+      PlungeRush_15: 773043758
+      PlungeRush_16: -939882206
+      PlungeRush_17: -1304939185
+      PlungeRush_18: 961191413
+      PlungeRush_19: 1678344455
+      PlungeRush_2: -1126534708
+      PlungeRush_20: 1185391249
+      PlungeRush_21: 704860272
+      PlungeRush_22: 589391147
+      PlungeRush_23: 1349751131
+      PlungeRush_3: 925766488
+      PlungeRush_4: -247085576
+      PlungeRush_5: -111511338
+      PlungeRush_6: -1059354895
+      PlungeRush_7: -1040596229
+      PlungeRush_8: -920055760
+      PlungeRush_9: 1883857357
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

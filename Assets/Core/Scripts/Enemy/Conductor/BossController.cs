@@ -111,11 +111,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     [TabGroup("Boss Controller", "Setup"), BoxGroup("Boss Controller/Setup/Volley&RadialLaser"), SerializeField, Required]
     private Transform laserHeightPoint;
 
-    [Header("Debug")]
-    [SerializeField] private Color debugSwordColor = new(1f, 0.3f, 0.2f, 0.8f);
-    [SerializeField] private float debugArcStepDeg = 5f;
-    [SerializeField] private LineRenderer Line;
-
     private float gravityOriginal;
     private readonly Collider2D[] overlapResults = new Collider2D[8];
     private BossStateMachine stateMachine;
@@ -358,13 +353,9 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public void SetLethal(AttackContext cx, bool on)
     {
-        AttackContext prev = attackCx;
         attackCx = cx;
         lethalActive = on;
         Player.ClearParryCandidate(this);
-
-        if (!on && (prev == AttackContext.Sword || prev == AttackContext.CurvedSlash))
-            DebugClearSwingLine();
     }
 
     public IEnumerator TeleportRoutine(Vector3 p, Action onTeleported = null) => teleportManager.PlayTeleportSequence(p, onTeleported);
@@ -436,29 +427,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
 
     public LayerMask PlayerHitMask => settings.playerHitMask;
 
-    public void DebugUpdateSwingLine(Vector2 origin, Vector2 dir, float length)
-    {
-        DebugUpdateSwingLine(origin, dir, length, settings.swordBladeThickness);
-    }
-
-    public void DebugUpdateSwingLine(Vector2 origin, Vector2 dir, float length, float thickness)
-    {
-        if (Line == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
-        Line.widthMultiplier = thickness;
-        Line.useWorldSpace = true;
-        Line.positionCount = 2;
-        Vector3 a = origin;
-        Vector3 b = origin + dir.normalized * length;
-        Line.SetPosition(0, a);
-        Line.SetPosition(1, b);
-    }
-
-    public void DebugClearSwingLine()
-    {
-        if (Line == null) throw new InvalidOperationException("ConductorBoss.swingLine is null. Assign a LineRenderer in the inspector.");
-        Line.positionCount = 0;
-    }
-
     private bool IsColliderWithinCircle(Collider2D col, Vector2 center, float radius)
     {
         Vector2 p = col.ClosestPoint(center);
@@ -467,63 +435,5 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         float d2 = dx * dx + dy * dy;
         float r2 = radius * radius;
         return d2 <= r2;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = debugSwordColor;
-
-        int face = 1;
-        if (transform.lossyScale.x < 0f) face = -1;
-        float baseAngle = face > 0 ? 0f : 180f;
-        float s = face > 0 ? settings.swordStartAngle : -settings.swordStartAngle;
-        float e = face > 0 ? settings.swordEndAngle : -settings.swordEndAngle;
-        float a0 = baseAngle + s;
-        float a1 = baseAngle + e;
-
-        float step = Mathf.Max(1f, debugArcStepDeg);
-        int steps = Mathf.Max(2, Mathf.CeilToInt(Mathf.Abs(a1 - a0) / step) + 1);
-
-        Vector3 prev = BladeTipAtAngle(a0);
-        for (int i = 1; i <= steps; i++)
-        {
-            float t = i / (float)steps;
-            float ang = Mathf.Lerp(a0, a1, t);
-            Vector3 curr = BladeTipAtAngle(ang);
-            Gizmos.DrawLine(prev, curr);
-            prev = curr;
-        }
-
-        DrawBladeBoxAtAngle(a0);
-        DrawBladeBoxAtAngle(a1);
-    }
-
-    private Vector3 BladeTipAtAngle(float angleDeg)
-    {
-        float rad = angleDeg * Mathf.Deg2Rad;
-        Vector2 dir = new(Mathf.Cos(rad), Mathf.Sin(rad));
-        return transform.position + (Vector3)(dir * settings.swordBladeLength);
-    }
-
-    private void DrawBladeBoxAtAngle(float angleDeg)
-    {
-        float rad = angleDeg * Mathf.Deg2Rad;
-        Vector2 dir = new(Mathf.Cos(rad), Mathf.Sin(rad));
-        Vector3 c = transform.position + (Vector3)(dir * (settings.swordBladeLength * 0.5f));
-        float hl = settings.swordBladeLength * 0.5f;
-        float ht = settings.swordBladeThickness * 0.5f;
-
-        Vector2 x = new(Mathf.Cos(rad), Mathf.Sin(rad));
-        Vector2 y = new(-Mathf.Sin(rad), Mathf.Cos(rad));
-
-        Vector3 p1 = c + (Vector3)(x * hl) + (Vector3)(y * ht);
-        Vector3 p2 = c + (Vector3)(x * hl) - (Vector3)(y * ht);
-        Vector3 p3 = c - (Vector3)(x * hl) - (Vector3)(y * ht);
-        Vector3 p4 = c - (Vector3)(x * hl) + (Vector3)(y * ht);
-
-        Gizmos.DrawLine(p1, p2);
-        Gizmos.DrawLine(p2, p3);
-        Gizmos.DrawLine(p3, p4);
-        Gizmos.DrawLine(p4, p1);
     }
 }

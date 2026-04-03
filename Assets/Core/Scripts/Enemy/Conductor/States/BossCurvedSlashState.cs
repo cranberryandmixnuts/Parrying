@@ -72,7 +72,6 @@ public sealed class BossCurvedSlashState : BossState
         boss.SetVelocityX(0f);
         boss.SetVelocityY(0f);
         boss.StopHorizontal();
-        boss.DebugClearSwingLine();
 
         float playerX = boss.PlayerTarget.transform.position.x;
 
@@ -119,15 +118,6 @@ public sealed class BossCurvedSlashState : BossState
 
             if (!resolved) TryBladeHitAndRegistration(prevPos, prevAngle, currPos, curAngle);
 
-            if (boss.LethalActive && !resolved)
-            {
-                Vector2 origin = currPos;
-                Vector2 tipDir = TipDir(curAngle);
-                boss.DebugUpdateSwingLine(origin, tipDir, boss.Settings.curvedSlashBladeLength, boss.Settings.curvedSlashBladeThickness);
-            }
-            else if (!boss.LethalActive)
-                boss.DebugClearSwingLine();
-
             elapsed += dt;
             if (elapsed < duration) return;
 
@@ -139,7 +129,6 @@ public sealed class BossCurvedSlashState : BossState
 
                 boss.Play(BossController.AnimCurvedSlashLand);
                 boss.SetLethal(BossController.AttackContext.CurvedSlash, false);
-                boss.DebugClearSwingLine();
 
                 phase = Phase.Land;
                 timer = boss.AnimLen(BossController.AnimCurvedSlashLand);
@@ -260,7 +249,6 @@ public sealed class BossCurvedSlashState : BossState
         boss.SetVelocityX(0f);
         boss.SetVelocityY(0f);
         boss.SetGravityScale(boss.OriginalGravityScale);
-        boss.DebugClearSwingLine();
         boss.ResetRotationToFacing();
     }
 
@@ -319,7 +307,6 @@ public sealed class BossCurvedSlashState : BossState
 
     private void BeginExternalRush()
     {
-        boss.DebugClearSwingLine();
         boss.SetLethal(BossController.AttackContext.Rush, true);
         boss.Play(BossController.AnimExternalRush);
         boss.SetGravityScale(0f);
@@ -428,12 +415,6 @@ public sealed class BossCurvedSlashState : BossState
         return o + dir * (boss.Settings.curvedSlashBladeLength * 0.5f);
     }
 
-    private Vector2 TipDir(float angleDeg)
-    {
-        float rad = angleDeg * Mathf.Deg2Rad;
-        return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-    }
-
     private bool RectCircleIntersects(Vector2 rectCenter, Vector2 rectHalf, float angleDeg, Vector2 circleCenter, float radius)
     {
         float rad = -angleDeg * Mathf.Deg2Rad;
@@ -450,10 +431,7 @@ public sealed class BossCurvedSlashState : BossState
     }
 
     private Vector3 EvaluatePathPosition(SplineContainer path, float t01)
-    {
-        float3 p = path.EvaluatePosition(Mathf.Clamp01(t01));
-        return new Vector3(p.x, p.y, p.z);
-    }
+        => new(path.EvaluatePosition(Mathf.Clamp01(t01)).x, path.EvaluatePosition(Mathf.Clamp01(t01)).y, path.EvaluatePosition(Mathf.Clamp01(t01)).z);
 
     private Vector3 WithZ(Vector3 p) => new(p.x, p.y, boss.transform.position.z);
 }
