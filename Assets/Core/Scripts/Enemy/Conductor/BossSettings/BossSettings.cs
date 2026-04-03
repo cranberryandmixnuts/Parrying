@@ -25,7 +25,7 @@ public sealed class BossSettings : ScriptableObject
     [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Timing"), SuffixLabel("s", true), MinValue(0f)]
     public float groggyDuration = 2f;
 
-    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Misc"), PropertyRange(0f, 1f), SuffixLabel("น่", true)]
+    [TabGroup("BossSettings", "Common"), BoxGroup("BossSettings/Common/Misc"), PropertyRange(0f, 1f)]
     public float repeatPenalty = 0.7f;
 
     [TabGroup("BossSettings", "Sword Drop"), BoxGroup("BossSettings/Sword Drop/Damage"), MinValue(0)]
@@ -65,7 +65,7 @@ public sealed class BossSettings : ScriptableObject
     public float curvedSlashEndAngle = -20f;
 
     [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("u", true), MinValue(0f)]
-    public float curvedSlashBladeLength = 7f;
+    public float curvedSlashBladeLength = 2f;
 
     [TabGroup("BossSettings", "Curved Slash"), BoxGroup("BossSettings/Curved Slash/Geometry"), SuffixLabel("u", true), MinValue(0f)]
     public float curvedSlashBladeThickness = 0.5f;
@@ -100,8 +100,8 @@ public sealed class BossSettings : ScriptableObject
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), MinValue(0)]
     public int missileVolleys = 3;
 
-    [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), SuffixLabel("s", true), MinValue(0f)]
-    public float missileVolleyInterval = 0.5f;
+    [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), PropertyRange(0f, 1f), SuffixLabel("%", true)]
+    public float missileFirePercent = 0.3f;
 
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Missile"), SuffixLabel("HP", true), MinValue(0f)]
     public int projectileDamage = 50;
@@ -120,9 +120,6 @@ public sealed class BossSettings : ScriptableObject
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Laser Shared")]
     [TabGroup("BossSettings", "Radial"), BoxGroup("BossSettings/Radial/Laser Shared")]
     public float laserActiveTime = 0.3f;
-
-    [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Laser Timing"), SuffixLabel("s", true), MinValue(0f)]
-    public float missileToLaserExtraDelay = 0.5f;
 
     [TabGroup("BossSettings", "Volley & Laser"), BoxGroup("BossSettings/Volley & Laser/Laser Movement"), SuffixLabel("deg/s", true), MinValue(0f)]
     public float laserTurnSpeedDegPerSec = 240f;

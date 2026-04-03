@@ -25,9 +25,11 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
     public const string AnimLanding = "Land";
     public const string AnimGroundRush = "Ground Rush";
     public const string AnimFire = "Fire";
+    public const string AnimLaserFire = "Laser Fire";
     public const string AnimCrackLaser = "Crack Laser";
     public const string AnimDeath = "Death";
     public const string AnimCurvedSlashDown = "Curved Slash Down";
+    public const string AnimCurvedSlashLand = "Curved Slash Land";
     public const string AnimCurvedSlashUp = "Curved Slash Up";
     public const string AnimExternalRush = "External Rush";
 
@@ -253,7 +255,6 @@ public sealed class BossController : EnemyBase, IParryReactive, IEnemyProjectile
         }
 
         int pattern = GetNextP1Pattern();
-        pattern = 2; // TEMP
 
         switch (pattern)
         {

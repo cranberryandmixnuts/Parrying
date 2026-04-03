@@ -8,6 +8,7 @@ public sealed class BossCurvedSlashState : BossState
     {
         Tele,
         Down,
+        Land,
         Up,
         ExternalRush
     }
@@ -17,6 +18,7 @@ public sealed class BossCurvedSlashState : BossState
 
     private float elapsed;
     private float duration;
+    private float timer;
 
     private float prevAngle;
     private float curAngle;
@@ -56,6 +58,7 @@ public sealed class BossCurvedSlashState : BossState
     {
         phase = Phase.Tele;
         resolved = false;
+        timer = 0f;
 
         rushHitDisable = 0f;
         rushActive = false;
@@ -134,20 +137,35 @@ public sealed class BossCurvedSlashState : BossState
                 boss.transform.position = junction;
                 prevBossPos = junction;
 
-                boss.Play(BossController.AnimCurvedSlashUp);
-                boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
+                boss.Play(BossController.AnimCurvedSlashLand);
+                boss.SetLethal(BossController.AttackContext.CurvedSlash, false);
+                boss.DebugClearSwingLine();
 
-                phase = Phase.Up;
-                duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
-                elapsed = 0f;
-
-                curAngle = upSwingFromAngle;
-                prevAngle = curAngle;
-
+                phase = Phase.Land;
+                timer = boss.AnimLen(BossController.AnimCurvedSlashLand);
                 return;
             }
 
             BeginExternalRush();
+            return;
+        }
+
+        if (phase == Phase.Land)
+        {
+            timer -= Time.deltaTime;
+            if (timer > 0f) return;
+
+            boss.Play(BossController.AnimCurvedSlashUp);
+            boss.SetLethal(BossController.AttackContext.CurvedSlash, true);
+
+            phase = Phase.Up;
+            duration = boss.AnimLen(BossController.AnimCurvedSlashUp);
+            elapsed = 0f;
+            resolved = false;
+
+            curAngle = upSwingFromAngle;
+            prevAngle = curAngle;
+            prevBossPos = boss.transform.position;
             return;
         }
 

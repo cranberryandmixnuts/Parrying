@@ -10,21 +10,17 @@ public sealed class BossVolleyLaserState : BossState
     }
 
     private Phase phase;
-    private float fireDuration;
-    private float stateTimer;
-    private float elapsed;
     private int missilesFired;
-
     private int missileCount;
-    private float missileInterval;
-    private float missilePhaseEndTime;
+
+    private float phaseTimer;
+    private float phaseLength;
+    private bool firedThisPhase;
 
     private float laserTrackDuration;
     private float laserWarningDuration;
     private float laserActiveDuration;
-    private float laserStartTime;
 
-    private bool laserStarted;
     private bool laserInteractionDisabled;
     private bool laserDirectionLocked;
     private bool laserFireSfxPlayed;
@@ -51,6 +47,7 @@ public sealed class BossVolleyLaserState : BossState
     {
         stateStarted = false;
         laserVfx = null;
+
         boss.SetLethal(BossController.AttackContext.LaserP1, false);
         boss.SetGravityScale(0f);
         boss.SetVelocityX(0f);
@@ -71,33 +68,20 @@ public sealed class BossVolleyLaserState : BossState
 
     public override void Update()
     {
-        if (!stateStarted) return;
-
-        float dt = Time.deltaTime;
-
-        stateTimer -= dt;
-        if (stateTimer <= 0f)
-        {
-            EndState();
+        if (!stateStarted)
             return;
-        }
-
-        elapsed += dt;
 
         if (phase == Phase.Missiles)
         {
-            UpdateMissiles();
-            if (elapsed >= laserStartTime)
-                phase = Phase.Laser;
-            else
-                return;
+            UpdateMissilePhase();
+            return;
         }
 
-        if (!laserStarted)
-            StartLaser();
-
-        laserTime = Mathf.Max(0f, elapsed - laserStartTime);
-        UpdateLaser();
+        if (phase == Phase.Laser)
+        {
+            UpdateLaserPhase();
+            return;
+        }
     }
 
     public override void FixedUpdate()
@@ -129,26 +113,15 @@ public sealed class BossVolleyLaserState : BossState
     private void OnTeleported()
     {
         teleportRoutine = null;
-        boss.FaceToPlayer();
-
-        boss.Play(BossController.AnimFire);
-        fireDuration = boss.AnimLen(BossController.AnimFire);
-        stateTimer = fireDuration;
-        elapsed = 0f;
+        stateStarted = true;
 
         missileCount = Mathf.Max(0, boss.Settings.missileVolleys);
-        missileInterval = boss.Settings.missileVolleyInterval;
         missilesFired = 0;
-
-        float lastShotTime = (missileCount - 1) * missileInterval;
-        missilePhaseEndTime = lastShotTime + missileInterval + boss.Settings.missileToLaserExtraDelay;
 
         laserTrackDuration = boss.Settings.laserWindupTime;
         laserWarningDuration = laserTrackDuration + boss.Settings.extraWarningTail;
         laserActiveDuration = boss.Settings.laserActiveTime;
-        laserStartTime = missilePhaseEndTime;
 
-        laserStarted = false;
         laserInteractionDisabled = false;
         laserDirectionLocked = false;
         laserFireSfxPlayed = false;
@@ -161,35 +134,58 @@ public sealed class BossVolleyLaserState : BossState
         laserDir = Vector2.right;
         laserAngleDeg = 0f;
 
-        phase = Phase.Missiles;
-        stateStarted = true;
-
         boss.SetLethal(BossController.AttackContext.LaserP1, false);
+
+        if (missileCount > 0)
+            BeginMissileFire();
+        else
+            BeginLaserFire();
     }
 
-    private void UpdateMissiles()
+    private void BeginMissileFire()
     {
-        while (missilesFired < missileCount)
+        phase = Phase.Missiles;
+        boss.FaceToPlayer();
+        boss.Play(BossController.AnimFire);
+
+        phaseLength = Mathf.Max(0.0001f, boss.AnimLen(BossController.AnimFire));
+        phaseTimer = phaseLength;
+        firedThisPhase = false;
+    }
+
+    private void UpdateMissilePhase()
+    {
+        phaseTimer -= Time.deltaTime;
+
+        float progress = 1f - Mathf.Clamp01(phaseTimer / phaseLength);
+        if (!firedThisPhase && progress >= boss.Settings.missileFirePercent)
         {
-            float nextShotTime = missilesFired * missileInterval;
-            if (elapsed >= nextShotTime)
-            {
-                FireMissile();
-                missilesFired++;
-            }
-            else
-            {
-                break;
-            }
+            FireMissile();
+            firedThisPhase = true;
         }
+
+        if (phaseTimer > 0f)
+            return;
+
+        if (!firedThisPhase)
+            FireMissile();
+
+        missilesFired++;
+
+        if (missilesFired < missileCount)
+            BeginMissileFire();
+        else
+            BeginLaserFire();
     }
 
     private void FireMissile()
     {
         Vector2 origin = boss.transform.position;
-
         Vector2 dir = (Vector2)boss.PlayerTarget.transform.position - origin;
-        if (dir.sqrMagnitude < 0.0001f) dir = Vector2.right;
+
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = Vector2.right;
+
         dir.Normalize();
 
         EnemyProjectile proj = Object.Instantiate(boss.MissilePrefab, origin, Quaternion.identity);
@@ -198,17 +194,42 @@ public sealed class BossVolleyLaserState : BossState
         AudioManager.Instance.PlayOneShotSFX("적 탄환 발사", boss.gameObject);
     }
 
+    private void BeginLaserFire()
+    {
+        phase = Phase.Laser;
+        boss.FaceToPlayer();
+        boss.Play(BossController.AnimLaserFire);
+
+        phaseLength = Mathf.Max(0.0001f, boss.AnimLen(BossController.AnimLaserFire));
+        phaseTimer = phaseLength;
+
+        StartLaser();
+    }
+
+    private void UpdateLaserPhase()
+    {
+        phaseTimer -= Time.deltaTime;
+        laserTime += Time.deltaTime;
+
+        UpdateLaser();
+
+        if (phaseTimer <= 0f)
+            EndState();
+    }
+
     private void StartLaser()
     {
-        laserStarted = true;
         laserTime = 0f;
         laserInteractionDisabled = false;
         laserDirectionLocked = false;
+        laserFireSfxPlayed = false;
 
         laserOrigin = boss.transform.position;
 
         Vector2 initialDir = (Vector2)boss.PlayerTarget.transform.position - laserOrigin;
-        if (initialDir.sqrMagnitude < 0.0001f) initialDir = Vector2.right;
+        if (initialDir.sqrMagnitude < 0.0001f)
+            initialDir = Vector2.right;
+
         initialDir.Normalize();
 
         laserDir = initialDir;
@@ -280,7 +301,8 @@ public sealed class BossVolleyLaserState : BossState
     private void UpdateLaserDirectionTracking()
     {
         Vector2 toPlayer = (Vector2)boss.PlayerTarget.transform.position - laserOrigin;
-        if (toPlayer.sqrMagnitude < 0.0001f) return;
+        if (toPlayer.sqrMagnitude < 0.0001f)
+            return;
 
         float desiredAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
         float maxStep = boss.Settings.laserTurnSpeedDegPerSec * Time.deltaTime;
@@ -341,7 +363,9 @@ public sealed class BossVolleyLaserState : BossState
     private void GetLaserRect(out Vector2 center, out Vector2 half, out float angleDeg)
     {
         Vector2 dir = laserDir;
-        if (dir.sqrMagnitude < 0.0001f) dir = Vector2.right;
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = Vector2.right;
+
         dir.Normalize();
 
         center = laserOrigin + dir * (laserLength * 0.5f);
