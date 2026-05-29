@@ -1,5 +1,4 @@
 using UnityEngine;
-using Sirenix.OdinInspector;
 
 public sealed class FollowObject : MonoBehaviour
 {

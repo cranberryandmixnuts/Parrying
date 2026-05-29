@@ -130,14 +130,15 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     }
 
     #region VFX Controls
-
-    public void PlayParry()
+    public void PlayParry(Vector2 worldPosition)
     {
         VisualEffect vfx = parryPool.Count > 0 ? parryPool.Dequeue() : CreateParryInstance();
         parryActive.Add(vfx);
 
         Transform tr = vfx.transform;
-        tr.SetParent(followPlayerRoot, false);
+        tr.SetParent(transform, true);
+        tr.SetPositionAndRotation(ToParryWorldPosition(worldPosition), Quaternion.identity);
+
         vfx.gameObject.SetActive(true);
         vfx.Reinit();
         vfx.Play();
@@ -158,10 +159,8 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
     }
 
     public void PlayDash() => Restart(dash);
-    //public void PlayDash() => DashRenderer.enabled = true;
 
     public void StopDash() => dash.Stop();
-    //public void StopDash() => DashRenderer.enabled = false;
 
     public void PlayHeal()
     {
@@ -467,4 +466,6 @@ public sealed class EffectManager : Singleton<EffectManager, SceneScope>
 
         camTr.DOShakePosition(duration, strength, 20, 90f, false, true).SetUpdate(true);
     }
+
+    private Vector3 ToParryWorldPosition(Vector2 position) => new(position.x, position.y, parryTemplate.transform.position.z);
 }

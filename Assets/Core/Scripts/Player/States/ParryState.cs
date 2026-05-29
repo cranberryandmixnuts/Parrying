@@ -81,7 +81,7 @@ public sealed class ParryState : PlayerState
                     {
                         player.AudioManager.PlayOneShotSFX("패링 성공", player.gameObject);
                         player.Effects.DoPerfectParryImpact();
-                        player.Effects.PlayParry();
+                        player.Effects.PlayParry(c.hitPoint);
                         player.Vitals.GainEnergy(player.Settings.perfectParryEnergyGain);
                         player.parryHadSuccessThisWindow = true;
                         c.attacker.OnPerfectParry(c.hitPoint);
